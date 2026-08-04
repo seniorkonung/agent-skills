@@ -159,4 +159,4 @@ Confirm that:
 
 ## See Also
 
-Read [definition-of-done.md](definition-of-done.md) before finalizing the task artifact. Use it as the standing completion bar without copying its full checklist into every task: acceptance criteria define task-specific success, while the Definition of Done defines the reusable quality, integration, documentation, and ship-readiness standard.
+Read [definition-of-done.md](../../../references/definition-of-done.md) before finalizing the task artifact. Use it as the standing completion bar without copying its full checklist into every task: acceptance criteria define task-specific success, while the Definition of Done defines the reusable quality, integration, documentation, and ship-readiness standard.

@@ -1,0 +1,16 @@
+name: agent-skills
+version: 0.0.1
+description: APM project for agent-skills
+author: Valentin Panchenko
+targets:
+  - agent-skills
+dependencies:
+  apm:
+    - git: obra/superpowers
+      ref: v6.2.0
+      skills:
+        - verification-before-completion
+      targets: [agent-skills]
+  mcp: []
+includes: auto
+scripts: {}

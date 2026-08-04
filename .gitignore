@@ -1,0 +1,4 @@
+.agents/
+
+# APM dependencies
+apm_modules/
