@@ -4,6 +4,7 @@ description: APM project for agent-skills
 author: Valentin Panchenko
 targets:
   - agent-skills
+  - codex
 dependencies:
   apm:
     - git: obra/superpowers

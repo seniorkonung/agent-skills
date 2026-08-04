@@ -446,6 +446,33 @@ deployments:
   - .
   active_owner: .
   content_hash: sha256:ddac02d7affedceae5d6129f7712e8086a8a8f58af1e2cbc0b32a3064797ea8e
+- kind: project-relative
+  target: codex
+  value: .codex/agents/code-reviewer.toml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:68551392550f16bad4545b154ec710ba215623bcb35f95f8ab2e613d798b50dd
+- kind: project-relative
+  target: codex
+  value: .codex/agents/security-auditor.toml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:6f2bec3bded4da237fa14b74fd77720f0e7d96982f09288652aec26b228110dd
+- kind: project-relative
+  target: codex
+  value: .codex/agents/test-engineer.toml
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:729261399bedbfa7af957725773fddea919b1e094a81ebe6d8a6e476d54c7ff8
 local_deployed_files:
 - .agents/skills/code-review-and-quality
 - .agents/skills/code-review-and-quality/SKILL.md
@@ -467,6 +494,9 @@ local_deployed_files:
 - .agents/skills/shipping-and-launch/SKILL.md
 - .agents/skills/test-driven-development
 - .agents/skills/test-driven-development/SKILL.md
+- .codex/agents/code-reviewer.toml
+- .codex/agents/security-auditor.toml
+- .codex/agents/test-engineer.toml
 local_deployed_file_hashes:
   .agents/skills/code-review-and-quality/SKILL.md: sha256:0c3fe048ef16d2a13fed1678052f46415ab99e45dfe541e8c90eac79afe70bfc
   .agents/skills/idea-refine/SKILL.md: sha256:41f782688238418f1feafb262368772bd312a8ae03d94993ffb4dba9caa067df
@@ -480,3 +510,6 @@ local_deployed_file_hashes:
   .agents/skills/security-and-hardening/SKILL.md: sha256:f06f38a9750b082fee21836e3ed03b7f566ef676178091c30e9696e9db971761
   .agents/skills/shipping-and-launch/SKILL.md: sha256:6d881f4beabb6c34c9dbdd0b7a71225377aecc0c01452af4ce8d930ab5426979
   .agents/skills/test-driven-development/SKILL.md: sha256:ddac02d7affedceae5d6129f7712e8086a8a8f58af1e2cbc0b32a3064797ea8e
+  .codex/agents/code-reviewer.toml: sha256:68551392550f16bad4545b154ec710ba215623bcb35f95f8ab2e613d798b50dd
+  .codex/agents/security-auditor.toml: sha256:6f2bec3bded4da237fa14b74fd77720f0e7d96982f09288652aec26b228110dd
+  .codex/agents/test-engineer.toml: sha256:729261399bedbfa7af957725773fddea919b1e094a81ebe6d8a6e476d54c7ff8
