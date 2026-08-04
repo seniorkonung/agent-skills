@@ -1,44 +1,8 @@
 lockfile_version: '1'
-generated_at: '2026-08-04T12:00:03.739882+00:00'
-apm_version: 0.26.0
-dependencies:
-- repo_url: obra/superpowers
-  name: superpowers
-  host: github.com
-  resolved_commit: 3dcbd5c4b48e02263fbf4a3c01e3fe4f81d584d9
-  resolved_ref: v6.2.0
-  version: 6.2.0
-  package_type: marketplace_plugin
-  deployed_files:
-  - .agents/skills/verification-before-completion
-  - .agents/skills/verification-before-completion/SKILL.md
-  deployed_file_hashes:
-    .agents/skills/verification-before-completion/SKILL.md: sha256:2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3
-  content_hash: sha256:f4ba2a0b0275955535927e8635806758416f20b7dd7ff598c051cf5cdd08051d
-  skill_subset:
-  - verification-before-completion
-  target_subset:
-  - agent-skills
-  declared_license: MIT
+generated_at: '2026-08-04T12:14:11.000954+00:00'
+apm_version: 0.27.0
+dependencies: []
 deployments:
-- kind: project-relative
-  target: agent-skills
-  value: .agents/skills/verification-before-completion
-  runtime: null
-  scope: project
-  owners:
-  - obra/superpowers
-  active_owner: obra/superpowers
-  content_hash: null
-- kind: project-relative
-  target: agent-skills
-  value: .agents/skills/verification-before-completion/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - obra/superpowers
-  active_owner: obra/superpowers
-  content_hash: sha256:2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3
 - kind: project-relative
   target: agents
   value: .agents/skills/planning-and-task-breakdown

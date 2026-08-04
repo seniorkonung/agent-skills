@@ -5,12 +5,7 @@ author: Valentin Panchenko
 targets:
   - agent-skills
 dependencies:
-  apm:
-    - git: obra/superpowers
-      ref: v6.2.0
-      skills:
-        - verification-before-completion
-      targets: [agent-skills]
+  apm: []
   mcp: []
 includes: auto
 scripts: {}
