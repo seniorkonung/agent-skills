@@ -17,6 +17,12 @@ dependencies:
         - domain-modeling
         - grill-with-docs
         - grilling
+    - git: addyosmani/agent-skills
+      ref: 0.6.5
+      skills:
+        - code-simplification
+        - debugging-and-error-recovery
+        - source-driven-development
   mcp: []
 includes: auto
 scripts: {}

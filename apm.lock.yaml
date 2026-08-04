@@ -1,7 +1,33 @@
-lockfile_version: '1'
-generated_at: '2026-08-04T15:01:06.660243+00:00'
+lockfile_version: '2'
+generated_at: '2026-08-04T15:21:11.681076+00:00'
 apm_version: 0.27.0
 dependencies:
+- repo_url: addyosmani/agent-skills
+  name: agent-skills
+  host: github.com
+  resolved_commit: ff2df4c07e7836a092ed28e1e9b42f4d6009280c
+  resolved_ref: 0.6.5
+  version: 0.6.5
+  package_type: marketplace_plugin
+  deployed_files:
+  - .agents/skills/code-simplification
+  - .agents/skills/code-simplification/SKILL.md
+  - .agents/skills/debugging-and-error-recovery
+  - .agents/skills/debugging-and-error-recovery/SKILL.md
+  - .agents/skills/source-driven-development
+  - .agents/skills/source-driven-development/SKILL.md
+  deployed_file_hashes:
+    .agents/skills/code-simplification/SKILL.md: sha256:f0c5ed754057eb0c1e027e2587f59de816651feb5e837242296c43ea21cf621d
+    .agents/skills/debugging-and-error-recovery/SKILL.md: sha256:927ad6917fa2891827351cfa3470cd715423faaa5c5f27fe74534d9324c35eea
+    .agents/skills/source-driven-development/SKILL.md: sha256:b979e7531ea601ed14a090f32a5b135db517c48ab9821c5e8b09efd80f4ff4d8
+  content_hash: sha256:5b91544f925d04ef97f08ad0d20586c29b3c8394535eb6e8585b4d04ba7eb53b
+  skill_subset:
+  - code-simplification
+  - debugging-and-error-recovery
+  - source-driven-development
+  constraint: 0.6.5
+  resolved_tag: 0.6.5
+  resolved_at: '2026-08-04T15:21:07+00:00'
 - repo_url: mattpocock/skills
   name: mattpocock-skills
   host: github.com
@@ -56,6 +82,24 @@ dependencies:
 deployments:
 - kind: project-relative
   target: agent-skills
+  value: .agents/skills/code-simplification
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: null
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/code-simplification/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:f0c5ed754057eb0c1e027e2587f59de816651feb5e837242296c43ea21cf621d
+- kind: project-relative
+  target: agent-skills
   value: .agents/skills/codebase-design
   runtime: null
   scope: project
@@ -90,6 +134,24 @@ deployments:
   - mattpocock/skills
   active_owner: mattpocock/skills
   content_hash: sha256:a8d50abac5a4018f60e1d911d4b6f4e36454ca14d6c390c0695a578c7de65dad
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/debugging-and-error-recovery
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: null
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/debugging-and-error-recovery/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:927ad6917fa2891827351cfa3470cd715423faaa5c5f27fe74534d9324c35eea
 - kind: project-relative
   target: agent-skills
   value: .agents/skills/domain-modeling
@@ -164,6 +226,24 @@ deployments:
   content_hash: sha256:5a35925d03a391bcfa46940868b649b72dba89ec9c19525e785bbb6bd3a7f478
 - kind: project-relative
   target: agent-skills
+  value: .agents/skills/source-driven-development
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: null
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/source-driven-development/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - addyosmani/agent-skills
+  active_owner: addyosmani/agent-skills
+  content_hash: sha256:b979e7531ea601ed14a090f32a5b135db517c48ab9821c5e8b09efd80f4ff4d8
+- kind: project-relative
+  target: agent-skills
   value: .agents/skills/verification-before-completion
   runtime: null
   scope: project
@@ -197,7 +277,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:26f1da8566c12575c726f4da84e1a9cf09bcb0d58d0f61ed255b7ef670939f5c
+  content_hash: sha256:0c3fe048ef16d2a13fed1678052f46415ab99e45dfe541e8c90eac79afe70bfc
 - kind: project-relative
   target: agents
   value: .agents/skills/idea-refine
@@ -308,6 +388,24 @@ deployments:
   content_hash: sha256:acf49ad221c68c354f88ac9d7be0b94fc179d90b25177b28b151b3d9d3e7b670
 - kind: project-relative
   target: agents
+  value: .agents/skills/security-and-hardening
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: agents
+  value: .agents/skills/security-and-hardening/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:f06f38a9750b082fee21836e3ed03b7f566ef676178091c30e9696e9db971761
+- kind: project-relative
+  target: agents
   value: .agents/skills/shipping-and-launch
   runtime: null
   scope: project
@@ -324,6 +422,24 @@ deployments:
   - .
   active_owner: .
   content_hash: sha256:6d881f4beabb6c34c9dbdd0b7a71225377aecc0c01452af4ce8d930ab5426979
+- kind: project-relative
+  target: agents
+  value: .agents/skills/test-driven-development
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: agents
+  value: .agents/skills/test-driven-development/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:ddac02d7affedceae5d6129f7712e8086a8a8f58af1e2cbc0b32a3064797ea8e
 local_deployed_files:
 - .agents/skills/code-review-and-quality
 - .agents/skills/code-review-and-quality/SKILL.md
@@ -339,10 +455,14 @@ local_deployed_files:
 - .agents/skills/observability-and-instrumentation/SKILL.md
 - .agents/skills/planning-and-task-breakdown
 - .agents/skills/planning-and-task-breakdown/SKILL.md
+- .agents/skills/security-and-hardening
+- .agents/skills/security-and-hardening/SKILL.md
 - .agents/skills/shipping-and-launch
 - .agents/skills/shipping-and-launch/SKILL.md
+- .agents/skills/test-driven-development
+- .agents/skills/test-driven-development/SKILL.md
 local_deployed_file_hashes:
-  .agents/skills/code-review-and-quality/SKILL.md: sha256:26f1da8566c12575c726f4da84e1a9cf09bcb0d58d0f61ed255b7ef670939f5c
+  .agents/skills/code-review-and-quality/SKILL.md: sha256:0c3fe048ef16d2a13fed1678052f46415ab99e45dfe541e8c90eac79afe70bfc
   .agents/skills/idea-refine/SKILL.md: sha256:41f782688238418f1feafb262368772bd312a8ae03d94993ffb4dba9caa067df
   .agents/skills/idea-refine/examples.md: sha256:c465973638b66ef33837caa13335f85ea273b75127e0e779330ed46c4245efc3
   .agents/skills/idea-refine/frameworks.md: sha256:161ebc18fdf2d996bc62a87a2d747cf1bf53548354f8925de25c732c27f00309
@@ -351,4 +471,6 @@ local_deployed_file_hashes:
   .agents/skills/incremental-implementation/SKILL.md: sha256:11b6c463fc40575041e2f5a8f467eb7f35820be0fb9a57f83fb341a1e6c8dd1c
   .agents/skills/observability-and-instrumentation/SKILL.md: sha256:72b2bf819884c33f78fa1894dc8a26e6901076a2e24c60cb3aef1a53c633a7a6
   .agents/skills/planning-and-task-breakdown/SKILL.md: sha256:acf49ad221c68c354f88ac9d7be0b94fc179d90b25177b28b151b3d9d3e7b670
+  .agents/skills/security-and-hardening/SKILL.md: sha256:f06f38a9750b082fee21836e3ed03b7f566ef676178091c30e9696e9db971761
   .agents/skills/shipping-and-launch/SKILL.md: sha256:6d881f4beabb6c34c9dbdd0b7a71225377aecc0c01452af4ce8d930ab5426979
+  .agents/skills/test-driven-development/SKILL.md: sha256:ddac02d7affedceae5d6129f7712e8086a8a8f58af1e2cbc0b32a3064797ea8e
