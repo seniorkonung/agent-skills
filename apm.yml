@@ -10,7 +10,6 @@ dependencies:
       ref: v6.2.0
       skills:
         - verification-before-completion
-      targets: [agent-skills]
     - git: mattpocock/skills
       ref: v1.1.0
       skills:

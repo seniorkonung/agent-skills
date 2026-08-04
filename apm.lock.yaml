@@ -1,5 +1,5 @@
 lockfile_version: '1'
-generated_at: '2026-08-04T14:52:06.671375+00:00'
+generated_at: '2026-08-04T15:01:06.660243+00:00'
 apm_version: 0.27.0
 dependencies:
 - repo_url: mattpocock/skills
@@ -52,8 +52,6 @@ dependencies:
   content_hash: sha256:f4ba2a0b0275955535927e8635806758416f20b7dd7ff598c051cf5cdd08051d
   skill_subset:
   - verification-before-completion
-  target_subset:
-  - agent-skills
   declared_license: MIT
 deployments:
 - kind: project-relative
@@ -184,6 +182,24 @@ deployments:
   content_hash: sha256:2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3
 - kind: project-relative
   target: agents
+  value: .agents/skills/code-review-and-quality
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: agents
+  value: .agents/skills/code-review-and-quality/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:26f1da8566c12575c726f4da84e1a9cf09bcb0d58d0f61ed255b7ef670939f5c
+- kind: project-relative
+  target: agents
   value: .agents/skills/idea-refine
   runtime: null
   scope: project
@@ -236,6 +252,24 @@ deployments:
   - .
   active_owner: .
   content_hash: sha256:f02a52408a4218047c032d221483abfbb48d11f090bb4915965c7419bf2e0e47
+- kind: project-relative
+  target: agents
+  value: .agents/skills/incremental-implementation
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: agents
+  value: .agents/skills/incremental-implementation/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:11b6c463fc40575041e2f5a8f467eb7f35820be0fb9a57f83fb341a1e6c8dd1c
 - kind: project-relative
   target: agents
   value: .agents/skills/observability-and-instrumentation
@@ -291,12 +325,16 @@ deployments:
   active_owner: .
   content_hash: sha256:6d881f4beabb6c34c9dbdd0b7a71225377aecc0c01452af4ce8d930ab5426979
 local_deployed_files:
+- .agents/skills/code-review-and-quality
+- .agents/skills/code-review-and-quality/SKILL.md
 - .agents/skills/idea-refine
 - .agents/skills/idea-refine/SKILL.md
 - .agents/skills/idea-refine/examples.md
 - .agents/skills/idea-refine/frameworks.md
 - .agents/skills/idea-refine/refinement-criteria.md
 - .agents/skills/idea-refine/scripts/idea-refine.sh
+- .agents/skills/incremental-implementation
+- .agents/skills/incremental-implementation/SKILL.md
 - .agents/skills/observability-and-instrumentation
 - .agents/skills/observability-and-instrumentation/SKILL.md
 - .agents/skills/planning-and-task-breakdown
@@ -304,11 +342,13 @@ local_deployed_files:
 - .agents/skills/shipping-and-launch
 - .agents/skills/shipping-and-launch/SKILL.md
 local_deployed_file_hashes:
+  .agents/skills/code-review-and-quality/SKILL.md: sha256:26f1da8566c12575c726f4da84e1a9cf09bcb0d58d0f61ed255b7ef670939f5c
   .agents/skills/idea-refine/SKILL.md: sha256:41f782688238418f1feafb262368772bd312a8ae03d94993ffb4dba9caa067df
   .agents/skills/idea-refine/examples.md: sha256:c465973638b66ef33837caa13335f85ea273b75127e0e779330ed46c4245efc3
   .agents/skills/idea-refine/frameworks.md: sha256:161ebc18fdf2d996bc62a87a2d747cf1bf53548354f8925de25c732c27f00309
   .agents/skills/idea-refine/refinement-criteria.md: sha256:1ca2973a4d01b5cb37ab7ddb2eff77fa4e792634a33d0ce44961c068fc88d51a
   .agents/skills/idea-refine/scripts/idea-refine.sh: sha256:f02a52408a4218047c032d221483abfbb48d11f090bb4915965c7419bf2e0e47
+  .agents/skills/incremental-implementation/SKILL.md: sha256:11b6c463fc40575041e2f5a8f467eb7f35820be0fb9a57f83fb341a1e6c8dd1c
   .agents/skills/observability-and-instrumentation/SKILL.md: sha256:72b2bf819884c33f78fa1894dc8a26e6901076a2e24c60cb3aef1a53c633a7a6
   .agents/skills/planning-and-task-breakdown/SKILL.md: sha256:acf49ad221c68c354f88ac9d7be0b94fc179d90b25177b28b151b3d9d3e7b670
   .agents/skills/shipping-and-launch/SKILL.md: sha256:6d881f4beabb6c34c9dbdd0b7a71225377aecc0c01452af4ce8d930ab5426979
