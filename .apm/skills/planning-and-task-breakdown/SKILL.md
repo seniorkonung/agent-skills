@@ -5,112 +5,88 @@ description: Convert clear specifications, design decisions, or scoped requireme
 
 # Planning and Task Breakdown
 
-Decompose approved work into small, ordered tasks that another agent can implement and verify without making unresolved product or architecture decisions.
+## Overview
 
-## Honor the Artifact Contract
+Decompose work into small, verifiable tasks with explicit acceptance criteria. Every task should be small enough to implement, test, and verify in a single focused session.
 
-- Treat the caller's template, content rules, and output target as authoritative.
-- Read the supplied requirements, design decisions, and relevant code before drafting tasks. Re-read source artifacts when they may have changed.
-- Produce only the requested task artifact. Do not choose or hard-code its output location, create companion planning documents, or modify implementation code.
-- Apply caller-provided context and rules as constraints without copying those instructions into the artifact.
-- Ask the user to resolve any unknown that would change scope, architecture, interfaces, or the dependency graph. Do not encode a hidden assumption as a task.
+## When to Use
 
-## Build the Task Graph
+- You have a spec, design, or clear requirements and need implementable tasks
+- A task feels too large or vague to start
+- Work needs to be parallelized across multiple agents or sessions
+- You need to communicate scope to a human
+- The implementation order is not obvious
+- Another workflow asks for an implementation task artifact
 
-1. Trace the requested behavior to its requirements and design decisions.
-2. Inspect the repository for affected components, existing patterns, test commands, and likely files.
-3. Map prerequisites such as contracts, migrations, shared infrastructure, and test fixtures.
-4. Order dependencies before their consumers. Place high-risk validation as early as its prerequisites allow.
-5. Prefer vertical slices that deliver testable behavior across layers. Keep shared foundations separate only when several slices depend on them.
-6. Identify independent tasks that can run in parallel after their shared contracts are fixed.
+**When NOT to use:** Single-file changes with obvious scope, or when the supplied spec already contains well-defined, implementation-ready tasks.
 
-Each task must produce one coherent outcome and leave the system in a working state. Split a task when its title joins independent outcomes with “and,” it crosses unrelated subsystems, or it cannot be completed and verified in one focused session.
+## The Planning Process
 
-### Example: Order by Dependency
+### Step 1: Analyze Before Implementation
 
-Map prerequisites before numbering tasks:
+Before writing implementation code, operate in read-only mode:
 
-```text
-Shared data contract
-├── Server validation
-│   └── API endpoint
-└── Client types
-    └── UI flow
-        └── End-to-end verification
-```
+- Read the spec, design decisions, and relevant codebase sections
+- Identify existing patterns and conventions
+- Map dependencies between components
+- Note risks and unknowns
+- Re-read supplied artifacts when they may have changed
 
-Build the shared contract before either consumer. After that contract is fixed, server validation and client types may proceed in parallel. Do not place the UI flow before the client types merely because the UI is the visible part of the feature.
+Treat the caller's template, content rules, and output target as authoritative. Produce only the requested task artifact at the caller-supplied target. Do not hard-code an output path, create companion planning documents, or modify implementation code.
 
-### Example: Prefer Vertical Slices
+If an unknown would change scope, architecture, interfaces, or the task graph, resolve it with the user before drafting tasks. Do not hide unresolved decisions inside task descriptions.
 
-Avoid horizontal slices that postpone integration until the end:
+### Step 2: Identify the Dependency Graph
+
+Map what depends on what:
 
 ```text
-1. Build the entire database layer
-2. Build all API endpoints
-3. Build all UI components
-4. Connect everything and test it
+Database schema
+    │
+    ├── API models/types
+    │       │
+    │       ├── API endpoints
+    │       │       │
+    │       │       └── Frontend API client
+    │       │               │
+    │       │               └── UI components
+    │       │
+    │       └── Validation logic
+    │
+    └── Seed data / migrations
 ```
 
-Prefer complete, independently verifiable behavior:
+Implement prerequisites before their consumers. After a shared contract is fixed, independent branches may proceed in parallel. Place high-risk validation as early as its prerequisites allow.
+
+### Step 3: Slice Vertically
+
+Instead of building all the database, then all the API, then all the UI, build one complete feature path at a time.
+
+**Bad — horizontal slicing:**
 
 ```text
-1. Registration works end-to-end (storage + API + UI + focused tests)
-2. Login works end-to-end (authentication + API + UI + focused tests)
-3. Task creation works end-to-end (storage + API + UI + focused tests)
+Task 1: Build the entire database schema
+Task 2: Build all API endpoints
+Task 3: Build all UI components
+Task 4: Connect everything
 ```
 
-Use a horizontal foundation task only when multiple vertical slices genuinely share it.
-
-## Size Tasks
-
-Use only these sizes:
-
-| Size | Typical files | Scope |
-|---|---:|---|
-| **XS** | 1 | Narrow function, test, or configuration change |
-| **S** | 1-2 | One component, endpoint, or focused behavior |
-| **M** | 3-5 | One vertical feature slice |
-
-Split work larger than M. Also split a task if it needs more than three acceptance criteria, is likely to take more than roughly two hours, or combines independently verifiable behavior.
-
-### Example: Split Oversized Work
-
-Avoid:
+**Good — vertical slicing:**
 
 ```text
-Implement search with filtering, pagination, analytics, documentation, and tests.
+Task 1: User can create an account (schema + API + UI + focused tests)
+Task 2: User can log in (auth + API + UI + focused tests)
+Task 3: User can create a task (schema + API + UI + focused tests)
+Task 4: User can view the task list (query + API + UI + focused tests)
 ```
 
-Prefer:
+Each vertical slice delivers working, testable functionality. Use a horizontal foundation task only when multiple slices genuinely share it.
 
-```text
-1. Basic search returns ranked results through the user-facing flow.
-2. Filters narrow those results through the same flow.
-3. Pagination preserves the query and active filters.
-4. Search analytics records the approved events without blocking results.
-5. Integration tests and public documentation cover the completed search flow.
-```
+### Step 4: Write Tasks
 
-Each item now has one outcome, a smaller file surface, and an independent verification target.
+Group related tasks under numbered level-two headings. Place each primary task checkbox at column zero and use hierarchical numbering.
 
-## Write the Artifact
-
-Group related tasks under numbered level-two headings. Place every tracked task marker at column zero and use hierarchical numbering.
-
-Avoid turning acceptance criteria and verification into additional tracked tasks:
-
-```markdown
-## 1. Export
-
-- [ ] 1.1 Implement CSV export
-- [ ] Exported CSV opens in spreadsheet applications
-- [ ] Export tests pass
-```
-
-This hides the actual task contract and makes a tracker report three tasks instead of one.
-
-Prefer one self-contained tracked task with nested, non-checkbox metadata:
+Each task follows this structure:
 
 ```markdown
 ## 1. Export
@@ -127,36 +103,149 @@ Prefer one self-contained tracked task with nested, non-checkbox metadata:
   - **Estimated scope:** S (1-2 files)
 ```
 
-Apply these rules to every task:
+Make the checkbox line self-contained: an implementer who sees only that line must still understand the required outcome. Use ordinary nested bullets for metadata.
 
-- Make the checkbox line self-contained. An implementer who sees only that line must still understand the required outcome.
-- Use a checkbox only for the primary task line. Use ordinary nested bullets for acceptance criteria, verification, dependencies, files, and scope so task trackers do not count metadata as separate work.
-- Limit acceptance criteria to specific, observable conditions. Do not restate the full specification.
-- Make verification concrete. Use repository commands discovered during inspection, plus a manual check only when automation cannot prove the behavior.
-- Reference prerequisite task numbers under **Dependencies**, or write `None`.
-- List paths found during repository inspection under **Files likely touched**. If the exact path is genuinely unknown, name the component or area and mark it as approximate; never invent a path.
-- Treat the file list and size as planning estimates, not permission to ignore relevant code discovered during implementation.
-- Mark a task complete only after its acceptance criteria and verification pass.
+**Bad — metadata becomes separate tracked tasks:**
 
-## Add Checkpoints
+```markdown
+- [ ] 1.1 Implement CSV export
+- [ ] Exported CSV opens in spreadsheet applications
+- [ ] Export tests pass
+```
 
-- Add a tracked integration or verification task after every two or three implementation tasks when they form a meaningful phase.
-- Add a final tracked task for the relevant end-to-end flow, full build, or broader test suite.
-- Keep checkpoint descriptions executable and specific; avoid generic tasks such as “verify everything” or “review with human.”
-- Keep independent slices parallelizable by referencing only their real prerequisites.
+This reports three tasks instead of one and separates the completion contract from the implementation task.
 
-## Review Before Emitting
+**Good — one tracked task with nested metadata:**
 
-Confirm that:
+```markdown
+- [ ] 1.1 Implement CSV export for the current result set
+  - **Acceptance criteria:**
+    - The generated file opens correctly in supported spreadsheet applications
+  - **Verification:**
+    - Run the focused export tests and inspect one generated fixture
+  - **Dependencies:** None
+  - **Files likely touched:** `src/export/csv.ts`, `tests/export/csv.test.ts`
+  - **Estimated scope:** S (1-2 files)
+```
 
-- every requested behavior is covered and every task traces to approved scope;
-- no task introduces behavior absent from the requirements or design;
-- dependencies reference existing task numbers and the ordering satisfies them;
-- every task has acceptance criteria, verification, likely files, and an XS/S/M estimate;
-- only primary task lines use checkbox markers;
-- no task is larger than M;
-- the artifact contains no unresolved decision that would change implementation.
+Never use checkboxes for acceptance criteria, verification, dependencies, files, or scope. Task trackers must count only primary task lines.
+
+### Step 5: Order and Checkpoint
+
+Arrange tasks so that:
+
+1. Dependencies are satisfied
+2. Each task leaves the system in a working state
+3. Verification checkpoints occur after every two or three implementation tasks when they form a meaningful phase
+4. High-risk work appears early enough to fail fast
+5. Independent slices reference only their real prerequisites
+
+Add explicit tracked checkpoints:
+
+```markdown
+## 3. Checkpoint: Foundation
+
+- [ ] 3.1 Verify the completed foundation before starting dependent feature work
+  - **Acceptance criteria:**
+    - All focused tests pass
+    - The application builds without errors
+    - The foundational flow works end-to-end
+  - **Verification:**
+    - Run `repository-focused-test-command`
+    - Run `repository-build-command`
+  - **Dependencies:** 1.1, 1.2, 2.1
+  - **Files likely touched:** None (verification only)
+  - **Estimated scope:** XS
+```
+
+Add a final checkpoint for the relevant end-to-end flow, full build, or broader test suite. Avoid vague checkpoints such as "verify everything."
+
+## Task Sizing Guidelines
+
+| Size | Files | Scope | Example |
+|---|---:|---|---|
+| **XS** | 1 | Single function, test, or config change | Add a validation rule |
+| **S** | 1-2 | One component or endpoint | Add a focused API endpoint |
+| **M** | 3-5 | One vertical feature slice | User registration flow |
+| **L** | 5-8 | Too large; break it down | Search with filters and pagination |
+| **XL** | 8+ | Too large; break it down | Entire subsystem |
+
+Emit only XS, S, and M tasks. Treat L and XL as signals that further decomposition is required.
+
+Break a task down further when:
+
+- It would take more than one focused session, roughly two or more hours
+- You cannot describe its acceptance criteria in three or fewer bullets
+- It touches more than about five files
+- It crosses two or more independent subsystems
+- Its title joins independent outcomes with "and"
+
+**Bad — oversized task:**
+
+```text
+Implement search with filtering, pagination, analytics, documentation, and tests.
+```
+
+**Good — smaller outcomes:**
+
+```text
+1. Basic search returns ranked results through the user-facing flow.
+2. Filters narrow those results through the same flow.
+3. Pagination preserves the query and active filters.
+4. Search analytics records the approved events without blocking results.
+5. Integration tests and public documentation cover the completed search flow.
+```
+
+## Output Artifact
+
+- Follow the caller-provided template and output target
+- Produce one task artifact, not separate plan and todo documents
+- Group related tasks under numbered headings
+- Use `- [ ] N.M ...` only for primary tracked tasks
+- Include acceptance criteria, verification, dependencies, likely files, and estimated scope under every task
+- Apply caller-provided context and rules as constraints without copying those instructions into the artifact
+
+## Parallelization Opportunities
+
+- **Safe to parallelize:** Independent vertical slices, tests for already-defined behavior, documentation
+- **Must be sequential:** Migrations, shared contracts, shared state changes, dependency chains
+- **Needs coordination:** Features that share an API or data contract; define the contract first, then parallelize consumers
+
+## Common Rationalizations
+
+| Rationalization | Reality |
+|---|---|
+| "I'll figure it out as I go" | Unresolved decisions discovered during implementation cause rework. |
+| "The tasks are obvious" | Writing them down exposes hidden dependencies and missing verification. |
+| "Planning is overhead" | A short dependency-aware plan prevents tangled implementation. |
+| "I can hold it all in my head" | Written tasks survive session boundaries and context compaction. |
+
+## Red Flags
+
+- Starting implementation before the task artifact is ready
+- Tasks that say "implement the feature" without a concrete outcome
+- Acceptance criteria or verification written as separate checkboxes
+- Missing verification steps or invented test commands
+- All tasks sized L or XL
+- No checkpoints between meaningful phases
+- Dependencies missing or ordered after their consumers
+- File paths invented without repository inspection
+- Tasks that introduce behavior outside the approved requirements or design
+
+## Verification
+
+Before finalizing the artifact, confirm:
+
+- [ ] Every task has specific acceptance criteria
+- [ ] Every task has a concrete verification step
+- [ ] Task dependencies are identified and ordered correctly
+- [ ] Likely files come from repository inspection and are clearly estimates
+- [ ] Every emitted task is XS, S, or M
+- [ ] Only primary task lines use checkbox markers in the output artifact
+- [ ] Checkpoints exist between meaningful phases and at final integration
+- [ ] Every requested behavior is covered without adding unapproved scope
+- [ ] The human has reviewed and approved the task artifact before implementation
 
 ## See Also
 
-Read [definition-of-done.md](../../../references/definition-of-done.md) before finalizing the task artifact. Use it as the standing completion bar without copying its full checklist into every task: acceptance criteria define task-specific success, while the Definition of Done defines the reusable quality, integration, documentation, and ship-readiness standard.
+Read [definition-of-done.md](../../../references/definition-of-done.md) before finalizing the task artifact. Acceptance criteria answer "did we build the right thing?" The Definition of Done supplies the reusable quality, integration, documentation, and ship-readiness bar. Apply it without copying the full checklist into every task.
