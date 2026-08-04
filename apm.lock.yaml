@@ -1,5 +1,5 @@
 lockfile_version: '2'
-generated_at: '2026-08-04T15:21:11.681076+00:00'
+generated_at: '2026-08-04T15:29:05.036067+00:00'
 apm_version: 0.27.0
 dependencies:
 - repo_url: addyosmani/agent-skills
@@ -25,6 +25,8 @@ dependencies:
   - code-simplification
   - debugging-and-error-recovery
   - source-driven-development
+  target_subset:
+  - agent-skills
   constraint: 0.6.5
   resolved_tag: 0.6.5
   resolved_at: '2026-08-04T15:21:07+00:00'
@@ -63,6 +65,8 @@ dependencies:
   - domain-modeling
   - grill-with-docs
   - grilling
+  target_subset:
+  - agent-skills
 - repo_url: obra/superpowers
   name: superpowers
   host: github.com
@@ -78,6 +82,8 @@ dependencies:
   content_hash: sha256:f4ba2a0b0275955535927e8635806758416f20b7dd7ff598c051cf5cdd08051d
   skill_subset:
   - verification-before-completion
+  target_subset:
+  - agent-skills
   declared_license: MIT
 deployments:
 - kind: project-relative

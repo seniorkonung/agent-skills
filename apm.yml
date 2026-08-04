@@ -10,6 +10,7 @@ dependencies:
       ref: v6.2.0
       skills:
         - verification-before-completion
+      targets: [agent-skills]
     - git: mattpocock/skills
       ref: v1.1.0
       skills:
@@ -17,12 +18,14 @@ dependencies:
         - domain-modeling
         - grill-with-docs
         - grilling
+      targets: [agent-skills]
     - git: addyosmani/agent-skills
       ref: 0.6.5
       skills:
         - code-simplification
         - debugging-and-error-recovery
         - source-driven-development
+      targets: [agent-skills]
   mcp: []
 includes: auto
 scripts: {}
