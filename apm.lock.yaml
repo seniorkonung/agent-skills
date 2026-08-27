@@ -466,6 +466,42 @@ deployments:
   content_hash: sha256:6d881f4beabb6c34c9dbdd0b7a71225377aecc0c01452af4ce8d930ab5426979
 - kind: project-relative
   target: agents
+  value: .agents/skills/skill-authoring
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: agents
+  value: .agents/skills/skill-authoring/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:b5bc4328af4a7a5f81068c23da89affc5690843f436dc7fcbd1f51d2cc65531c
+- kind: project-relative
+  target: agents
+  value: .agents/skills/skill-authoring/references/evaluation.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2aaf0e25f1037ba1ae83bb693b8fde5eea87512dd812e965961cb5b2d811cb52
+- kind: project-relative
+  target: agents
+  value: .agents/skills/skill-authoring/references/examples.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2788c3fc6423fee22f10a5f8886e99d888184fd4f056fc54704f455d6e5b1e8d
+- kind: project-relative
+  target: agents
   value: .agents/skills/test-driven-development
   runtime: null
   scope: project
@@ -532,6 +568,10 @@ local_deployed_files:
 - .agents/skills/security-and-hardening/SKILL.md
 - .agents/skills/shipping-and-launch
 - .agents/skills/shipping-and-launch/SKILL.md
+- .agents/skills/skill-authoring
+- .agents/skills/skill-authoring/SKILL.md
+- .agents/skills/skill-authoring/references/evaluation.md
+- .agents/skills/skill-authoring/references/examples.md
 - .agents/skills/test-driven-development
 - .agents/skills/test-driven-development/SKILL.md
 - .codex/agents/code-reviewer.toml
@@ -552,6 +592,9 @@ local_deployed_file_hashes:
   .agents/skills/planning-and-task-breakdown/SKILL.md: sha256:acf49ad221c68c354f88ac9d7be0b94fc179d90b25177b28b151b3d9d3e7b670
   .agents/skills/security-and-hardening/SKILL.md: sha256:f06f38a9750b082fee21836e3ed03b7f566ef676178091c30e9696e9db971761
   .agents/skills/shipping-and-launch/SKILL.md: sha256:6d881f4beabb6c34c9dbdd0b7a71225377aecc0c01452af4ce8d930ab5426979
+  .agents/skills/skill-authoring/SKILL.md: sha256:b5bc4328af4a7a5f81068c23da89affc5690843f436dc7fcbd1f51d2cc65531c
+  .agents/skills/skill-authoring/references/evaluation.md: sha256:2aaf0e25f1037ba1ae83bb693b8fde5eea87512dd812e965961cb5b2d811cb52
+  .agents/skills/skill-authoring/references/examples.md: sha256:2788c3fc6423fee22f10a5f8886e99d888184fd4f056fc54704f455d6e5b1e8d
   .agents/skills/test-driven-development/SKILL.md: sha256:ddac02d7affedceae5d6129f7712e8086a8a8f58af1e2cbc0b32a3064797ea8e
   .codex/agents/code-reviewer.toml: sha256:68551392550f16bad4545b154ec710ba215623bcb35f95f8ab2e613d798b50dd
   .codex/agents/security-auditor.toml: sha256:6f2bec3bded4da237fa14b74fd77720f0e7d96982f09288652aec26b228110dd
