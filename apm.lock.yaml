@@ -286,6 +286,42 @@ deployments:
   content_hash: sha256:0c3fe048ef16d2a13fed1678052f46415ab99e45dfe541e8c90eac79afe70bfc
 - kind: project-relative
   target: agents
+  value: .agents/skills/discussion
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: agents
+  value: .agents/skills/discussion/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7360e4d92df16887899e64407c54853936f49ec189caad80a05b443c378253ff
+- kind: project-relative
+  target: agents
+  value: .agents/skills/discussion/references/document-format.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:7259d33bef84de3c3b976b1f3ff4e61e9b24e12312e3291647492eaf694cd668
+- kind: project-relative
+  target: agents
+  value: .agents/skills/discussion/references/examples.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:17739bc08eef88c1d3a359acf133186ac9ddc384c4334c6152929949c5f1c24f
+- kind: project-relative
+  target: agents
   value: .agents/skills/idea-refine
   runtime: null
   scope: project
@@ -301,7 +337,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:41f782688238418f1feafb262368772bd312a8ae03d94993ffb4dba9caa067df
+  content_hash: sha256:ab5240e4593b9b0250952986ce3b9aba4a7629c4bf8f6335d13584cff6ba7300
 - kind: project-relative
   target: agents
   value: .agents/skills/idea-refine/examples.md
@@ -310,7 +346,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:c465973638b66ef33837caa13335f85ea273b75127e0e779330ed46c4245efc3
+  content_hash: sha256:326c8e64083f29b3ea8b99e757198efafcf30a68c227156b521e1cddff5ed4ad
 - kind: project-relative
   target: agents
   value: .agents/skills/idea-refine/frameworks.md
@@ -476,6 +512,10 @@ deployments:
 local_deployed_files:
 - .agents/skills/code-review-and-quality
 - .agents/skills/code-review-and-quality/SKILL.md
+- .agents/skills/discussion
+- .agents/skills/discussion/SKILL.md
+- .agents/skills/discussion/references/document-format.md
+- .agents/skills/discussion/references/examples.md
 - .agents/skills/idea-refine
 - .agents/skills/idea-refine/SKILL.md
 - .agents/skills/idea-refine/examples.md
@@ -499,8 +539,11 @@ local_deployed_files:
 - .codex/agents/test-engineer.toml
 local_deployed_file_hashes:
   .agents/skills/code-review-and-quality/SKILL.md: sha256:0c3fe048ef16d2a13fed1678052f46415ab99e45dfe541e8c90eac79afe70bfc
-  .agents/skills/idea-refine/SKILL.md: sha256:41f782688238418f1feafb262368772bd312a8ae03d94993ffb4dba9caa067df
-  .agents/skills/idea-refine/examples.md: sha256:c465973638b66ef33837caa13335f85ea273b75127e0e779330ed46c4245efc3
+  .agents/skills/discussion/SKILL.md: sha256:7360e4d92df16887899e64407c54853936f49ec189caad80a05b443c378253ff
+  .agents/skills/discussion/references/document-format.md: sha256:7259d33bef84de3c3b976b1f3ff4e61e9b24e12312e3291647492eaf694cd668
+  .agents/skills/discussion/references/examples.md: sha256:17739bc08eef88c1d3a359acf133186ac9ddc384c4334c6152929949c5f1c24f
+  .agents/skills/idea-refine/SKILL.md: sha256:ab5240e4593b9b0250952986ce3b9aba4a7629c4bf8f6335d13584cff6ba7300
+  .agents/skills/idea-refine/examples.md: sha256:326c8e64083f29b3ea8b99e757198efafcf30a68c227156b521e1cddff5ed4ad
   .agents/skills/idea-refine/frameworks.md: sha256:161ebc18fdf2d996bc62a87a2d747cf1bf53548354f8925de25c732c27f00309
   .agents/skills/idea-refine/refinement-criteria.md: sha256:1ca2973a4d01b5cb37ab7ddb2eff77fa4e792634a33d0ce44961c068fc88d51a
   .agents/skills/idea-refine/scripts/idea-refine.sh: sha256:f02a52408a4218047c032d221483abfbb48d11f090bb4915965c7419bf2e0e47

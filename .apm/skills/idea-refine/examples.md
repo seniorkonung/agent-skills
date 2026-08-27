@@ -236,3 +236,29 @@ The interesting tension: variations 1 and 5 fix the *output* problem (nothing ch
 7. **The "Not Doing" list does real work.** It's specific and reasoned. Each item is something you might *want* to do but shouldn't yet.
 
 8. **The skill adapts to context.** A codebase-aware example references actual architecture. A process idea generates zero-cost experiments instead of products. The framework stays the same but the output matches the domain.
+
+---
+
+## Example 4: Continue From a Discussion Handoff
+
+**`discussion` invokes:** Refine the confirmed idea "cross-change research
+dossiers" from `docs/discussions/persistent-pre-change-research.md`. Relevant
+conclusions: exploration must survive sessions; one dossier may inform several
+changes; OpenSpec changes must be created later in separate sessions. The
+discussion already compared session logs, per-change research artifacts, and a
+living thematic dossier.
+
+**Skill behavior:**
+
+1. Read the discussion and verify that those conclusions are current.
+2. Do not generate five new storage models: meaningful alternatives were
+   already compared.
+3. Check only what is still missing from the one-pager, such as the specific
+   target user or the riskiest assumption.
+4. Create the confirmed idea with an `Origin` section linking to the discussion
+   and listing the three inherited conclusions.
+5. Return the idea path so `discussion` can record the reverse link.
+
+The handoff does not weaken the refinement standard. It changes where the
+evidence comes from: prior curated exploration can satisfy a phase, while a
+mere assertion that "we discussed it already" cannot.
