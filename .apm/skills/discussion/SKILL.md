@@ -13,6 +13,11 @@ the current understanding, not a transcript, meeting log, or OpenSpec change.
 
 - Keep the conversation free-form. Ask only questions that sharpen the topic,
   challenge a consequential assumption, or unblock a useful conclusion.
+- Separate the user's actual desired outcome from a conventional solution,
+  buzzword, or idea of what they should want. Probe only when the distinction
+  could change direction; offer your current hypothesis so the user can
+  correct it, and accept grounded preferences without turning the discussion
+  into an interview.
 - Keep the memory strict. Important conclusions, constraints, unresolved
   questions, and downstream implications must survive the session.
 - Curate current truth instead of accumulating turns. Rewrite stale synthesis,

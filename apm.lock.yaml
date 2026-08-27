@@ -301,7 +301,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:7360e4d92df16887899e64407c54853936f49ec189caad80a05b443c378253ff
+  content_hash: sha256:e2955c622a54cc115184772a8829eae61c1317468749f93bcd5028335828066b
 - kind: project-relative
   target: agents
   value: .agents/skills/discussion/references/document-format.md
@@ -539,7 +539,7 @@ local_deployed_files:
 - .codex/agents/test-engineer.toml
 local_deployed_file_hashes:
   .agents/skills/code-review-and-quality/SKILL.md: sha256:0c3fe048ef16d2a13fed1678052f46415ab99e45dfe541e8c90eac79afe70bfc
-  .agents/skills/discussion/SKILL.md: sha256:7360e4d92df16887899e64407c54853936f49ec189caad80a05b443c378253ff
+  .agents/skills/discussion/SKILL.md: sha256:e2955c622a54cc115184772a8829eae61c1317468749f93bcd5028335828066b
   .agents/skills/discussion/references/document-format.md: sha256:7259d33bef84de3c3b976b1f3ff4e61e9b24e12312e3291647492eaf694cd668
   .agents/skills/discussion/references/examples.md: sha256:17739bc08eef88c1d3a359acf133186ac9ddc384c4334c6152929949c5f1c24f
   .agents/skills/idea-refine/SKILL.md: sha256:ab5240e4593b9b0250952986ce3b9aba4a7629c4bf8f6335d13584cff6ba7300
