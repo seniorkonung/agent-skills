@@ -5,14 +5,11 @@ Read this reference before creating or restructuring
 for a review that may span many sessions. Keep it as a curated view of current
 truth, not a transcript, scratchpad, or second copy of the change artifacts.
 
-## Location and Language
+## Location and Format
 
 - Store exactly one ledger at `openspec/changes/<change>/review.md`.
 - Keep it outside the OpenSpec artifact schema. Its existence does not mean the
   review is complete.
-- Write headings, field names, identifiers, and status values in English.
-- Write finding prose in English unless the project's explicit artifact-language
-  rules require another language.
 - Use relative repository paths and line references for evidence.
 - Do not add YAML frontmatter. The Markdown itself is the human-readable source
   of truth.
@@ -97,8 +94,9 @@ normally invalidates downstream coherence, task, and verification coverage.
 
 ## Required Document Shape
 
-Use this structure. Omit empty optional paragraphs, but do not rename lifecycle
-fields or status values.
+Use this semantic structure. The headings and human-facing field labels below
+are examples; adapt them to the target project's conventions. Omit empty
+optional paragraphs, but preserve exact status values and finding IDs.
 
 ```markdown
 # OpenSpec Change Review: <change-name>
@@ -160,8 +158,8 @@ fields or status values.
 - `<date>` - `<finding or review state>` - <durable decision and rationale>
 ```
 
-`Reviewed Inputs.State` is `current`, `stale`, `missing`, or `new`; it is separate
-from coverage and finding states.
+The reviewed-input state uses `current`, `stale`, `missing`, or `new`; it is
+separate from coverage and finding states.
 
 ## Maintaining the Ledger
 

@@ -436,7 +436,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:2294a4a37795c5b61edfd7eac452425bad77bef762310ce5b86603b83e70db2f
+  content_hash: sha256:364493858df8f4750ec492418336c5afb4c4bb6c96ea998371de18fec119225b
 - kind: project-relative
   target: agents
   value: .agents/skills/openspec-review-change/references/review-lenses.md
@@ -630,7 +630,7 @@ local_deployed_file_hashes:
   .agents/skills/incremental-implementation/SKILL.md: sha256:11b6c463fc40575041e2f5a8f467eb7f35820be0fb9a57f83fb341a1e6c8dd1c
   .agents/skills/observability-and-instrumentation/SKILL.md: sha256:72b2bf819884c33f78fa1894dc8a26e6901076a2e24c60cb3aef1a53c633a7a6
   .agents/skills/openspec-review-change/SKILL.md: sha256:96ab731a0f3958c2292c28c4ce8668a5eec55804469c806b871c067b12059177
-  .agents/skills/openspec-review-change/references/review-ledger.md: sha256:2294a4a37795c5b61edfd7eac452425bad77bef762310ce5b86603b83e70db2f
+  .agents/skills/openspec-review-change/references/review-ledger.md: sha256:364493858df8f4750ec492418336c5afb4c4bb6c96ea998371de18fec119225b
   .agents/skills/openspec-review-change/references/review-lenses.md: sha256:467e3b6a4660197a8197ab6a7267492528fe88df9ff0ada025721131bfd152cd
   .agents/skills/planning-and-task-breakdown/SKILL.md: sha256:acf49ad221c68c354f88ac9d7be0b94fc179d90b25177b28b151b3d9d3e7b670
   .agents/skills/security-and-hardening/SKILL.md: sha256:f06f38a9750b082fee21836e3ed03b7f566ef676178091c30e9696e9db971761
