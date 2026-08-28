@@ -1,6 +1,6 @@
 lockfile_version: '2'
-generated_at: '2026-08-04T15:29:05.036067+00:00'
-apm_version: 0.27.0
+generated_at: '2026-08-28T14:12:36.462335+00:00'
+apm_version: 0.28.0
 dependencies:
 - repo_url: addyosmani/agent-skills
   name: agent-skills
@@ -29,7 +29,7 @@ dependencies:
   - agent-skills
   constraint: 0.6.5
   resolved_tag: 0.6.5
-  resolved_at: '2026-08-04T15:21:07+00:00'
+  resolved_at: '2026-08-28T14:12:30+00:00'
 - repo_url: mattpocock/skills
   name: mattpocock-skills
   host: github.com
