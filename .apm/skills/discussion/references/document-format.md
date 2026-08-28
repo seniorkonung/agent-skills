@@ -32,20 +32,6 @@ when the understanding changes; do not append session summaries.]
 ### Related Discussions
 - [Discussion name](related-discussion.md) — [Boundary and relationship.]
 
-### Candidate OpenSpec Changes
-
-#### `change-slug` — [Intended outcome]
-- **Purpose:** [The independently valuable result.]
-- **In:** [What belongs in this change.]
-- **Out:** [Tempting adjacent work explicitly excluded.]
-- **Depends on:** [Earlier candidates or external prerequisite, or "Nothing".]
-- **Handoff notes:**
-  - **Proposal:** [Motivation or scope information needed later.]
-  - **Specs:** [Observable behavior, constraints, or edge cases needed later.]
-  - **Design:** [Technical direction or trade-off needed later.]
-  - **ADR:** [Decision whose rationale must be preserved.]
-  - **Tasks:** [Execution or sequencing knowledge needed later.]
-
 ## Superseded Conclusions
 - **Previously:** [Material former conclusion.]
   **Replaced by:** [Current conclusion and why the change matters.]
@@ -54,16 +40,15 @@ when the understanding changes; do not append session summaries.]
 ## Editing Rules
 
 - Keep `Current Synthesis` readable without requiring the rest of the document.
+- Treat `Purpose` as the scope boundary. Change it when the user deliberately
+  reframes the topic, not as a way to make accumulated tangents appear relevant.
 - Put stable results in `Conclusions`; keep uncertainty explicit in
   `Open Questions` rather than weakening every sentence with caveats.
 - Record rationale beside the conclusion or decision it supports. Avoid a
   detached evidence dump.
-- In candidate changes, include only handoff labels that carry actual
-  information. An empty `Specs` or `ADR` label is noise.
-- A candidate change should deliver one independently reviewable outcome. If
-  its `In` list contains separate outcomes or its handoff notes describe
-  unrelated architectures, split it or record the unresolved decomposition as
-  an open question.
+- For a related discussion, keep only its link, boundary, relationship, and any
+  implication needed to understand the parent. The child owns its detailed
+  synthesis and questions.
 - `Superseded Conclusions` is exceptional. Use it only when forgetting the old
   conclusion and why it changed could cause future work to repeat a mistake.
 - Use relative Markdown links so the dossier remains portable with the repo.
