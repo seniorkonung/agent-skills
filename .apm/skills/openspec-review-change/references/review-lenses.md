@@ -1,7 +1,7 @@
 # Risk-Based Review Lenses
 
 Use this guide to discover material concerns that the proposal may not mention.
-Review the four core areas on every change, scan the activation map, then read the
+Review the five core areas on every change, scan the activation map, then read the
 detailed guidance only for conditional areas activated by repository evidence.
 
 Do not copy this catalog into `review.md` or record a verdict for every lens. The
@@ -31,6 +31,50 @@ Check that the change names the real problem, affected users or operators,
 observable success, non-goals, and a coherent boundary. Look for hidden platform
 work, tasks unsupported by the proposal, contradictory non-goals, and assumptions
 that materially change scope.
+
+### Specification Set and Capability Boundaries
+
+Treat the change and its specs as different axes. A change groups one unit of
+work; specs partition the system's durable behavioral contract. Do not assume the
+change needs one spec, that each technical layer needs a spec, or that the
+existing delta layout proves the correct decomposition.
+
+First derive the behavioral commitments from the proposal, scenarios, canonical
+specs, repository behavior, and domain language without trusting their current
+placement. Then check that:
+
+- the proposal's capability map is complete and matches the delta spec paths;
+- new capability paths express stable domain ownership, while modified paths
+  match the relevant canonical specs;
+- each spec has one coherent purpose and each requirement belongs to that purpose;
+- each requirement expresses one observable obligation rather than several
+  behaviors joined by "and also";
+- each scenario exercises its parent requirement and its normative outcome is
+  owned by that spec;
+- related capabilities are neither collapsed into a catch-all spec nor fragmented
+  into implementation-layer specs;
+- overlapping requirements have one clear source of truth rather than duplicated
+  or conflicting owners.
+
+A cross-capability journey does not automatically need to be split at every
+dependency. Keep another capability's behavior as a GIVEN precondition when the
+current scenario changes only one owned outcome. Split or move the scenario when
+it asserts an additional obligation with a different owner, purpose, or lifecycle.
+
+Apply a behavior-contract test to technical-looking content. "Create a database
+table" belongs in design or tasks. "A created record remains available after a
+service restart" is observable behavior and normally belongs to the capability
+that promises the record. A separate persistence capability is justified only
+when storage itself has an independent consumer-facing or operator-facing
+contract and ownership. Use the same reasoning for queues, caches, encryption,
+transactions, retries, and infrastructure.
+
+Finally compare artifact roles explicitly: the proposal owns why, scope, and the
+capability map; specs own normative behavior; design owns implementation choices;
+tasks own execution work; verification supplies evidence. Report contradictions
+or behavior that exists only in a downstream artifact. Do not silently choose one
+artifact as correct or repair a missing requirement by treating a task as the
+source of truth.
 
 ### Behavioral Correctness
 

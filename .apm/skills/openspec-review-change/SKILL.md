@@ -64,16 +64,55 @@ If a required artifact is missing, record what cannot yet be reviewed and direct
 the user to the appropriate OpenSpec continuation. Do not create the artifact as
 part of an audit.
 
+## Audit the Specification Set Explicitly
+
+Review the specs as their own behavioral architecture before treating them as one
+link in the artifact chain. A change folder is a unit of work, not a capability
+boundary: one change may add or modify several specs, and its title or primary
+feature does not make one catch-all spec the correct owner of every scenario.
+
+Reconstruct the intended behavioral contract independently of the current file
+layout, then check:
+
+- whether the proposal names every new or modified capability and every delta
+  uses the correct new or canonical spec path;
+- whether each spec has a coherent, stable capability purpose rather than merely
+  mirroring the current change, implementation layer, or task grouping;
+- whether each requirement states one observable product or system obligation and
+  each scenario actually verifies that requirement;
+- whether each requirement and scenario sits with the capability that owns its
+  outcome, without duplicate ownership or unrelated behavior hidden in a
+  convenient spec;
+- whether important behavior is absent, repeated, or contradicted across specs,
+  proposal, design, tasks, and verification.
+
+Do not create a spec merely because implementation needs a database, queue,
+library, class, or other mechanism. Put implementation choices and construction
+work in design or tasks. Persistence, atomicity, compatibility, recovery, or
+other technical-sounding properties belong in specs only when they are
+externally verifiable product, downstream-system, or operator contracts. Give
+such behavior a separate capability spec only when it has independent ownership
+and purpose; otherwise keep it with the capability whose outcome it constrains.
+
+If a scenario depends on another capability, keep that dependency as context
+when it is only a precondition. Split or move behavior when the scenario creates
+a separate normative outcome with a different owner or lifecycle. Record unclear
+capability ownership, misplaced scenarios, implementation leakage, and
+cross-artifact contradictions as findings rather than normalizing the existing
+layout.
+
 ## Review Breadth Before Depth
 
-Start with the four core questions:
+Start with the five core questions:
 
 1. Does the change define the real problem, intended outcome, scope, and
    non-goals?
-2. Are observable behavior, edge cases, errors, and permissions unambiguous?
-3. Do intent, requirements, decisions, tasks, and verification agree in both
+2. Does the specification set use the right capability boundaries and place each
+   requirement and scenario with its behavioral owner?
+3. Are observable behavior, edge cases, errors, and permissions unambiguous?
+4. Do intent, requirements, decisions, tasks, and verification agree in both
    directions?
-4. Could an implementer complete and verify the work without inventing missing
+5. Could an implementer complete and verify the work without inventing missing
    requirements or decisions?
 
 Then scan the activation map in
@@ -152,7 +191,9 @@ the Apply decision to the human.
 Before reporting a clean review, confirm that:
 
 - the actual artifact graph and relevant repository context were inspected;
-- all four core questions and every activated risk area were reviewed;
+- the capability set, spec boundaries, and placement of every changed requirement
+  and scenario were reviewed at the behavioral-contract level;
+- all five core questions and every activated risk area were reviewed;
 - findings are evidence-backed and current;
 - proposal outcomes trace through requirements, decisions, tasks, and
   verification;

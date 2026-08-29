@@ -427,7 +427,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:d53be3bf66597b254099314dbff05fe9094e398dbe11bb51ffd18d7b68a3ca80
+  content_hash: sha256:d3aa7026125a4e019949f014bf6faf68b3200ffea60a959f1dabfbf2be637634
 - kind: project-relative
   target: agents
   value: .agents/skills/openspec-review-change/references/review-format.md
@@ -445,7 +445,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:b33737ed6c9554aa87c6db7a770c81ff8b9ccb53a9a0905682494af979dcf47a
+  content_hash: sha256:68f289916a85cf64b0d675611bc6377af55c64fd8cad8b947bc23286bf34afb0
 - kind: project-relative
   target: agents
   value: .agents/skills/planning-and-task-breakdown
@@ -629,9 +629,9 @@ local_deployed_file_hashes:
   .agents/skills/idea-refine/scripts/idea-refine.sh: sha256:f02a52408a4218047c032d221483abfbb48d11f090bb4915965c7419bf2e0e47
   .agents/skills/incremental-implementation/SKILL.md: sha256:11b6c463fc40575041e2f5a8f467eb7f35820be0fb9a57f83fb341a1e6c8dd1c
   .agents/skills/observability-and-instrumentation/SKILL.md: sha256:72b2bf819884c33f78fa1894dc8a26e6901076a2e24c60cb3aef1a53c633a7a6
-  .agents/skills/openspec-review-change/SKILL.md: sha256:d53be3bf66597b254099314dbff05fe9094e398dbe11bb51ffd18d7b68a3ca80
+  .agents/skills/openspec-review-change/SKILL.md: sha256:d3aa7026125a4e019949f014bf6faf68b3200ffea60a959f1dabfbf2be637634
   .agents/skills/openspec-review-change/references/review-format.md: sha256:8fff9c014c0422603f982706b0b5b31adfceafec7ddd139e452c8017352fbfb7
-  .agents/skills/openspec-review-change/references/review-lenses.md: sha256:b33737ed6c9554aa87c6db7a770c81ff8b9ccb53a9a0905682494af979dcf47a
+  .agents/skills/openspec-review-change/references/review-lenses.md: sha256:68f289916a85cf64b0d675611bc6377af55c64fd8cad8b947bc23286bf34afb0
   .agents/skills/planning-and-task-breakdown/SKILL.md: sha256:acf49ad221c68c354f88ac9d7be0b94fc179d90b25177b28b151b3d9d3e7b670
   .agents/skills/security-and-hardening/SKILL.md: sha256:f06f38a9750b082fee21836e3ed03b7f566ef676178091c30e9696e9db971761
   .agents/skills/shipping-and-launch/SKILL.md: sha256:6d881f4beabb6c34c9dbdd0b7a71225377aecc0c01452af4ce8d930ab5426979
