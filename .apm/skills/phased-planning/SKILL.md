@@ -62,13 +62,14 @@ transitions required to reach it.
 2. Identify states that must become true before the next body of work can begin.
 3. Order those states as one strict sequence. Do not emit branches, lanes, or a
    dependency graph.
-4. Use the smallest number of phases that still gives each transition a coherent
-   outcome and boundary.
+4. Use the fewest phases that preserve useful planning boundaries. Do not merge
+   distinct coherent outcomes merely to reduce the phase count.
 5. Check that every in-scope requirement shapes a phase or a plan-wide
    constraint without copying the requirement list into the plan.
 
-Name phases for outcomes, not activities. Split a phase when later work should
-not begin until a distinct, coherent state has been achieved. Merge a proposed
+Name phases for outcomes, not activities. Split at a distinct, coherent outcome
+boundary: either later work should wait for that state, or task breakdown would
+otherwise need to recreate phase-like groups inside the phase. Merge a proposed
 phase when it amounts to one obvious action or one technical artifact that
 belongs inside a broader transition.
 
@@ -80,6 +81,35 @@ backend, frontend, testing, security, documentation, and observability are not
 separate phases unless one of them genuinely creates a distinct required state.
 Normally, cross-cutting qualities shape the outcome, boundaries, or readiness
 condition of the phases they constrain.
+
+## Calibrate Phase Size
+
+A phase is right-sized when it owns one coherent outcome and can be decomposed
+directly into a manageable set of related implementation tasks. The downstream
+task breakdown should not need another layer of phase-like groups to make the
+work understandable.
+
+Split a proposed phase when:
+
+- it contains several independently meaningful outcomes rather than one coherent
+  state transition;
+- its task breakdown would require multiple intermediate outcomes that behave
+  like internal phases; or
+- its boundaries are too broad to explain what is achieved before the next phase
+  begins.
+
+Do not split a phase merely because it crosses technical layers, contains
+parallel work, or produces several artifacts. Keep that work together when it
+contributes to one outcome and remains one coherent body of tasks. Do not use a
+numeric task limit; task complexity varies, while outcome coherence is the stable
+boundary.
+
+For an asynchronous export capability, `Add the export endpoint` is too small
+because it is directly implementable as a task. `Authorized users can request
+and retrieve reliable exports without blocking interactive traffic` is
+right-sized because it describes one usable outcome supported by several related
+tasks. `Deliver the self-service analytics platform` is too large when it bundles
+independently meaningful ingestion, querying, dashboard, and export outcomes.
 
 ## Phase Contract
 
@@ -178,9 +208,13 @@ phase or regenerate tasks for the entire plan.
 
 Before finalizing a phased plan, confirm that:
 
-- [ ] The plan contains the minimum meaningful strictly ordered phases.
+- [ ] The plan contains the fewest meaningful strictly ordered phases that
+      preserve useful planning boundaries.
 - [ ] Every phase describes an outcome-oriented state transition.
 - [ ] Every phase is broad enough to generate several later tasks.
+- [ ] Every phase can be decomposed directly into one manageable body of related
+      tasks without introducing phase-like groups or independently meaningful
+      internal outcomes.
 - [ ] The requirements are covered without being repeated as a checklist.
 - [ ] Cross-cutting qualities constrain relevant outcomes instead of becoming
       routine technical phases.
