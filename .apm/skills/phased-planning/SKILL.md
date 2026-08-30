@@ -24,8 +24,7 @@ Use this skill when:
 
 - requirements need an execution direction before task decomposition;
 - a workflow needs a high-level plan artifact upstream of its task artifact;
-- changed requirements require a local revision of current or future phases;
-- tasks will be generated iteratively for one phase at a time.
+- changed requirements require a local revision of current or future phases.
 
 Do not use this skill to break a selected phase into implementable work. Use a
 task-breakdown workflow for checklists, acceptance criteria, dependencies,
