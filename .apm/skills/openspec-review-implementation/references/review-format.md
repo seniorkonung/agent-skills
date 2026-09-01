@@ -1,138 +1,101 @@
 # Implementation Review Report Format
 
-Use `<change-root>/implementation-review.md` as the durable statement of current
-independent decision-review findings across bounded implementation targets. It is
-a companion report, not an OpenSpec schema artifact, a conformance report, or a
-history of review sessions. Read this reference before every report write.
+Use `<change-root>/implementation-review.md` for the current pre-push review.
+The report describes one immutable `upstream..HEAD` range and one active OpenSpec
+change. It is not review history or approval to push, merge, archive, or accept
+risk.
 
 ## Keep Only Current Truth
 
-- Rewrite the relevant target section after implementation, intent, or conclusions
-  change.
-- Remove a finding only when a fresh isolated review of an immutable target shows
-  that it has been fixed, disproven, or made obsolete.
-- Keep an accepted residual risk visible while the risky condition remains.
-- Preserve applicable findings from other targets; reviewing a new increment must
-  not overwrite them.
-- Retain every target section with applicable findings, accepted risks,
-  `Re-audit required`, or an incomplete review. Remove it only after a conclusive
-  isolated review of the same decision boundary, or when repository evidence
-  shows that boundary no longer exists in the current implementation.
-- Retain only the most recent clean immutable-target section across the change so
-  the latest clean scope survives context loss without becoming review history.
-- Do not preserve resolved findings, old assessments, previous reviewer output,
-  or remediation history.
-- Do not duplicate findings in a summary table.
+- Rewrite the report after the outgoing head, implementation, planning artifacts,
+  or conclusions change.
+- Remove fixed, disproved, and obsolete findings after a complete re-audit.
+- Keep accepted risk visible while the risky condition remains.
+- Do not retain old targets, resolved findings, reviewer transcripts, duplicate
+  summaries, or empty sections.
 
-## Aggregate Result
+## Result
 
-Use one report-level result:
+Use one aggregate result:
 
-- `Open findings` when any retained target has an applicable finding, including
-  an accepted residual risk or a finding awaiting re-audit;
-- `Independent review incomplete` when no applicable finding remains but at least
-  one retained target is incomplete; or
-- `No substantive findings` only after a clean isolated review of an immutable
-  target when no incomplete target remains.
+- `Changes needed` when any substantive finding remains;
+- `Incomplete` when no finding remains but any required pass, target boundary, or
+  verification step was incomplete; or
+- `No substantive findings` only when decision, conformance, and code-quality
+  passes all completed on the recorded immutable range.
 
-The aggregate result describes the evidence still present, not whether the human
-has chosen remediation. Express that choice through each finding's disposition.
+The result reports review evidence. It is not a push verdict.
 
 ## Suggested Shape
 
-Adapt headings to project conventions when useful. Omit optional fields rather
-than creating empty sections.
+Omit optional fields rather than adding placeholders.
 
 ```markdown
-# OpenSpec Implementation Decision Review: <change-name>
+# OpenSpec Implementation Review: <change-name>
 
-## Current assessment
+## Assessment
 
-**Result:** Open findings | No substantive findings | Independent review incomplete
+**Result:** Changes needed | Incomplete | No substantive findings
 
-<A short current assessment across retained targets. Do not claim conformity to
-OpenSpec artifacts.>
+<A short statement of the highest-impact current conclusion.>
 
-Mention the dominant disposition and any additional incomplete targets without
-turning this paragraph into a duplicate finding summary.
+## Review target
 
-## Target: <stable target ID> — <task identifier or neutral increment label>
+- **Upstream:** <tracking ref and full base SHA>
+- **Reviewed head:** <full HEAD SHA>
+- **Outgoing commits:** <count>
+- **Reviewable paths:** <count; excludes implementation-review.md>
+- **OpenSpec change:** <name and schema>
+- **Upstream freshness:** Local tracking state; no fetch performed
+- **Excluded worktree state:** <dirty paths were excluded; omit when clean>
 
-### Review target
+## Pass coverage
 
-- **Code baseline:** <base revision or other reproducible boundary>
-- **Reviewed state:** <immutable head revision, or bounded uncommitted paths>
-- **Included paths:** <exact reviewed path set>
-- **Patch digest:** <SHA-256 for a transient diff; omit for an immutable target>
-- **Reproducibility:** Immutable | Provisional transient snapshot
+| Pass | Status | Evidence or limitation |
+|---|---|---|
+| Independent decision review | Complete | <fresh reviewer boundary and scope> |
+| OpenSpec conformance | Complete | <verification and validation evidence> |
+| Code quality | Complete | <areas and checks covered> |
 
-### Intention brief
+Use `Incomplete` for a pass whose required evidence was unavailable.
 
-- **Problem:** <undesirable state>
-- **Desired outcome:** <state that should become possible or true>
-- **Affected boundary:** <actor or system boundary>
-- **Binding constraints:** <only externally binding constraints, or "None known">
-- **Non-goals:** <scope exclusions; omit when none are needed>
+## Findings
 
-### Independent assessment
+### F1 · High — <concise problem>
 
-**Result:** Changes needed | No substantive findings | Incomplete
+- **Evidence:** <specific paths, lines, behavior, and repository facts>
+- **Impact:** <concrete failure, rework, or engineering harm>
+- **Required outcome:** <what must become true without prescribing one fix>
+- **Earliest source of truth:** <implementation/tests, task/verification,
+  design/ADR, requirement/proposal, or separate change>
+- **Affected artifacts:** <artifact IDs and code areas that must stay consistent>
+- **Decision needed:** <focused human choice and why; omit when unnecessary>
+- **Disposition:** Open | Planned | Awaiting decision | Accepted risk
 
-<A short assessment of the engineering decisions in the bounded target. Do not
-claim conformity to OpenSpec artifacts.>
+## Review coverage
 
-**Isolation:** <fresh reviewer boundary, excluded context, and any limitation>
-
-### Findings
-
-#### High — <concise decision problem>
-
-- **Evidence:** <specific code and repository facts>
-- **Failure mode:** <failure, unnecessary complexity, or structural harm>
-- **Why the decision is unsound:** <reason under the supplied intent and constraints>
-- **Required property:** <engineering outcome needed without prescribing one fix>
-- **Possible alternatives:** <illustrative options; omit when they would narrow the solution space>
-- **Uncertainty:** <missing decision-relevant constraint or question; omit when none>
-- **Affected layers:** <implementation, task/verification, design/ADR,
-  requirement/proposal, workflow context, or separate change; add only after
-  reconciliation>
-- **Earliest source of truth:** <the first implementation or artifact source that
-  must change; add only after reconciliation>
-- **Disposition:** Open | Remediation planned | Accepted residual risk | Awaiting human decision | Re-audit required
-- **Decision needed:** <human choice and why; omit when unnecessary>
-
-### Review coverage
-
-<A brief note naming the code paths and decision-relevant areas examined. This is
-not an OpenSpec conformity matrix.>
+<A concise note naming important paths, runtime boundaries, requirements, and
+activated risk areas examined. Do not reproduce a traceability matrix.>
 ```
 
 Use `critical`, `high`, `medium`, and `low` severity according to plausible
-impact. Do not create findings for preference-only alternatives without concrete
-harm or material simplification.
+impact. Do not report cosmetic preferences or hypothetical improvements without
+concrete harm.
 
-Use one target section per bounded target. A provisional target or non-isolated
-fallback must use `Incomplete`; it may retain concrete findings but cannot emit a
-clean conclusion or clear an existing finding.
-
-Persist the independent assessment after the pre-reconciliation code-evidence
-check allowed by the main workflow. During reconciliation, add affected layers,
-earliest source of truth, disposition, and decision fields without rewriting the
-evidence or result from planning rationale. Use `Re-audit required` when later
-context may disprove or narrow a finding, and keep it until a fresh isolated
-review decides the issue.
+`Evidence` establishes the fact. `Impact` explains why it matters. `Required
+outcome` defines closure while preserving solution choice. Put implementation
+ideas in the working remediation plan or OpenSpec tasks, not in the finding,
+unless examples are needed to clarify the valid solution space.
 
 ## A Clean Review
 
-When no substantive problem remains, do not leave placeholder findings, resolved
-items, or implied concerns. Write:
+When no substantive finding remains, write:
 
 ```markdown
-### Findings
+## Findings
 
-No substantive engineering-decision findings were found in the reviewed
-implementation target under the supplied intention and binding constraints.
+No substantive findings were found in the reviewed outgoing implementation range.
 ```
 
-The current assessment, intention brief, target, isolation note, and coverage
-should remain so the scope and limits of that conclusion survive context loss.
+Keep the target, pass coverage, and review coverage so the boundary of that
+conclusion remains reproducible.

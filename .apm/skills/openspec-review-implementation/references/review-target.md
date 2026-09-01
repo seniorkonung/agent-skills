@@ -1,46 +1,57 @@
-# Review Target Identity and Transient Snapshots
+# Pre-Push Review Target
 
-Read this reference when the review target includes uncommitted work.
-
-## Stable Target ID
-
-Use a task ID when it uniquely names the reviewed decision boundary. Otherwise
-assign a short neutral increment label. Keep the same ID across remediation and
-re-audits of that boundary; assign a new ID when the intent or reviewed scope
-materially changes.
-
-For an immutable target, record full base and reviewed commit SHAs plus the exact
-included paths. Branch names and abbreviated SHAs are not immutable identities.
-
-## Canonical Transient Snapshot
-
-Create a byte-stable patch in scratch space outside the repository with a
-temporary Git index seeded from the full base SHA. This captures staged,
-unstaged, deleted, and non-ignored untracked files without changing the user's
-real index:
+Use the bundled helper to resolve which committed bytes and OpenSpec change the
+review owns:
 
 ```sh
-review_snapshot_dir="$(mktemp -d)"
-review_index="$review_snapshot_dir/index"
-GIT_INDEX_FILE="$review_index" git read-tree "<full-base-sha>"
-GIT_INDEX_FILE="$review_index" git add -A -- <explicit-included-paths>
-GIT_INDEX_FILE="$review_index" git diff --cached --binary --full-index \
-  --no-ext-diff "<full-base-sha>" -- <explicit-included-paths> \
-  > "$review_snapshot_dir/target.patch"
-sha256sum "$review_snapshot_dir/target.patch"
+node "<skill-root>/scripts/discover-review-target.mjs"
 ```
 
-Use explicit pathspecs rather than unresolved globs. Record the base SHA, paths,
-exact command variant, and patch SHA-256; give the reviewer the saved patch and
-mark the target **provisional**. A digest identifies the reviewed bytes but does
-not reconstruct them after the scratch patch is removed.
+## Contract
 
-If the environment lacks an equivalent temporary-index or SHA-256 command, or
-intentionally included ignored untracked files cannot be captured, stop as
-incomplete instead of claiming a deterministic snapshot. Do not allow edits to
-included paths until the reviewer finishes. Then remove the scratch snapshot.
+The helper requires Git, Node.js, and the `openspec` CLI. It is read-only: it
+does not fetch, write repository files, or include staged, unstaged, or untracked
+work.
 
-A provisional review may retain substantive findings, but it cannot issue `No
-substantive findings`, clear an earlier finding, or replace an immutable-target
-review. Commit the intended target and re-audit before treating absence of
-findings as durable evidence.
+It resolves:
+
+- the current branch's configured upstream and full base SHA;
+- the full `upstream..HEAD` commit list and changed paths;
+- ahead and behind counts;
+- active changes from `openspec status --all --json`; and
+- the one change whose reported `changeRoot` contains a changed path.
+
+It excludes every active change's `implementation-review.md` from reviewable
+paths. This allows review evidence to be committed without triggering an endless
+report-only re-review loop.
+
+## Overrides
+
+- Use `--upstream <ref>` only when the user supplies a different local baseline.
+- Use `--change <name>` only to associate a range that changes no artifact under
+  a change root. It cannot override changed-path evidence or hide another change
+  touched by the range.
+- Use `--openspec <path>` for a non-default CLI executable.
+
+The helper never checks the live remote. A configured upstream reflects the last
+local tracking update; an explicit baseline is another local ref. Do not fetch
+without the user's request.
+
+## Results
+
+- `ready`: use the exact base, head, commits, reviewable paths, selected change,
+  implementation paths, and excluded paths.
+- `no_outgoing_commits`: nothing committed is waiting for push.
+- `no_reviewable_changes`: outgoing commits change only excluded review reports.
+- `incomplete`: stop and report its reason. Request only the missing baseline or
+  intentional change association.
+- `diverged_upstream`: stop because the branch is both ahead and behind; it is not
+  a normal push target.
+- `multiple_change_matches`: stop and require a branch or checkout whose outgoing
+  range contains one change. An explicit change name cannot make a mixed range
+  safe.
+
+`worktreeDirty` is disclosure only. Never add those paths to the committed target.
+
+The CLI exits `0` for ready and no-op results, `2` for incomplete results, and
+`64` for invalid helper arguments. It always emits resolved results as JSON.

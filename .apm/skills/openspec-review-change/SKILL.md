@@ -1,13 +1,14 @@
 ---
 name: openspec-review-change
-description: Audits and iteratively strengthens an OpenSpec change proposal before implementation. Use when asked to review, challenge, continue reviewing, re-audit, or resolve recorded findings in an OpenSpec change before Apply; not for code review or post-implementation verification.
+description: Audits and iteratively strengthens planning artifacts for an active OpenSpec change before implementation or after material planning revisions. Use for a broad proposal/spec/design/task review or re-audit; not for implementation review, code verification, or a narrow correction traced from code.
 ---
 
 # OpenSpec Review Change
 
 Review an OpenSpec change as one system of intent, requirements, decisions, and
 implementation work. Look beyond the proposal's declared scope, find material
-gaps before implementation, and keep a concise current assessment in
+gaps before implementation or before continuing after substantial replanning,
+and keep a concise current assessment in
 `openspec/changes/<change>/review.md`.
 
 The report is working review evidence. It is not an OpenSpec schema artifact, an
@@ -25,21 +26,27 @@ approval record, or permission to run Apply.
   whenever they provide evidence about the proposed change.
 - Ask the human before settling consequential product, contract, architecture,
   data, security, privacy, infrastructure-cost, or residual-risk decisions.
-- Do not describe the change as approved or ready to Apply. The human owns that
-  decision after the review.
+- Do not describe the change as approved, ready to Apply, or safe to continue.
+  The human owns that decision after the review.
 
 ## Routing
 
-Use this skill for a full pre-Apply review, a continuation of that review, a
-re-audit after proposal changes, or user-requested resolution of its findings.
+Use this skill for a full planning-artifact review before Apply, a continuation of
+that review, a re-audit after material planning changes, or user-requested
+resolution of its own findings.
 
 Route narrower or later work elsewhere:
 
 - syntax or structure validation alone -> `openspec validate`;
 - a narrow requested artifact edit -> the OpenSpec update workflow;
-- verification of implemented code against the change -> OpenSpec verification;
-- independent review and reconciliation of engineering decisions in a completed
-  Apply increment -> `openspec-review-implementation`;
+- standalone verification of implemented code against the change -> OpenSpec
+  verification;
+- pre-push review, implementation verification, and remediation of findings
+  traced from committed code -> `openspec-review-implementation`;
+- a narrow planning correction required by an implementation finding stays in
+  `openspec-review-implementation`; return here only when the correction
+  materially changed intent, capability boundaries, or requirements and now
+  warrants a broad planning re-audit;
 - independent decision review that needs no OpenSpec orchestration ->
   `implementation-decision-review`;
 - ordinary conformance, pull-request, or implementation review -> code review;
@@ -188,7 +195,7 @@ of requirements, or silently broaden the change to make a finding disappear.
 Report the current result, the highest-impact findings or the absence of findings,
 artifacts changed during requested remediation, decisions still needed, the
 validation boundary, and the `review.md` path. Keep the handoff concise and leave
-the Apply decision to the human.
+the Apply or continuation decision to the human.
 
 ## Verification
 
