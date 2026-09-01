@@ -199,26 +199,51 @@ finding remains. Otherwise use `Changes needed` or `Incomplete`.
 
 ## Address Findings When Asked
 
-Plan remediation by severity and dependency before editing. Keep the working plan
-consistent with the corrective work recorded in the OpenSpec tracking artifact.
+A request such as `fix F2` re-enters this skill in remediation mode. Keep this
+skill as the coordinator: select the requested findings, recheck their severity,
+dependencies, and earliest sources of truth, prepare a bounded remediation plan,
+obtain consequential human decisions, and retain control of verification,
+commit coordination, and re-audit. Do not absorb unrelated cleanup or other open
+findings unless the user selected them.
 
-For each selected finding:
+When a selected finding requires any proposal, specification, design, task, or
+other planning-artifact revision, invoke `openspec-update-change`. Never edit a
+planning artifact directly under this skill. Give the update workflow:
 
-1. obtain any consequential human decision;
-2. correct the earliest source of truth;
-3. before editing a planning artifact, run
-   `openspec instructions "<artifact-id>" --change "<name>" --json` and follow
-   its resolved path, template, instruction, context, and rules;
-4. update dependent artifacts in schema dependency order;
-5. reopen a completed task when the original work was never complete, or add a
-   later corrective task when a newly accepted requirement or design decision
-   creates new work;
-6. give corrective tasks concrete acceptance criteria and verification evidence
-   according to the schema; never use a vague task to hide a requirement or
-   design gap;
-7. update code and tests through the appropriate implementation workflows and
-   run focused verification; and
-8. run OpenSpec validation and verification again.
+- the change name and finding ID;
+- the finding's evidence, impact, and required outcome;
+- every consequential decision the user has settled; and
+- the planning artifacts expected to be affected, without treating that estimate
+  as the actual schema graph.
+
+The update workflow owns planning reconciliation. It must independently refresh
+`openspec status`, resolve the current artifact IDs and concrete
+`existingOutputPaths`, read all related existing planning artifacts, and
+reconcile them in any direction. Schema dependency order may help it understand
+the graph, but does not constrain which existing artifact can correct another.
+It must show every proposed revision and obtain user confirmation before each
+write, and it must never edit implementation code.
+
+Corrective task handling also belongs to `openspec-update-change`. It must reopen
+a completed task when the original work was never complete, or add a corrective
+task when a newly accepted requirement or design decision creates new work. Each
+corrective task needs concrete acceptance criteria and verification evidence;
+never use vague tracked work to hide a requirement or design gap.
+
+If reconciliation needs an artifact or glob output that does not yet exist, the
+update workflow hands that creation to `openspec-continue-change`. If it discovers
+materially new intent, it recommends a separate change. If it discovers required
+code changes, it returns control to this remediation workflow instead of making
+them.
+
+If `openspec-update-change` is unavailable, stop before any planning-artifact
+write. Report an incomplete or incorrect OpenSpec workflow installation and tell
+the user to run terminal `openspec update`; never fall back to direct editing.
+
+After planning reconciliation, or immediately when no planning revision is
+needed, update code and tests through the appropriate implementation workflow,
+normally `openspec-apply-change`, strictly within the selected findings. Run
+focused verification, then run OpenSpec validation and verification again.
 
 Keep refinements serving the same intent in the current change. Put materially
 different intent or scope in a separate change. Do not invoke
@@ -229,7 +254,9 @@ changed enough to warrant a broad planning-artifact re-audit.
 Re-audit only after remediation is committed, because the target must remain the
 complete immutable `upstream..HEAD` range. If committing is outside the agent's
 authorization, ask the user to commit before re-audit. Use a fresh isolated
-decision reviewer and rewrite `implementation-review.md` to current truth.
+decision reviewer and rewrite `implementation-review.md` to current truth. A
+finding that the complete re-audit disproves or verifies as fixed is removed from
+the report rather than retained or marked resolved.
 
 ## Handoff
 
@@ -258,7 +285,8 @@ Before reporting the result, confirm that:
 - conformance and code-quality passes covered the same immutable range;
 - every finding has evidence, impact, a required outcome, and an earliest source;
 - report state matches the current base and head without stale findings;
-- remediation followed current schema instructions and updated tracked work; and
+- remediation delegated planning writes to `openspec-update-change`, kept code
+  changes within the selected findings, and updated tracked work; and
 - no push, merge, archive, or risk-acceptance approval was implied.
 
 When changing this skill, run the bundled discovery tests and evaluate the

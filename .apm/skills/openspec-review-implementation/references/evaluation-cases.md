@@ -20,8 +20,12 @@ The skill should:
 - expose only that brief and the immutable code target to a fresh decision
   reviewer;
 - cover decision quality, OpenSpec conformance, and ordinary code quality;
-- produce concise findings that identify the earliest source of truth; and
-- keep remediation and schema-aware task updates unambiguous.
+- produce concise findings that identify the earliest source of truth;
+- coordinate remediation without directly editing planning artifacts;
+- use `openspec-update-change` for confirmed, bidirectional planning
+  reconciliation and corrective task updates; and
+- retain ownership of scoped implementation, verification, commit coordination,
+  and re-audit.
 
 ## Case 1: Normal Pre-Push Review
 
@@ -142,10 +146,26 @@ The skill should:
 
 **Expected behavior**
 
-- Keep remediation in `openspec-review-implementation`.
-- Load current instructions for every planning artifact before editing it.
-- Correct the requirement first, update dependent artifacts in schema order, and
-  add or reopen tracked work with concrete verification.
+- Keep remediation coordination in `openspec-review-implementation`: select F2,
+  confirm its severity, dependencies, and earliest source, prepare the bounded
+  plan, and obtain any consequential decision.
+- Invoke `openspec-update-change` with the change name, F2, its evidence, impact,
+  required outcome, settled decisions, and the expected affected artifacts. Do
+  not edit a planning artifact directly under the review skill.
+- Require the update workflow to refresh `openspec status`, resolve current
+  artifact IDs and `existingOutputPaths`, read all related planning artifacts,
+  and reconcile requirement, design, and tasks in any direction rather than
+  treating dependency order as a write order.
+- Show every proposed planning revision and obtain user confirmation before each
+  write. The update workflow must not edit code or tests.
+- Have the update workflow reopen an incorrectly completed task or add a
+  corrective task for newly accepted work, with concrete acceptance criteria and
+  verification evidence.
+- After planning reconciliation returns, use the appropriate implementation
+  workflow, normally `openspec-apply-change`, to update code and tests strictly
+  for F2. Retain ownership of verification, commit coordination, and re-audit.
+- Keep F2 in the report until a complete committed re-audit verifies the fix;
+  then remove it rather than marking it resolved.
 - Use `openspec-review-change` afterward only if the planning revision materially
   changed intent, capability boundaries, or the requirement set enough to need a
   broad re-audit.
@@ -218,6 +238,44 @@ The skill should:
   consolidate all findings into one current report.
 - Record both units and disclose any unmatched path or uncertain task mapping.
 
+## Case 10: Update Workflow Reaches a Boundary
+
+**Prompt**
+
+> Fix F4, including any planning correction it requires, but keep the work in
+> the original change only if it still has the same intent.
+
+**Fixture**
+
+- Variant A: the required artifact or glob output does not yet exist.
+- Variant B: the proposed correction introduces materially new intent.
+- Variant C: an accepted planning revision implies code changes.
+
+**Expected behavior**
+
+- Delegate creation of a missing artifact or glob output to
+  `openspec-continue-change`; do not create it under the update or review skill.
+- Recommend a separate change when the correction introduces materially new
+  intent rather than silently broadening the selected change.
+- Return required code work to the outer remediation coordinator. The update
+  workflow never edits code, and the coordinator uses the appropriate scoped
+  implementation workflow.
+
+## Case 11: Standard Update Skill Is Missing
+
+**Prompt**
+
+> Fix F3 now. The requirement and task both need changes, but this repository
+> does not contain `openspec-update-change`.
+
+**Expected behavior**
+
+- Report an incomplete or incorrect OpenSpec workflow installation.
+- Tell the user to run terminal `openspec update` to regenerate the standard
+  workflows.
+- Stop before planning-artifact writes. Do not silently fall back to direct
+  editing, even if the proposed correction looks mechanical.
+
 ## Deterministic Checks
 
 Run:
@@ -229,4 +287,6 @@ node --test tests/discover-review-target.test.mjs
 The tests must cover a single matched change, no outgoing commits, multiple
 matched changes, explicit-change isolation, and a report-only commit. Also
 validate frontmatter, relative links, generated copies, and the focused
-repository diff.
+repository diff. Behavioral evaluation must cover planning handoff,
+bidirectional reconciliation, per-edit confirmation, the update workflow's
+code-write prohibition, its boundary handoffs, and the missing-skill failure.
