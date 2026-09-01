@@ -1,8 +1,12 @@
 # Risk-Based Review Lenses
 
-Use this guide to discover material concerns that the proposal may not mention.
-Review the five core areas on every change, scan the activation map, then read the
-detailed guidance only for conditional areas activated by repository evidence.
+Use this guide to discover material concerns that the change artifacts may not
+mention.
+Review intent, behavioral correctness, coherence, planned work, and verification
+on every change. Apply the behavioral-contract guidance when the schema contains
+such artifacts or the change affects durable observable behavior. Then scan the
+activation map and read detailed guidance only for other areas activated by
+repository evidence.
 
 Do not copy this catalog into `review.md` or record a verdict for every lens. The
 report needs a brief coverage note and concrete findings, not a completed
@@ -12,49 +16,58 @@ checklist.
 
 Use all available evidence:
 
-- the proposal's problem, outcomes, scope, and non-goals;
-- added, changed, removed, or renamed requirements and scenarios;
-- design decisions, alternatives, assumptions, and open questions;
-- tasks, verification, deployment, and operational work;
+- the artifacts that own intent, outcomes, scope, and non-goals;
+- added, changed, removed, or renamed behavioral commitments;
+- decisions, alternatives, assumptions, and open questions;
+- planned work, verification, deployment, and operations;
 - affected code, callers, state, configuration, integrations, and tests;
 - canonical specs, domain language, and prior decisions.
 
 Follow runtime data flow and dependencies far enough to find affected consumers,
 trust boundaries, failure paths, deployment constraints, and operators. An impact
-omitted from the proposal may be the most important finding.
+omitted from the intent artifacts may be the most important finding.
 
 ## Core Review
 
 ### Intent and Scope
 
-Check that the change names the real problem, affected users or operators,
-observable success, non-goals, and a coherent boundary. Look for hidden platform
-work, tasks unsupported by the proposal, contradictory non-goals, and assumptions
-that materially change scope.
+Check that the artifacts owning intent name the real problem, affected users or
+operators, observable success, non-goals, and a coherent boundary. Look for
+hidden platform work, downstream work unsupported by intent, contradictory
+non-goals, and assumptions that materially change scope.
 
-### Specification Set and Capability Boundaries
+### Behavioral Contract and Capability Boundaries
 
-Treat the change and its specs as different axes. A change groups one unit of
-work; specs partition the system's durable behavioral contract. Do not assume the
-change needs one spec, that each technical layer needs a spec, or that the
-existing delta layout proves the correct decomposition.
+Apply this section when the actual schema contains specifications or equivalent
+behavioral-contract artifacts, or when repository evidence shows that the change
+affects durable observable behavior. If the schema legitimately omits or skips
+that role, verify the justification instead of inventing an artifact.
 
-First derive the behavioral commitments from the proposal, scenarios, canonical
-specs, repository behavior, and domain language without trusting their current
-placement. Then check that:
+Treat a change and its behavioral contracts as different axes. A change groups
+one unit of work; contracts partition the system's durable behavior. Do not
+assume the change needs one contract, that each technical layer needs one, or that
+the existing artifact layout proves the correct decomposition.
 
-- the proposal's capability map is complete and matches the delta spec paths;
-- new capability paths express stable domain ownership, while modified paths
-  match the relevant canonical specs;
-- each spec has one coherent purpose and each requirement belongs to that purpose;
-- each requirement expresses one observable obligation rather than several
+First derive the behavioral commitments from intent, contract artifacts,
+canonical sources, repository behavior, and domain language without trusting
+their current placement. Then check that:
+
+- the artifacts owning intent name every new or modified behavioral capability;
+- each contract has one coherent purpose and each obligation belongs to that
+  purpose;
+- each obligation expresses one observable outcome rather than several
   behaviors joined by "and also";
-- each scenario exercises its parent requirement and its normative outcome is
-  owned by that spec;
+- each scenario or example, when used, exercises its parent obligation and its
+  normative outcome is owned by that contract;
 - related capabilities are neither collapsed into a catch-all spec nor fragmented
   into implementation-layer specs;
 - overlapping requirements have one clear source of truth rather than duplicated
   or conflicting owners.
+
+When OpenSpec delta specs are present, also check that the capability map matches
+their paths, new capability paths express stable domain ownership, and modified
+paths match the relevant canonical specs. Verify that each requirement and
+scenario sits with the capability that owns its outcome.
 
 A cross-capability journey does not automatically need to be split at every
 dependency. Keep another capability's behavior as a GIVEN precondition when the
@@ -62,19 +75,19 @@ current scenario changes only one owned outcome. Split or move the scenario when
 it asserts an additional obligation with a different owner, purpose, or lifecycle.
 
 Apply a behavior-contract test to technical-looking content. "Create a database
-table" belongs in design or tasks. "A created record remains available after a
-service restart" is observable behavior and normally belongs to the capability
-that promises the record. A separate persistence capability is justified only
-when storage itself has an independent consumer-facing or operator-facing
-contract and ownership. Use the same reasoning for queues, caches, encryption,
-transactions, retries, and infrastructure.
+table" belongs with decisions or planned work. "A created record remains
+available after a service restart" is observable behavior and normally belongs
+to the capability that promises the record. A separate persistence capability is
+justified only when storage itself has an independent consumer-facing or
+operator-facing contract and ownership. Use the same reasoning for queues,
+caches, encryption, transactions, retries, and infrastructure.
 
-Finally compare artifact roles explicitly: the proposal owns why, scope, and the
-capability map; specs own normative behavior; design owns implementation choices;
-tasks own execution work; verification supplies evidence. Report contradictions
-or behavior that exists only in a downstream artifact. Do not silently choose one
-artifact as correct or repair a missing requirement by treating a task as the
-source of truth.
+Finally map the actual artifacts to the conceptual roles of intent, behavioral
+contract, decisions, work, and evidence. A conventional schema may express these
+as proposal, specs, design, tasks, and verification, but those names are not the
+contract. Report contradictions or behavior that exists only in a downstream
+artifact. Do not silently choose one artifact as correct or repair a missing
+upstream commitment by treating planned work as the source of truth.
 
 ### Behavioral Correctness
 
@@ -85,23 +98,27 @@ the same conclusion about what must happen.
 
 ### Coherence and Traceability
 
-Trace both directions through the actual schema graph:
+Map the actual schema graph to the applicable conceptual roles and trace both
+directions:
 
 ```text
-intent -> requirements -> decisions -> tasks -> verification
+intent -> behavioral contract -> decisions -> work -> verification
 ```
 
-Every upstream commitment needs downstream implementation and evidence. Every
-downstream task needs upstream justification. Terms, invariants, error semantics,
-and selected alternatives should agree across artifacts.
+Roles may be combined, omitted, or skipped when the schema and change justify it;
+do not require conventional artifacts merely to fill the example. Every upstream
+commitment needs downstream implementation and evidence. Every downstream work
+item needs upstream justification. Terms, invariants, error semantics, and
+selected alternatives should agree across artifacts.
 
-### Tasks and Verification
+### Planned Work and Verification
 
-Check that tasks are dependency ordered, small enough to execute without design
-invention, and cover every material requirement, migration, configuration,
-telemetry, compatibility, documentation, rollout, and rollback obligation.
-Verification should name observable evidence and repository-supported commands or
-procedures rather than merely saying that tests pass.
+Check that planned work is dependency ordered, small enough to execute without
+design invention, and covers every material behavioral commitment, migration,
+configuration, telemetry, compatibility, documentation, rollout, and rollback
+obligation. Verification should name observable evidence and
+repository-supported commands or procedures rather than merely saying that tests
+pass.
 
 ## Conditional Activation Map
 

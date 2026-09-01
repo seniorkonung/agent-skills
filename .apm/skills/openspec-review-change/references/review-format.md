@@ -1,8 +1,8 @@
 # Review Report Format
 
-Use `openspec/changes/<change>/review.md` as a concise statement of the current
-review result. It is a companion report, not an OpenSpec schema artifact, an
-approval record, or a history of review sessions.
+Use `<change-root>/review.md` as a concise statement of the current review result.
+It is a companion report, not an OpenSpec schema artifact, an approval record, or
+a history of review sessions.
 
 ## Keep Only Current Truth
 
