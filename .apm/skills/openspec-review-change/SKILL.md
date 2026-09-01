@@ -31,29 +31,17 @@ approval record, or permission to run Apply.
 
 ## Routing
 
-Use this skill for a full planning-artifact review before Apply, a continuation of
-that review, a re-audit after material planning changes, or user-requested
-resolution of its own findings.
+Use this skill for a broad review of planning artifacts in one active change:
+before Apply, after material replanning, or to re-audit or address its own
+findings.
 
-Route narrower or later work elsewhere:
+Use `openspec-review-implementation` for committed implementation and pre-push
+review. A narrow planning correction traced from an implementation finding stays
+there. Return here only when intent, capability boundaries, or requirements
+changed enough to warrant a broad planning re-audit.
 
-- syntax or structure validation alone -> `openspec validate`;
-- a narrow requested artifact edit -> the OpenSpec update workflow;
-- standalone verification of implemented code against the change -> OpenSpec
-  verification;
-- pre-push review, implementation verification, and remediation of findings
-  traced from committed code -> `openspec-review-implementation`;
-- a narrow planning correction required by an implementation finding stays in
-  `openspec-review-implementation`; return here only when the correction
-  materially changed intent, capability boundaries, or requirements and now
-  warrants a broad planning re-audit;
-- independent decision review that needs no OpenSpec orchestration ->
-  `implementation-decision-review`;
-- ordinary conformance, pull-request, or implementation review -> code review;
-- creation of missing required artifacts -> the OpenSpec continuation workflow.
-
-A full review may still identify structural errors or missing artifacts. Record
-them as findings rather than silently expanding the task.
+This review may report structural errors or missing artifacts, but it does not
+create missing artifacts or implement the change.
 
 ## Resolve the Change and Its Evidence
 

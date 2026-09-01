@@ -445,7 +445,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:7733a502a82e7fcf1bf56d784ca0ea59962df3c1789af4a5c0a560cf230b6820
+  content_hash: sha256:6976b051684b80f01640a358ed3d86d9bd34de9b1e209a33c2bdc1135f7351c5
 - kind: project-relative
   target: agents
   value: .agents/skills/openspec-review-change/references/review-format.md
@@ -740,7 +740,7 @@ local_deployed_file_hashes:
   .agents/skills/implementation-decision-review/SKILL.md: sha256:569d69a47cafd109144f2107fe99b1ea8b48d509dc91550712612bb0bb7c1d6a
   .agents/skills/incremental-implementation/SKILL.md: sha256:11b6c463fc40575041e2f5a8f467eb7f35820be0fb9a57f83fb341a1e6c8dd1c
   .agents/skills/observability-and-instrumentation/SKILL.md: sha256:72b2bf819884c33f78fa1894dc8a26e6901076a2e24c60cb3aef1a53c633a7a6
-  .agents/skills/openspec-review-change/SKILL.md: sha256:7733a502a82e7fcf1bf56d784ca0ea59962df3c1789af4a5c0a560cf230b6820
+  .agents/skills/openspec-review-change/SKILL.md: sha256:6976b051684b80f01640a358ed3d86d9bd34de9b1e209a33c2bdc1135f7351c5
   .agents/skills/openspec-review-change/references/review-format.md: sha256:8fff9c014c0422603f982706b0b5b31adfceafec7ddd139e452c8017352fbfb7
   .agents/skills/openspec-review-change/references/review-lenses.md: sha256:68f289916a85cf64b0d675611bc6377af55c64fd8cad8b947bc23286bf34afb0
   .agents/skills/openspec-review-implementation/SKILL.md: sha256:bd88f3bb722b61ca5cf60669cb3c63495a7ccb3d5e597a71d060ed80ca13319a
