@@ -5,6 +5,22 @@ The report describes one immutable `upstream..HEAD` range and one active OpenSpe
 change. It is not review history or approval to push, merge, archive, or accept
 risk.
 
+## Record Supported Conclusions
+
+Create or rewrite the report as soon as any review pass substantiates a finding
+with repository evidence, concrete impact, a required outcome, and an earliest
+source of truth. Do not defer a supported finding until the remaining passes
+finish.
+
+Completing a pass alone does not justify a report write. Do not use the report as
+a scratchpad, progress log, or store for suspicions and reviewer transcripts. If
+no substantive finding is established during the passes, write the clean report
+only when finalizing the review.
+
+When later evidence reveals another symptom of the same root cause, update the
+existing finding instead of adding a duplicate. Revise or remove a recorded
+finding when the evidence changes or disproves it.
+
 ## Keep Only Current Truth
 
 - Rewrite the report after the outgoing head, implementation, planning artifacts,

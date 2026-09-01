@@ -121,6 +121,24 @@ consequential mapping cannot be resolved from repository evidence, ask the human
 instead of guessing. If it remains unresolved, mark the affected independent
 pass `Incomplete`.
 
+## Record Findings During Review
+
+Read [references/review-format.md](references/review-format.md) before beginning
+the review passes. In any pass, once repository evidence substantiates a finding,
+create or rewrite `implementation-review.md` immediately to include it rather
+than retaining it until all passes finish. Establish its evidence, impact,
+required outcome, and earliest source of truth before recording it.
+
+Do not write the report merely because a pass completed, and do not use it for
+suspicions, private notes, reviewer transcripts, or review-session history. If no
+substantive finding has been established, wait until finalization to write a clean
+report. As later evidence changes a recorded conclusion, update, merge, or remove
+the affected finding so every write continues to state the current truth.
+
+Immediately before every report write, confirm that `HEAD` and the local upstream
+ref still resolve to the recorded head and base. If either moved, rerun discovery
+and review the new target instead of publishing a stale report.
+
 ## Review in Three Passes
 
 ### 1. Independent decision review
@@ -209,7 +227,7 @@ Inspect affected callers, tests, configuration, data paths, and runtime
 boundaries far enough to substantiate findings, without adding them to the target
 or expanding into unrelated cleanup.
 
-## Consolidate Findings
+## Finalize Findings
 
 Verify every cited fact against the repository. Merge duplicate symptoms from
 different passes into one finding. Keep distinct root causes separate.
@@ -226,12 +244,9 @@ A documented choice does not rebut an engineering problem. Narrow or remove a
 finding only when concrete evidence disproves its failure mode or supplies a
 binding constraint. Human acceptance changes the disposition, not the evidence.
 
-Read [references/review-format.md](references/review-format.md) before every
-report write. Rewrite the report to the current truth for the full outgoing
-range; do not retain resolved findings, old targets, or review-session history.
-Immediately before writing, confirm that `HEAD` and the local upstream ref still
-resolve to the recorded head and base. If either moved, rerun discovery and
-review the new target instead of publishing a stale report.
+Before the final report write, ensure the report reflects the current truth for
+the full outgoing range and contains no resolved findings, old targets, duplicate
+symptoms, or review-session history.
 
 Use this result precedence:
 

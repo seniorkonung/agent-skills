@@ -22,6 +22,8 @@ The skill should:
 - give each fresh reviewer the exact base, head, and unit path list from Git
   discovery without letting it rediscover or widen the target;
 - cover decision quality, OpenSpec conformance, and ordinary code quality;
+- record each substantiated finding when it is verified instead of retaining it
+  until all review passes finish;
 - produce concise findings that identify the earliest source of truth;
 - coordinate a planning handoff without editing implementation or invoking
   Apply;
@@ -324,6 +326,35 @@ The skill should:
 - Run the code-quality pass in the orchestrator context using
   `code-review-and-quality` only as a five-axis lens. Keep this skill's severity,
   result, and no-approval report protocol.
+
+## Case 13: Findings Are Recorded When Substantiated
+
+**Prompt**
+
+> Review the committed implementation and keep the report limited to conclusions
+> you can support with repository evidence.
+
+**Fixture**
+
+- The independent decision pass returns two substantiated engineering problems
+  and one suspicion that lacks concrete impact.
+- The conformance pass later finds another symptom of the first problem.
+- The code-quality pass supplies repository evidence that disproves the second
+  problem.
+
+**Expected behavior**
+
+- Verify each engineering problem's evidence, impact, required outcome, and
+  earliest source, then write the supported findings to
+  `implementation-review.md` without waiting for the remaining passes to finish.
+- Do not create or rewrite the report merely because a pass completed, and do
+  not record the unsupported suspicion, private notes, or reviewer transcript.
+- When the conformance pass finds the same root cause, update the first finding
+  instead of adding a duplicate.
+- Remove the second finding when the later evidence disproves it so the report
+  continues to state only the current supported conclusion.
+- If all three passes complete without a substantive finding, write the clean
+  report only when finalizing the review.
 
 ## Deterministic Checks
 
