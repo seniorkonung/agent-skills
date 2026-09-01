@@ -481,7 +481,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:bd88f3bb722b61ca5cf60669cb3c63495a7ccb3d5e597a71d060ed80ca13319a
+  content_hash: sha256:061dfd83e38f9d6592c63e612b057eb42e34904d5f06ea60cdd81b84c7d531a6
 - kind: project-relative
   target: agents
   value: .agents/skills/openspec-review-implementation/references/evaluation-cases.md
@@ -490,7 +490,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:5c75b2c4aa2a8fde9b0c5e7e066382c203e924975e024f2d47bce36d86364dfe
+  content_hash: sha256:9ab4f057d341fa2595571e277305a8adb9f527a7fe4d5465f6186b46d1f51a03
 - kind: project-relative
   target: agents
   value: .agents/skills/openspec-review-implementation/references/review-format.md
@@ -499,7 +499,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:586760c74e54dd13fa38154d84c0835f9ce1ba75804188641a119f1da835dc03
+  content_hash: sha256:688915885f5309cec63eaa29980ffaf9b7c4d2251116aa803cfbac480a94df07
 - kind: project-relative
   target: agents
   value: .agents/skills/openspec-review-implementation/references/review-target.md
@@ -508,7 +508,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:eed5428cd392e97e1588f9907f550b7aa61384406f969afaed0f976e7490bc8e
+  content_hash: sha256:e9f2b7417f35e6fd188e47614f37a8b222038afdfc8b84d18fb8e3fcd7186f55
 - kind: project-relative
   target: agents
   value: .agents/skills/openspec-review-implementation/scripts/discover-review-target.mjs
@@ -743,10 +743,10 @@ local_deployed_file_hashes:
   .agents/skills/openspec-review-change/SKILL.md: sha256:6976b051684b80f01640a358ed3d86d9bd34de9b1e209a33c2bdc1135f7351c5
   .agents/skills/openspec-review-change/references/review-format.md: sha256:8fff9c014c0422603f982706b0b5b31adfceafec7ddd139e452c8017352fbfb7
   .agents/skills/openspec-review-change/references/review-lenses.md: sha256:68f289916a85cf64b0d675611bc6377af55c64fd8cad8b947bc23286bf34afb0
-  .agents/skills/openspec-review-implementation/SKILL.md: sha256:bd88f3bb722b61ca5cf60669cb3c63495a7ccb3d5e597a71d060ed80ca13319a
-  .agents/skills/openspec-review-implementation/references/evaluation-cases.md: sha256:5c75b2c4aa2a8fde9b0c5e7e066382c203e924975e024f2d47bce36d86364dfe
-  .agents/skills/openspec-review-implementation/references/review-format.md: sha256:586760c74e54dd13fa38154d84c0835f9ce1ba75804188641a119f1da835dc03
-  .agents/skills/openspec-review-implementation/references/review-target.md: sha256:eed5428cd392e97e1588f9907f550b7aa61384406f969afaed0f976e7490bc8e
+  .agents/skills/openspec-review-implementation/SKILL.md: sha256:061dfd83e38f9d6592c63e612b057eb42e34904d5f06ea60cdd81b84c7d531a6
+  .agents/skills/openspec-review-implementation/references/evaluation-cases.md: sha256:9ab4f057d341fa2595571e277305a8adb9f527a7fe4d5465f6186b46d1f51a03
+  .agents/skills/openspec-review-implementation/references/review-format.md: sha256:688915885f5309cec63eaa29980ffaf9b7c4d2251116aa803cfbac480a94df07
+  .agents/skills/openspec-review-implementation/references/review-target.md: sha256:e9f2b7417f35e6fd188e47614f37a8b222038afdfc8b84d18fb8e3fcd7186f55
   .agents/skills/openspec-review-implementation/scripts/discover-review-target.mjs: sha256:90211146d7240edcc897a214ff3e09983c4332defcf417f491f7e15e873e7306
   .agents/skills/openspec-review-implementation/tests/discover-review-target.test.mjs: sha256:146653bf99daf09f9ee98d3fe29d8240cca71a929bf41e610a8e42ea1fb0d333
   .agents/skills/phased-planning/SKILL.md: sha256:f6e9d5c94db8837f005182bcdc5e3d4f511bb88741cdd71829ce6aeaa0badd1c

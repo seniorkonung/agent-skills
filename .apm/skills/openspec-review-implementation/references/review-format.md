@@ -49,11 +49,26 @@ Omit optional fields rather than adding placeholders.
 - **Upstream freshness:** Local tracking state; no fetch performed
 - **Excluded worktree state:** <dirty paths were excluded; omit when clean>
 
+## Reviewed increment
+
+### U1 · <short intended outcome>
+
+- **Work items:** <task or work-item IDs or stable labels attributable to the range>
+- **Requirements and scenarios:** <affected IDs or stable labels>
+- **Affected boundary:** <actor or system boundary>
+- **Implementation target:** <paths or bounded diff within the recorded base..head>
+- **Applicable constraints and non-goals:** <mechanism-neutral summary>
+- **Excluded change scope:** <untouched future work; omit when obvious>
+
+## Unmapped range
+
+- **Unmatched outgoing paths:** <paths and uncertainty; omit when none>
+
 ## Pass coverage
 
 | Pass | Status | Evidence or limitation |
 |---|---|---|
-| Independent decision review | Complete | <fresh reviewer boundary and scope> |
+| Independent decision review | Complete | <fresh reviewer boundary for each unit> |
 | OpenSpec conformance | Complete | <verification and validation evidence> |
 | Code quality | Complete | <areas and checks covered> |
 
@@ -81,6 +96,13 @@ activated risk areas examined. Do not reproduce a traceability matrix.>
 Use `critical`, `high`, `medium`, and `low` severity according to plausible
 impact. Do not report cosmetic preferences or hypothetical improvements without
 concrete harm.
+
+The reviewed-increment section defines what the outgoing range actually claims
+to deliver. Add another `U<n>` section for each materially distinct outcome. Omit
+`Unmapped range` when every material path is mapped. Do not list the whole change
+as implemented, treat a checkbox as sufficient mapping evidence, or enumerate
+every untouched future task. Any material unmatched path must remain visible here
+and as a finding when it represents unrelated or untraceable work.
 
 `Evidence` establishes the fact. `Impact` explains why it matters. `Required
 outcome` defines closure while preserving solution choice. Put implementation

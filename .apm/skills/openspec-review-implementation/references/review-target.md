@@ -25,6 +25,11 @@ It excludes every active change's `implementation-review.md` from reviewable
 paths. This allows review evidence to be committed without triggering an endless
 report-only re-review loop.
 
+The helper identifies the Git target and active change, not the tasks or
+requirements implemented by that target. Resolve that semantic work increment
+from the immutable diff and the complete change context during review; do not
+infer it from changed filenames alone.
+
 ## Overrides
 
 - Use `--upstream <ref>` only when the user supplies a different local baseline.
