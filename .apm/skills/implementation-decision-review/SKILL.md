@@ -1,6 +1,6 @@
 ---
 name: implementation-decision-review
-description: Independently challenges whether implemented engineering decisions are a defensible way to achieve a supplied high-level intention. Use after a bounded implementation increment when the caller wants decision quality rather than task or specification conformance or merge approval; not for orchestration, durable finding management, or planning-artifact reconciliation.
+description: Independently assesses whether engineering decisions in a bounded implementation are a defensible way to achieve a supplied high-level intent. Use in a fresh reviewer context after an implementation increment when the caller wants decision-quality findings rather than task or specification conformance or a merge verdict; not when review state or planning artifacts must be managed.
 ---
 
 # Implementation Decision Review
@@ -10,9 +10,10 @@ Ask whether the implementation is a defensible way to achieve its high-level
 intent and whether repository evidence reveals a materially simpler, safer, or
 more coherent alternative. Do not try to prove global optimality.
 
-This is a read-only review. Return findings to the caller; do not modify code,
-persist review state, issue a merge verdict, or decide which planning artifact
-should change.
+This read-only review protocol must run in a fresh reviewer context. The caller
+must establish isolation and supply a stable target. Return findings only; do not
+modify code, persist review state, issue a merge verdict, or decide which planning
+artifact should change.
 
 ## Required Input
 
@@ -23,25 +24,40 @@ The caller supplies an intention brief containing:
   system terms;
 - **Affected boundary:** the actor or system boundary whose outcome matters;
 - **Binding constraints:** only externally imposed constraints that genuinely
-  limit valid solutions;
+  limit valid solutions, or `none known` when none have been identified;
 - **Non-goals:** optional scope exclusions that prevent review drift; and
-- **Review target:** the exact diff, commit range, or bounded file set to inspect.
+- **Review target:** the exact diff, commit range, snapshot, or bounded file set to
+  inspect, stable for the duration of the review.
 
 The brief must describe outcomes rather than the selected mechanism. Treat files,
 symbols, technologies, algorithms, patterns, module seams, and task steps as
 implementation choices unless the caller explicitly identifies one as an
 externally binding constraint and explains why.
 
-Return `Incomplete` when the problem, outcome, boundary, exact target, or a
-decision-relevant binding constraint is missing. State the smallest question that
-would unblock review instead of reconstructing the answer from planning material.
+For example, a mechanism-neutral brief can say:
+
+```text
+Problem: Automation can receive success although no report exists.
+Desired outcome: Reported success means the report can be retrieved.
+Affected boundary: Calling automation and the report service.
+Binding constraints: Existing exit codes are an external compatibility contract.
+Non-goals: Changing report contents.
+Review target: The exact <base>..<head> diff for the named increment.
+```
+
+Return `Incomplete` when the problem, outcome, boundary, binding constraints
+field, or exact target is absent; when the target cannot be held stable; or when
+repository evidence exposes a likely external constraint not covered by the
+brief. State the smallest question that would unblock review. Do not invent an
+unknown constraint or reconstruct the answer from planning material.
 
 ## Preserve Independence
 
-An independent result requires a fresh context that has not participated in the
-implementation or seen its planning rationale. If the current context has already
-seen that material, disclose the limitation and return `Incomplete`; an
-instruction to forget known context does not restore independence.
+An independent result requires a fresh context that has neither participated in
+the implementation nor received its planning rationale or any framing material
+prohibited below. If the current context has already received that material,
+disclose the limitation and return `Incomplete`; an instruction to forget known
+context does not restore independence.
 
 Use only the supplied intention brief as framing context. Do not seek or read:
 
@@ -79,9 +95,9 @@ Judge the resulting system, not just changed lines. Follow affected callers and
 boundaries far enough to substantiate a failure mode, but do not broaden the
 review into unrelated cleanup.
 
-Do not assess conformity to hidden tasks or specifications. Do not infer that a
-requirement, design, or task is wrong; the caller may reconcile confirmed findings
-against its own source-of-truth graph afterward.
+Do not assess conformity to hidden tasks or specifications or attribute a finding
+to an unseen requirement, design, or task. Report the engineering problem and
+required property; the caller can later decide which artifact should change.
 
 ## Return an Evidence-Backed Result
 
@@ -93,8 +109,10 @@ Use one result:
 - `Incomplete` when intent, target, constraints, or independence are insufficient
   for a sound conclusion.
 
-Use `critical`, `high`, `medium`, or `low` severity calibrated to plausible
-impact. Report `low` only for concrete harm or material simplification. Omit nits,
+Use `critical`, `high`, `medium`, or `low` severity calibrated to plausible impact
+and reach: `critical` means plausible catastrophic or system-wide harm; `high`, a
+serious failure of the stated outcome; `medium`, a material but bounded failure or
+risk; and `low`, concrete limited harm or material simplification. Omit nits,
 preference-only alternatives, FYIs, mandatory praise, merge readiness, and
 `APPROVE` or `REQUEST CHANGES` language.
 
@@ -105,12 +123,19 @@ Every finding includes:
 - **Why the decision is unsound:** reasoning under the supplied intent and
   constraints;
 - **Required property:** the engineering outcome needed to close the finding
-  without prescribing one implementation;
-- **Possible alternatives:** only when examples clarify the solution space; and
-- **Uncertainty:** a missing constraint or focused question when relevant.
+  without prescribing one implementation.
+
+Add **Possible alternatives** only when examples clarify the solution space. Add
+**Uncertainty** when a missing constraint or focused question affects the finding.
 
 Keep the required property separate from example remedies. Do not turn one
 possible fix into a hidden specification when several approaches remain valid.
+For example, the distinction can look like this:
+
+- **Required property:** A success response must correspond to durable completion
+  or expose a caller-visible pending state.
+- **Possible alternatives:** Wait for completion, or return a durable operation
+  handle whose status exposes later failure.
 
 Use this shape:
 
@@ -130,21 +155,25 @@ Use this shape:
 
 ### Review coverage
 
-<Code paths and decision-relevant areas examined, plus any limitation.>
+<Target identity, code paths and decision-relevant areas examined, plus any
+limitation.>
 ```
 
-When no finding remains, omit placeholder finding sections and state that no
-substantive engineering-decision finding was found under the supplied intention
-and constraints. This result makes no claim about task or specification
-conformance, merge readiness, or the quality of context deliberately withheld.
+When no substantive finding exists, omit placeholder finding sections and state
+that none was found under the supplied intention and constraints. This result
+makes no claim about task or specification conformance, merge readiness, or the
+quality of context deliberately withheld.
 
 ## Completion Check
 
 Before returning the result, confirm that:
 
 - the intention brief did not prescribe the selected mechanism;
-- the exact target was bounded without unrelated changes;
-- no prohibited rationale or previous finding entered the review context;
-- every finding has concrete evidence, a failure mode, and a required property;
+- every mandatory input field was present, with `none known` accepted for binding
+  constraints;
+- the exact target was stable and bounded without unrelated changes;
+- no prohibited framing material or previous finding entered the review context;
+- every finding has concrete evidence, a failure mode, soundness reasoning, and a
+  required property;
 - uncertainty is explicit rather than filled from hidden planning context; and
 - the result contains no conformance, planning-artifact, or merge verdict.
