@@ -134,6 +134,26 @@ test('discovers changes without requiring batch status support', async () => {
   assert.equal(result.change.name, 'add-value');
 });
 
+test('preserves Git paths that contain newlines', async () => {
+  const { changeRoot, openspecBin, repositoryRoot } = await createRepository();
+  const unusualPath = 'openspec/changes/add-value/line\nbreak.md';
+
+  await writeFile(path.join(repositoryRoot, unusualPath), '# Unusual path\n');
+  git(repositoryRoot, 'add', '.');
+  git(repositoryRoot, 'commit', '--quiet', '-m', 'docs: add unusual path');
+
+  const result = discoverReviewTarget({
+    cwd: repositoryRoot,
+    openspecBin,
+    upstreamRef: 'HEAD~1',
+  });
+
+  assert.equal(result.result, 'ready', JSON.stringify(result, null, 2));
+  assert.deepEqual(result.changedPaths, [unusualPath]);
+  assert.deepEqual(result.change.matchingPaths, [unusualPath]);
+  assert.equal(result.change.changeRoot, changeRoot);
+});
+
 test('returns a no-op result when there are no outgoing commits', async () => {
   const { openspecBin, repositoryRoot } = await createRepository();
 

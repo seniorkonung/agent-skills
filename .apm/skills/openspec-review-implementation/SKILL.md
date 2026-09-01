@@ -116,10 +116,13 @@ the active change.
 
 Keep tasks in one unit when they serve the same outcome and boundary. When the
 range contains materially distinct outcomes, create separate units and decision
-briefs rather than flattening them into the whole change's purpose. If a
-consequential mapping cannot be resolved from repository evidence, ask the human
-instead of guessing. If it remains unresolved, mark the affected independent
-pass `Incomplete`.
+briefs rather than flattening them into the whole change's purpose. If distinct
+units share a changed path, keep their outcome mapping separate but send those
+units to one fresh decision reviewer with a combined neutral brief and the union
+of their complete path lists. Do not pretend path-level Git targets can isolate
+separate hunks in one file. If a consequential mapping cannot be resolved from
+repository evidence, ask the human instead of guessing. If it remains unresolved,
+mark the affected independent pass `Incomplete`.
 
 ## Record Findings During Review
 
@@ -143,8 +146,10 @@ and review the new target instead of publishing a stale report.
 
 ### 1. Independent decision review
 
-For each review unit, synthesize a short mechanism-neutral intention brief from
-the complete planning context and the increment map. This is controlled context
+For each review unit, or combined set of units that share a changed path,
+synthesize a short mechanism-neutral intention brief from the complete planning
+context and the increment map. A combined brief contains a complete intention
+section for each unit and one shared exact target. This is controlled context
 reduction, not an attempt to understand the work from a minimal set of files or
 to substitute the whole change's purpose for the implemented increment.
 
@@ -173,12 +178,13 @@ rationale; leave that unit's independent pass `Incomplete` until the human
 resolves it.
 
 Use a fresh zero-history reviewer that follows `implementation-decision-review`
-for each materially distinct unit. Give it only that unit's intention brief and
-repository root. The reviewer must reconstruct exactly
-`git diff <base>..<head> -- <unit-paths>` from the supplied target. It must not
-rerun target discovery, resolve the current upstream or `HEAD`, inspect other
-changed paths, or widen the unit. It may inspect unchanged surrounding code as
-context, but before opening a context path outside the target it must use
+for each path-disjoint unit or combined set of path-overlapping units. Give it
+only the applicable intention brief and repository root. The reviewer must
+reconstruct exactly `git diff <base>..<head> -- <review-paths>` from the supplied
+target. It must not rerun target discovery, resolve the current upstream or
+`HEAD`, inspect other changed paths, or widen the target. It may inspect unchanged
+surrounding code as context, but before opening a context path outside the target
+it must use
 `git diff --quiet <base> <head> -- <path>` only to confirm that the path did not
 change. It must not read a changed context path. Findings must arise from the
 bounded target. If another changed path is required to review the unit
@@ -292,8 +298,8 @@ Before reporting the result, confirm that:
   context without hiding material conflicts or promoting chosen solutions into
   constraints;
 - the independent reviewer received only the neutral brief, repository root, and
-  immutable base, head, and exact unit path list in a fresh context, and did not
-  widen or rediscover that target;
+  immutable base, head, and exact path list for the assigned unit or overlap group
+  in a fresh context, and did not widen or rediscover that target;
 - conformance and code-quality passes covered the same immutable range;
 - the code-quality pass used its supporting skill only as a review lens and kept
   this skill's result, severity, and report protocol;

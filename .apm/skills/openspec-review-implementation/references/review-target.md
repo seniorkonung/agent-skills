@@ -32,6 +32,9 @@ implementation. `reviewablePaths` is the authoritative changed-file inventory.
 requirements, and review units from the immutable diff and complete change
 context; do not infer them from location or filenames alone.
 
+The helper reads Git's changed-path output with NUL delimiters so newlines and
+other quoted characters in a path do not change the inventory boundary.
+
 ## Overrides
 
 - Use `--upstream <ref>` only when the user supplies a different local baseline.

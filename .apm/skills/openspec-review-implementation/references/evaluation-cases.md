@@ -19,8 +19,8 @@ The skill should:
 - understand the complete planning context before reducing it to a neutral brief;
 - expose only that brief and the immutable code target to a fresh decision
   reviewer;
-- give each fresh reviewer the exact base, head, and unit path list from Git
-  discovery without letting it rediscover or widen the target;
+- give each fresh reviewer the exact base, head, and assigned unit or overlap-group
+  path list from Git discovery without letting it rediscover or widen the target;
 - cover decision quality, OpenSpec conformance, and ordinary code quality;
 - record each substantiated finding when it is verified instead of retaining it
   until all review passes finish;
@@ -243,16 +243,24 @@ The skill should:
 - Two tasks implement one user-visible outcome in one subsystem.
 - A third task implements a materially different operator outcome in a disjoint
   subsystem, but all three belong to the same active change.
-- Their code and test paths are separable in the immutable outgoing diff.
+- Variant A: their code and test paths are separable in the immutable outgoing
+  diff.
+- Variant B: one changed implementation path materially contributes to both
+  outcomes.
 
 **Expected behavior**
 
 - Map all three tasks and every material outgoing implementation path.
 - Group the first two tasks into one review unit and the third into another; do
   not flatten them into the active change's broad purpose.
-- Prepare one mechanism-neutral brief and use one fresh decision reviewer per
-  materially distinct unit. Give each reviewer only its exact path subset from
-  the immutable diff; neither reviewer may inspect the other unit's changed paths.
+- In variant A, prepare one mechanism-neutral brief and use one fresh decision
+  reviewer per materially distinct unit. Give each reviewer only its exact path
+  subset from the immutable diff; neither reviewer may inspect the other unit's
+  changed paths.
+- In variant B, keep the two units distinct in the increment map and report, but
+  use one fresh reviewer with a combined neutral brief and the union of their
+  complete path lists. Do not assign the shared path to only one unit or attempt
+  hunk-level isolation.
 - Apply conformance and code-quality review to the complete outgoing range and
   consolidate all findings into one current report.
 - Record both units and disclose any unmatched path or uncertain task mapping.
@@ -366,9 +374,9 @@ node --test tests/discover-review-target.test.mjs
 
 The tests must cover a single matched change, discovery through list plus
 per-change status, no outgoing commits, multiple matched changes, explicit-change
-isolation, the location-only `pathsOutsideChangeRoot` field, and a report-only
-commit. Also validate frontmatter, relative links, generated copies, and the
-focused repository diff. Behavioral evaluation must cover exact reviewer path
-boundaries, result precedence, planning handoff, phased-plan versus task
-granularity, the prohibition on code and Apply, the update workflow's boundary
-handoffs, and the missing-skill failure.
+isolation, the location-only `pathsOutsideChangeRoot` field, unusual Git paths,
+and a report-only commit. Also validate frontmatter, relative links, generated
+copies, and the focused repository diff. Behavioral evaluation must cover exact
+reviewer path boundaries, including overlapping unit paths, result precedence,
+planning handoff, phased-plan versus task granularity, the prohibition on code
+and Apply, the update workflow's boundary handoffs, and the missing-skill failure.

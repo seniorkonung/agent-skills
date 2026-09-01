@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 const TRACKING_REF_FRESHNESS = 'local tracking state; no fetch performed';
 const EXPLICIT_REF_FRESHNESS = 'explicit local ref; no fetch performed';
 
-function run(command, args, cwd) {
+function run(command, args, cwd, { trim = true } = {}) {
   const result = spawnSync(command, args, {
     cwd,
     encoding: 'utf8',
@@ -22,11 +22,15 @@ function run(command, args, cwd) {
     throw new Error(`${command} ${args.join(' ')}: ${detail}`);
   }
 
-  return result.stdout.trim();
+  return trim ? result.stdout.trim() : result.stdout;
 }
 
 function git(cwd, ...args) {
   return run('git', args, cwd);
+}
+
+function gitRaw(cwd, ...args) {
+  return run('git', args, cwd, { trim: false });
 }
 
 function isInside(candidatePath, parentPath) {
@@ -207,14 +211,17 @@ export function discoverReviewTarget({
     '--reverse',
     `${upstream}..HEAD`,
   ).split('\n');
-  const changedOutput = git(
+  const changedOutput = gitRaw(
     repositoryRoot,
     'diff',
     '--name-only',
+    '-z',
     '--diff-filter=ACDMRTUXB',
     `${upstream}..HEAD`,
   );
-  const changedPaths = changedOutput ? changedOutput.split('\n').sort() : [];
+  const changedPaths = changedOutput
+    ? changedOutput.split('\0').filter(Boolean).sort()
+    : [];
   const targetContext = {
     ...common,
     commits,
