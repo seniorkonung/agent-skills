@@ -38,7 +38,11 @@ Route narrower or later work elsewhere:
 - syntax or structure validation alone -> `openspec validate`;
 - a narrow requested artifact edit -> the OpenSpec update workflow;
 - verification of implemented code against the change -> OpenSpec verification;
-- pull-request or implementation review -> code review;
+- independent review and reconciliation of engineering decisions in a completed
+  Apply increment -> `openspec-review-implementation`;
+- independent decision review that needs no OpenSpec orchestration ->
+  `implementation-decision-review`;
+- ordinary conformance, pull-request, or implementation review -> code review;
 - creation of missing required artifacts -> the OpenSpec continuation workflow.
 
 A full review may still identify structural errors or missing artifacts. Record
