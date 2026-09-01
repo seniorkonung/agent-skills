@@ -1,6 +1,6 @@
 ---
 name: openspec-review-implementation
-description: Reviews all commits ahead of upstream before push, auto-detects the active OpenSpec change, records actionable code and specification findings, and coordinates schema-aware fixes. Use after Apply commits or to re-audit or fix implementation-review findings; not for uncommitted work or an initial proposal review.
+description: Reviews the committed pre-push range against an active OpenSpec change, records actionable engineering and conformance findings, and prepares findings for later implementation. Use after Apply commits, for re-audit, or to plan remediation; not for uncommitted work, an initial proposal review, or implementation itself.
 ---
 
 # OpenSpec Review Implementation
@@ -21,8 +21,11 @@ residual risk.
   create an endless re-review loop.
 - Review one active OpenSpec change at a time. Do not guess when outgoing commits
   touch several changes.
-- During an audit, write only `implementation-review.md`. Change code or planning
-  artifacts only when the user asks to address findings.
+- During an audit, write only `implementation-review.md`. Planning artifacts may
+  change only in the separate remediation path below.
+- When addressing findings, never edit implementation code or tests and never
+  invoke Apply. Reconcile existing planning artifacts only through
+  `openspec-update-change`, then hand implementation back to the user.
 - Ask the human before settling consequential product, contract, architecture,
   data, security, privacy, cost, or residual-risk decisions.
 - Isolation applies to the decision reviewer, not the orchestrator preparing its
@@ -43,9 +46,21 @@ read-only and excludes uncommitted work and `implementation-review.md`. Do not
 claim the local upstream reflects the live remote or run `git fetch` without the
 user's request.
 
-If the selected range contains no implementation paths outside the change root,
-route planning-only review to `openspec-review-change`; do not issue a clean
-implementation verdict.
+Treat `reviewablePaths` as the authoritative changed-file inventory for the
+review. It comes from the recorded Git diff. `pathsOutsideChangeRoot` is only a
+location hint; it does not prove that a path is implementation.
+
+Classify each reviewable path by its actual role in the diff and repository:
+planning evidence, implementation or delivery behavior, tests, configuration,
+migrations, documentation, or unrelated work. Paths under the change root may be
+delivery surfaces in a custom schema, and paths outside it may still be planning
+artifacts. Record the exact delivery-path subset for later passes. Every
+reviewable path must remain visible as planning evidence, a review-unit target,
+or an unmapped path; do not silently drop one after classification.
+
+If semantic classification finds no implementation or delivery behavior to
+review, route to `openspec-review-change`; do not issue a clean implementation
+verdict.
 
 ## Understand the Current Change
 
@@ -53,11 +68,12 @@ Refresh `openspec status --change "<name>" --json` after discovery. Use its
 `changeRoot`, `schemaName`, `artifactPaths`, `artifacts`, and `actionContext`
 rather than assuming filenames or a repository-local planning layout.
 
-Run `openspec instructions apply --change "<name>" --json`. Read its current
-context files, tracked progress, tasks, project context, applicable operation
-guidance, and relevant canonical specs. Follow their references far enough to
-understand why the requested outcomes and constraints exist; do not infer intent
-from one artifact in isolation.
+Run the read-only context command
+`openspec instructions apply --change "<name>" --json`; this does not invoke the
+Apply workflow. Read its current context files, tracked progress, tasks, project
+context, applicable operation guidance, and relevant canonical specs. Follow
+their references far enough to understand why the requested outcomes and
+constraints exist; do not infer intent from one artifact in isolation.
 
 If planning sources conflict or leave a consequential part of intent unclear,
 preserve the uncertainty and ask the human for the smallest decision that would
@@ -71,6 +87,10 @@ by the outgoing range. Starting from the immutable `base..head` diff, map the
 behavior actually changed in implementation, tests, configuration, migrations,
 and other delivery surfaces to the part of the change that the range claims to
 deliver.
+
+Do not add unchanged files to the review target. Inspect unchanged callers,
+dependencies, and runtime boundaries only as context needed to understand the
+changed behavior; do not report unrelated findings from them.
 
 Inspect the tracked-work diff as evidence. Tasks completed, reopened, or edited
 in the range are candidates, not proof of scope or completion. Include an
@@ -128,21 +148,31 @@ because the implementation follows it.
 
 The brief must contain `Problem`, `Desired outcome`, `Affected boundary`,
 `Binding constraints`, optional `Non-goals`, and an exact `Review target` naming
-the immutable base, head, and the paths or bounded diff for that unit. If a
-material conflict or unknown prevents an accurate brief, do not fill it from code
-or selected-solution rationale; leave that unit's independent pass `Incomplete`
-until the human resolves it.
+the repository root, immutable base and head, and the unit's complete path list.
+Every target path must come from `reviewablePaths`. If a material conflict or
+unknown prevents an accurate brief, do not fill it from code or selected-solution
+rationale; leave that unit's independent pass `Incomplete` until the human
+resolves it.
 
 Use a fresh zero-history reviewer that follows `implementation-decision-review`
 for each materially distinct unit. Give it only that unit's intention brief and
-repository root. Forbid planning artifacts, commit messages and history, the
-review report, prior findings, implementation discussion, and the orchestrator's
-private source notes. The reviewer may inspect the exact diff and surrounding
-repository code named by the brief.
+repository root. The reviewer must reconstruct exactly
+`git diff <base>..<head> -- <unit-paths>` from the supplied target. It must not
+rerun target discovery, resolve the current upstream or `HEAD`, inspect other
+changed paths, or widen the unit. It may inspect unchanged surrounding code as
+context, but before opening a context path outside the target it must use
+`git diff --quiet <base> <head> -- <path>` only to confirm that the path did not
+change. It must not read a changed context path. Findings must arise from the
+bounded target. If another changed path is required to review the unit
+coherently, the reviewer returns `Incomplete` and asks the orchestrator to
+correct the unit instead of adding that path itself.
+
+Forbid planning artifacts, commit messages and history, the review report, prior
+findings, implementation discussion, and the orchestrator's private source notes.
 
 If isolated review is unavailable, continue the other passes but mark this pass
-and the aggregate result `Incomplete`. A non-isolated pass may add concrete
-findings but cannot produce a clean result or clear an earlier finding.
+`Incomplete`. A non-isolated pass may add concrete findings but cannot produce a
+clean result or clear an earlier finding.
 
 ### 2. OpenSpec conformance review
 
@@ -167,11 +197,17 @@ implementation correctness.
 
 ### 3. Code-quality review
 
-Review the same outgoing implementation diff for correctness, readability,
-architecture, security, and performance. Follow `code-review-and-quality` when
-available. Inspect affected callers, tests, configuration, data paths, and runtime
-boundaries far enough to substantiate findings, without expanding into unrelated
-cleanup.
+In the current orchestrator context, invoke `code-review-and-quality` when
+available and review the complete bounded delivery-path subset. If it is
+unavailable, apply the same five axes directly and disclose that limitation. Use
+its correctness, readability, architecture, security, and performance lenses and
+evidence discipline only. This skill owns the target, severity scale, findings,
+and aggregate result; do not import approval language, merge verdicts, or
+`Required`/`Nit`/`Optional`/`FYI` categories from the supporting skill.
+
+Inspect affected callers, tests, configuration, data paths, and runtime
+boundaries far enough to substantiate findings, without adding them to the target
+or expanding into unrelated cleanup.
 
 ## Consolidate Findings
 
@@ -193,78 +229,38 @@ binding constraint. Human acceptance changes the disposition, not the evidence.
 Read [references/review-format.md](references/review-format.md) before every
 report write. Rewrite the report to the current truth for the full outgoing
 range; do not retain resolved findings, old targets, or review-session history.
+Immediately before writing, confirm that `HEAD` and the local upstream ref still
+resolve to the recorded head and base. If either moved, rerun discovery and
+review the new target instead of publishing a stale report.
 
-Use `No substantive findings` only when all three passes completed and no material
-finding remains. Otherwise use `Changes needed` or `Incomplete`.
+Use this result precedence:
+
+1. `Changes needed` when any substantive finding remains, even if a pass is
+   incomplete;
+2. `Incomplete` when no finding remains but a required pass, target boundary, or
+   verification step is incomplete; or
+3. `No substantive findings` only when all three passes completed and no material
+   finding remains.
 
 ## Address Findings When Asked
 
-A request such as `fix F2` re-enters this skill in remediation mode. Keep this
-skill as the coordinator: select the requested findings, recheck their severity,
-dependencies, and earliest sources of truth, prepare a bounded remediation plan,
-obtain consequential human decisions, and retain control of verification,
-commit coordination, and re-audit. Do not absorb unrelated cleanup or other open
-findings unless the user selected them.
+A request such as `fix F2` re-enters this skill only to prepare planning and
+tracked work for later implementation. Read
+[references/remediation.md](references/remediation.md) before taking any action.
 
-When a selected finding requires any proposal, specification, design, task, or
-other planning-artifact revision, invoke `openspec-update-change`. Never edit a
-planning artifact directly under this skill. Give the update workflow:
-
-- the change name and finding ID;
-- the finding's evidence, impact, and required outcome;
-- every consequential decision the user has settled; and
-- the planning artifacts expected to be affected, without treating that estimate
-  as the actual schema graph.
-
-The update workflow owns planning reconciliation. It must independently refresh
-`openspec status`, resolve the current artifact IDs and concrete
-`existingOutputPaths`, read all related existing planning artifacts, and
-reconcile them in any direction. Schema dependency order may help it understand
-the graph, but does not constrain which existing artifact can correct another.
-It must show every proposed revision and obtain user confirmation before each
-write, and it must never edit implementation code.
-
-Corrective task handling also belongs to `openspec-update-change`. It must reopen
-a completed task when the original work was never complete, or add a corrective
-task when a newly accepted requirement or design decision creates new work. Each
-corrective task needs concrete acceptance criteria and verification evidence;
-never use vague tracked work to hide a requirement or design gap.
-
-If reconciliation needs an artifact or glob output that does not yet exist, the
-update workflow hands that creation to `openspec-continue-change`. If it discovers
-materially new intent, it recommends a separate change. If it discovers required
-code changes, it returns control to this remediation workflow instead of making
-them.
-
-If `openspec-update-change` is unavailable, stop before any planning-artifact
-write. Report an incomplete or incorrect OpenSpec workflow installation and tell
-the user to run terminal `openspec update`; never fall back to direct editing.
-
-After planning reconciliation, or immediately when no planning revision is
-needed, update code and tests through the appropriate implementation workflow,
-normally `openspec-apply-change`, strictly within the selected findings. Run
-focused verification, then run OpenSpec validation and verification again.
-
-Keep refinements serving the same intent in the current change. Put materially
-different intent or scope in a separate change. Do not invoke
-`openspec-review-change` merely because one finding touches a planning artifact;
-use it after remediation only when intent, capability boundaries, or requirements
-changed enough to warrant a broad planning-artifact re-audit.
-
-Re-audit only after remediation is committed, because the target must remain the
-complete immutable `upstream..HEAD` range. If committing is outside the agent's
-authorization, ask the user to commit before re-audit. Use a fresh isolated
-decision reviewer and rewrite `implementation-review.md` to current truth. A
-finding that the complete re-audit disproves or verifies as fixed is removed from
-the report rather than retained or marked resolved.
+This skill never implements a finding. After planning reconciliation, keep the
+finding in the report and hand the affected work items to the user. A later,
+separate Apply invocation may implement them. Re-audit only after that work is
+committed and the user requests another review of the complete pre-push range.
 
 ## Handoff
 
 Report the upstream and reviewed head, selected change, reviewed work units and
 work-item IDs or labels, aggregate result, highest-impact findings or their
 absence, decisions still needed, excluded uncommitted work, validation and
-verification evidence, isolation limitations, and the report path. Leave the
-push, merge, and archive decisions to the human.
+verification evidence, isolation limitations, planning handoff state, and the
+report path. Leave implementation, push, merge, and archive decisions to the
+human.
 
 ## Verification
 
@@ -281,12 +277,16 @@ Before reporting the result, confirm that:
   context without hiding material conflicts or promoting chosen solutions into
   constraints;
 - the independent reviewer received only the neutral brief, repository root, and
-  immutable code target in a fresh context;
+  immutable base, head, and exact unit path list in a fresh context, and did not
+  widen or rediscover that target;
 - conformance and code-quality passes covered the same immutable range;
+- the code-quality pass used its supporting skill only as a review lens and kept
+  this skill's result, severity, and report protocol;
 - every finding has evidence, impact, a required outcome, and an earliest source;
 - report state matches the current base and head without stale findings;
-- remediation delegated planning writes to `openspec-update-change`, kept code
-  changes within the selected findings, and updated tracked work; and
+- remediation delegated planning writes to `openspec-update-change`, recorded
+  appropriate tracked work, and made no code, test, Apply, or implementation
+  changes; and
 - no push, merge, archive, or risk-acceptance approval was implied.
 
 When changing this skill, run the bundled discovery tests and evaluate the

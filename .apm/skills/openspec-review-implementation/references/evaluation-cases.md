@@ -19,13 +19,16 @@ The skill should:
 - understand the complete planning context before reducing it to a neutral brief;
 - expose only that brief and the immutable code target to a fresh decision
   reviewer;
+- give each fresh reviewer the exact base, head, and unit path list from Git
+  discovery without letting it rediscover or widen the target;
 - cover decision quality, OpenSpec conformance, and ordinary code quality;
 - produce concise findings that identify the earliest source of truth;
-- coordinate remediation without directly editing planning artifacts;
+- coordinate a planning handoff without editing implementation or invoking
+  Apply;
 - use `openspec-update-change` for confirmed, bidirectional planning
   reconciliation and corrective task updates; and
-- retain ownership of scoped implementation, verification, commit coordination,
-  and re-audit.
+- keep phased plans at outcome granularity while recording detailed corrective
+  work in the schema's task or tracked-work artifact.
 
 ## Case 1: Normal Pre-Push Review
 
@@ -54,7 +57,11 @@ The skill should:
 - Read the complete planning context, distinguish the compatibility contract from
   the selected mechanism, and prepare every required intention-brief field.
 - Give the fresh decision reviewer the neutral brief and immutable code target,
-  but no planning artifacts, design rationale, or synthesis notes.
+  including the exact base, head, and unit path list, but no planning artifacts,
+  design rationale, or synthesis notes.
+- Have the reviewer reconstruct only that bounded Git diff. It may inspect
+  unchanged surrounding code as context, but it must not rerun discovery, inspect
+  other changed paths, or report unrelated findings.
 - Run decision, conformance, and code-quality passes in that order.
 - Write only the selected change's `implementation-review.md`.
 - Record the reviewed unit and its work-item and requirement IDs in the report.
@@ -108,11 +115,13 @@ The skill should:
 
 **Fixture**
 
-- Outgoing commits contain only files under the selected change root.
+- Outgoing commits contain change artifacts plus a linked planning document
+  outside the selected change root, but no implementation or delivery behavior.
 
 **Expected behavior**
 
 - Route to `openspec-review-change`.
+- Treat `pathsOutsideChangeRoot` as a location hint, not proof of implementation.
 - Do not issue a clean implementation result or create implementation-review
   findings.
 
@@ -129,9 +138,12 @@ The skill should:
 **Expected behavior**
 
 - Complete conformance and code-quality passes when possible.
-- Mark the independent decision pass and aggregate result `Incomplete`.
-- Preserve concrete findings, but do not clear prior findings or claim a clean
-  result from the non-isolated pass.
+- Mark the independent decision pass `Incomplete`.
+- Use `Changes needed` when another pass finds a substantive issue; otherwise use
+  aggregate result `Incomplete`. Never claim a clean result from the non-isolated
+  pass.
+- Preserve concrete findings and do not clear prior findings from a non-isolated
+  pass.
 
 ## Case 6: Finding Changes Requirements
 
@@ -161,14 +173,16 @@ The skill should:
 - Have the update workflow reopen an incorrectly completed task or add a
   corrective task for newly accepted work, with concrete acceptance criteria and
   verification evidence.
-- After planning reconciliation returns, use the appropriate implementation
-  workflow, normally `openspec-apply-change`, to update code and tests strictly
-  for F2. Retain ownership of verification, commit coordination, and re-audit.
-- Keep F2 in the report until a complete committed re-audit verifies the fix;
-  then remove it rather than marking it resolved.
-- Use `openspec-review-change` afterward only if the planning revision materially
-  changed intent, capability boundaries, or the requirement set enough to need a
-  broad re-audit.
+- If the schema contains a phased-planning artifact, revise it only when F2
+  changes a phase outcome, boundary, direction, or readiness. Keep detailed
+  corrective work in the task or tracked-work artifact rather than adding a
+  checklist to the phased plan.
+- Do not edit code or tests, invoke `openspec-apply-change`, commit implementation,
+  or re-audit in this remediation run.
+- Keep F2 in the report with disposition `Planned` only when a concrete work item
+  now owns it. Hand that work item to the user for a separate later Apply.
+- Remove F2 only after later implementation is committed and a complete new
+  review verifies or disproves it.
 
 ## Case 7: Report-Only Commit
 
@@ -209,8 +223,10 @@ The skill should:
   choice into an external constraint.
 - Ask the human for the smallest consequential decision needed to resolve the
   conflict.
-- If it remains unresolved, mark the independent pass and aggregate result
-  `Incomplete` while continuing conformance and code-quality review where useful.
+- If it remains unresolved, mark the independent pass `Incomplete` while
+  continuing conformance and code-quality review where useful. Use aggregate
+  `Changes needed` if another pass finds a substantive issue; otherwise use
+  `Incomplete`.
 - Do not expose the planning artifacts or preferred implementation to the fresh
   reviewer.
 
@@ -233,7 +249,8 @@ The skill should:
 - Group the first two tasks into one review unit and the third into another; do
   not flatten them into the active change's broad purpose.
 - Prepare one mechanism-neutral brief and use one fresh decision reviewer per
-  materially distinct unit.
+  materially distinct unit. Give each reviewer only its exact path subset from
+  the immutable diff; neither reviewer may inspect the other unit's changed paths.
 - Apply conformance and code-quality review to the complete outgoing range and
   consolidate all findings into one current report.
 - Record both units and disclose any unmatched path or uncertain task mapping.
@@ -253,13 +270,14 @@ The skill should:
 
 **Expected behavior**
 
-- Delegate creation of a missing artifact or glob output to
-  `openspec-continue-change`; do not create it under the update or review skill.
+- Stop when an artifact or glob output does not yet exist, name the separate
+  planning action required to create it, and do not invoke a continuation
+  workflow under this skill.
 - Recommend a separate change when the correction introduces materially new
   intent rather than silently broadening the selected change.
-- Return required code work to the outer remediation coordinator. The update
-  workflow never edits code, and the coordinator uses the appropriate scoped
-  implementation workflow.
+- Record required code work in an existing task or tracked-work artifact through
+  Update, then hand it to the user. Neither Update nor this coordinator edits code
+  or invokes Apply.
 
 ## Case 11: Standard Update Skill Is Missing
 
@@ -276,6 +294,37 @@ The skill should:
 - Stop before planning-artifact writes. Do not silently fall back to direct
   editing, even if the proposed correction looks mechanical.
 
+## Case 12: Reviewer Cannot Widen Its Unit
+
+**Prompt**
+
+> Review the committed implementation, but keep independent reviewers isolated
+> to their assigned outcomes.
+
+**Fixture**
+
+- Git discovery records immutable base and head revisions and four reviewable
+  paths.
+- The orchestrator maps two paths to U1 and two paths to U2.
+- U1 has an unchanged caller that is useful context, while one changed U2 path
+  looks superficially related.
+
+**Expected behavior**
+
+- Give the U1 reviewer the repository root, recorded base and head, and only the
+  two U1 paths.
+- Have it reconstruct `git diff <base>..<head> -- <U1-paths>` rather than running
+  target discovery or resolving the current branch state.
+- Before opening the caller, have it run
+  `git diff --quiet <base> <head> -- <caller>` to confirm that the path is
+  unchanged. It may then use the caller as context without making it a target.
+- Forbid it from inspecting the changed U2 path or reporting unrelated findings.
+  If U1 cannot be reviewed coherently without that path, return `Incomplete` and
+  ask the orchestrator to remap the units.
+- Run the code-quality pass in the orchestrator context using
+  `code-review-and-quality` only as a five-axis lens. Keep this skill's severity,
+  result, and no-approval report protocol.
+
 ## Deterministic Checks
 
 Run:
@@ -284,9 +333,11 @@ Run:
 node --test tests/discover-review-target.test.mjs
 ```
 
-The tests must cover a single matched change, no outgoing commits, multiple
-matched changes, explicit-change isolation, and a report-only commit. Also
-validate frontmatter, relative links, generated copies, and the focused
-repository diff. Behavioral evaluation must cover planning handoff,
-bidirectional reconciliation, per-edit confirmation, the update workflow's
-code-write prohibition, its boundary handoffs, and the missing-skill failure.
+The tests must cover a single matched change, discovery through list plus
+per-change status, no outgoing commits, multiple matched changes, explicit-change
+isolation, the location-only `pathsOutsideChangeRoot` field, and a report-only
+commit. Also validate frontmatter, relative links, generated copies, and the
+focused repository diff. Behavioral evaluation must cover exact reviewer path
+boundaries, result precedence, planning handoff, phased-plan versus task
+granularity, the prohibition on code and Apply, the update workflow's boundary
+handoffs, and the missing-skill failure.

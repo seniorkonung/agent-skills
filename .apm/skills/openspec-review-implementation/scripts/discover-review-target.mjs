@@ -72,14 +72,46 @@ export function matchChangedPathsToChanges({
   return matches.sort((left, right) => left.name.localeCompare(right.name));
 }
 
-function parseStatus(command, args, cwd) {
+function parseJson(command, args, cwd) {
   const output = run(command, args, cwd);
 
   try {
     return JSON.parse(output);
   } catch (error) {
-    throw new Error(`OpenSpec returned invalid JSON: ${error.message}`);
+    throw new Error(`${command} returned invalid JSON: ${error.message}`);
   }
+}
+
+function listActiveChangeNames(openspecBin, repositoryRoot) {
+  const result = parseJson(openspecBin, ['list', '--json'], repositoryRoot);
+  const changes = Array.isArray(result) ? result : result?.changes;
+  if (!Array.isArray(changes)) {
+    throw new Error('OpenSpec list JSON did not contain a changes array.');
+  }
+
+  const names = changes.map((change) =>
+    typeof change === 'string' ? change : change?.name,
+  );
+  if (names.some((name) => typeof name !== 'string' || name.length === 0)) {
+    throw new Error('OpenSpec list JSON contained a change without a name.');
+  }
+
+  return [...new Set(names)].sort((left, right) => left.localeCompare(right));
+}
+
+function loadActiveChanges(openspecBin, repositoryRoot) {
+  const names = listActiveChangeNames(openspecBin, repositoryRoot);
+  return names.map((name) => {
+    const status = parseJson(
+      openspecBin,
+      ['status', '--change', name, '--json'],
+      repositoryRoot,
+    );
+    if (status?.changeName !== name || !status?.changeRoot) {
+      throw new Error(`OpenSpec status JSON was invalid for change ${name}.`);
+    }
+    return status;
+  });
 }
 
 function incomplete(reason, message, context = {}) {
@@ -200,22 +232,9 @@ export function discoverReviewTarget({
 
   let statuses;
   try {
-    const status = parseStatus(
-      openspecBin,
-      ['status', '--all', '--json'],
-      repositoryRoot,
-    );
-    statuses = status.changes;
+    statuses = loadActiveChanges(openspecBin, repositoryRoot);
   } catch (error) {
     return incomplete('openspec_status_failed', error.message, targetContext);
-  }
-
-  if (!Array.isArray(statuses)) {
-    return incomplete(
-      'openspec_status_invalid',
-      'OpenSpec status JSON did not contain a changes array.',
-      targetContext,
-    );
   }
 
   const reportPaths = new Set(
@@ -291,7 +310,7 @@ export function discoverReviewTarget({
     [change] = matches;
   }
 
-  const implementationPaths = reviewablePaths.filter(
+  const pathsOutsideChangeRoot = reviewablePaths.filter(
     (changedPath) =>
       !isInside(
         path.resolve(repositoryRoot, changedPath),
@@ -305,7 +324,7 @@ export function discoverReviewTarget({
     change,
     excludedPaths,
     reviewablePaths,
-    implementationPaths,
+    pathsOutsideChangeRoot,
   };
 }
 

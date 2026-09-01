@@ -39,33 +39,62 @@ async function createRepository() {
     await mkdtemp(path.join(tmpdir(), 'fake-openspec-')),
     'openspec',
   );
-  const status = {
-    changes: [
-      {
-        changeName: 'add-value',
-        schemaName: 'spec-driven',
-        changeRoot,
-        artifactPaths: {
-          tasks: {
-            outputPath: 'tasks.md',
-            resolvedOutputPath: path.join(changeRoot, 'tasks.md'),
-            existingOutputPaths: [path.join(changeRoot, 'tasks.md')],
-          },
-        },
-        actionContext: { mode: 'repo-local' },
-        artifacts: [],
+  const changeStatus = {
+    changeName: 'add-value',
+    schemaName: 'spec-driven',
+    changeRoot,
+    artifactPaths: {
+      tasks: {
+        outputPath: 'tasks.md',
+        resolvedOutputPath: path.join(changeRoot, 'tasks.md'),
+        existingOutputPaths: [path.join(changeRoot, 'tasks.md')],
       },
-    ],
-    root: { path: repositoryRoot, source: 'nearest' },
+    },
+    actionContext: { mode: 'repo-local' },
+    artifacts: [],
   };
+
+  await writeFakeOpenSpec(openspecBin, [changeStatus]);
+
+  return { changeRoot, changeStatus, openspecBin, repositoryRoot };
+}
+
+async function writeFakeOpenSpec(
+  openspecBin,
+  statuses,
+  { failBatch = false } = {},
+) {
+  const listPayload = {
+    changes: statuses.map((status) => ({ name: status.changeName })),
+  };
+  const cases = statuses
+    .map(
+      (status) =>
+        `    ${status.changeName}) printf '%s\\n' '${JSON.stringify(status)}' ;;`,
+    )
+    .join('\n');
 
   await writeFile(
     openspecBin,
-    `#!/bin/sh\nprintf '%s\\n' '${JSON.stringify(status)}'\n`,
+    `#!/bin/sh
+if [ "$1" = "list" ]; then
+  printf '%s\\n' '${JSON.stringify(listPayload)}'
+  exit 0
+fi
+if [ "$1" = "status" ] && [ "$2" = "--change" ]; then
+  case "$3" in
+${cases}
+    *) exit 1 ;;
+  esac
+  exit 0
+fi
+if [ "$1" = "status" ] && [ "$2" = "--all" ]; then
+  ${failBatch ? "printf '%s\\n' 'unknown option --all' >&2; exit 1" : `printf '%s\\n' '${JSON.stringify({ changes: statuses })}'; exit 0`}
+fi
+exit 64
+`,
   );
   await chmod(openspecBin, 0o755);
-
-  return { changeRoot, openspecBin, repositoryRoot };
 }
 
 test('discovers the one OpenSpec change touched by outgoing commits', async () => {
@@ -86,8 +115,23 @@ test('discovers the one OpenSpec change touched by outgoing commits', async () =
     'openspec/changes/add-value/tasks.md',
     'src/app.js',
   ]);
-  assert.deepEqual(result.implementationPaths, ['src/app.js']);
+  assert.deepEqual(result.pathsOutsideChangeRoot, ['src/app.js']);
+  assert.equal('implementationPaths' in result, false);
   assert.equal(result.upstreamFreshness, 'explicit local ref; no fetch performed');
+});
+
+test('discovers changes without requiring batch status support', async () => {
+  const { changeStatus, openspecBin, repositoryRoot } = await createRepository();
+  await writeFakeOpenSpec(openspecBin, [changeStatus], { failBatch: true });
+
+  const result = discoverReviewTarget({
+    cwd: repositoryRoot,
+    openspecBin,
+    upstreamRef: 'HEAD~1',
+  });
+
+  assert.equal(result.result, 'ready');
+  assert.equal(result.change.name, 'add-value');
 });
 
 test('returns a no-op result when there are no outgoing commits', async () => {
@@ -147,29 +191,23 @@ test('an explicit change cannot hide another change in the same range', async ()
   git(repositoryRoot, 'add', '.');
   git(repositoryRoot, 'commit', '--quiet', '-m', 'feat: add export');
 
-  const status = {
-    changes: [
-      {
-        changeName: 'add-value',
-        schemaName: 'spec-driven',
-        changeRoot,
-        artifactPaths: {},
-        artifacts: [],
-      },
-      {
-        changeName: 'add-export',
-        schemaName: 'spec-driven',
-        changeRoot: secondChangeRoot,
-        artifactPaths: {},
-        artifacts: [],
-      },
-    ],
-    root: { path: repositoryRoot, source: 'nearest' },
-  };
-  await writeFile(
-    openspecBin,
-    `#!/bin/sh\nprintf '%s\\n' '${JSON.stringify(status)}'\n`,
-  );
+  const statuses = [
+    {
+      changeName: 'add-value',
+      schemaName: 'spec-driven',
+      changeRoot,
+      artifactPaths: {},
+      artifacts: [],
+    },
+    {
+      changeName: 'add-export',
+      schemaName: 'spec-driven',
+      changeRoot: secondChangeRoot,
+      artifactPaths: {},
+      artifacts: [],
+    },
+  ];
+  await writeFakeOpenSpec(openspecBin, statuses);
 
   const result = discoverReviewTarget({
     changeName: 'add-value',

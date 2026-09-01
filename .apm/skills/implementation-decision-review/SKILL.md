@@ -26,8 +26,9 @@ The caller supplies an intention brief containing:
 - **Binding constraints:** only externally imposed constraints that genuinely
   limit valid solutions, or `none known` when none have been identified;
 - **Non-goals:** optional scope exclusions that prevent review drift; and
-- **Review target:** the exact diff, commit range, snapshot, or bounded file set to
-  inspect, stable for the duration of the review.
+- **Review target:** the repository root, immutable base and head revisions, and
+  the complete changed-path list for this unit. The caller, not this reviewer,
+  owns discovery and guarantees that the target is stable.
 
 The brief must describe outcomes rather than the selected mechanism. Treat files,
 symbols, technologies, algorithms, patterns, module seams, and task steps as
@@ -42,7 +43,7 @@ Desired outcome: Reported success means the report can be retrieved.
 Affected boundary: Calling automation and the report service.
 Binding constraints: Existing exit codes are an external compatibility contract.
 Non-goals: Changing report contents.
-Review target: The exact <base>..<head> diff for the named increment.
+Review target: Repository <root>; exact <base>..<head>; paths <path list>.
 ```
 
 Return `Incomplete` when the problem, outcome, boundary, binding constraints
@@ -66,11 +67,21 @@ Use only the supplied intention brief as framing context. Do not seek or read:
 - the implementing agent's discussion or explanation; or
 - earlier review findings and preferred remedies.
 
-Use revision identifiers only to resolve the exact diff. Inspect the target,
-tests, surrounding production code, callers, runtime boundaries, configuration,
-and repository conventions as needed to understand actual behavior. Treat tests
-as reviewable evidence, not as authoritative intent: they may encode the same
-poor decision as the implementation.
+Reconstruct only `git diff <base>..<head> -- <target-paths>` from the supplied
+target. Do not rerun a discovery helper, resolve the current upstream or `HEAD`,
+read other changed paths, or widen the target yourself. If another changed path
+is required for a coherent review, return `Incomplete` and name it so the caller
+can correct the unit boundary.
+
+Inspect unchanged surrounding production code, callers, runtime boundaries,
+configuration, and repository conventions as needed to understand actual
+behavior. Before opening a context path outside the target, use
+`git diff --quiet <base> <head> -- <path>` only to confirm that it did not change.
+Do not read it when that check reports a change; return `Incomplete` if the path
+is necessary. Context files are not additional review targets: findings must
+arise from decisions embodied in the bounded diff. Treat tests in the target as
+reviewable evidence, not as authoritative intent; they may encode the same poor
+decision as the implementation.
 
 A recorded, tested, or deliberate choice is not evidence that the choice is
 sound.
@@ -172,6 +183,10 @@ Before returning the result, confirm that:
 - every mandatory input field was present, with `none known` accepted for binding
   constraints;
 - the exact target was stable and bounded without unrelated changes;
+- the reviewed diff used only the supplied base, head, and target paths, without
+  rediscovery or scope expansion;
+- every context path outside the target was confirmed unchanged before it was
+  read;
 - no prohibited framing material or previous finding entered the review context;
 - every finding has concrete evidence, a failure mode, soundness reasoning, and a
   required property;

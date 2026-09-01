@@ -24,6 +24,9 @@ Use one aggregate result:
 - `No substantive findings` only when decision, conformance, and code-quality
   passes all completed on the recorded immutable range.
 
+This order is the precedence. A review with both findings and incomplete coverage
+uses `Changes needed`; the pass table preserves the coverage limitation.
+
 The result reports review evidence. It is not a push verdict.
 
 ## Suggested Shape
@@ -56,7 +59,7 @@ Omit optional fields rather than adding placeholders.
 - **Work items:** <task or work-item IDs or stable labels attributable to the range>
 - **Requirements and scenarios:** <affected IDs or stable labels>
 - **Affected boundary:** <actor or system boundary>
-- **Implementation target:** <paths or bounded diff within the recorded base..head>
+- **Implementation target:** <exact changed paths within the recorded base..head>
 - **Applicable constraints and non-goals:** <mechanism-neutral summary>
 - **Excluded change scope:** <untouched future work; omit when obvious>
 
@@ -68,7 +71,7 @@ Omit optional fields rather than adding placeholders.
 
 | Pass | Status | Evidence or limitation |
 |---|---|---|
-| Independent decision review | Complete | <fresh reviewer boundary for each unit> |
+| Independent decision review | Complete | <fresh reviewer and exact path boundary for each unit> |
 | OpenSpec conformance | Complete | <verification and validation evidence> |
 | Code quality | Complete | <areas and checks covered> |
 

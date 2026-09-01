@@ -18,17 +18,19 @@ It resolves:
 - the current branch's configured upstream and full base SHA;
 - the full `upstream..HEAD` commit list and changed paths;
 - ahead and behind counts;
-- active changes from `openspec status --all --json`; and
+- active change names from `openspec list --json` and current metadata from
+  `openspec status --change <name> --json`; and
 - the one change whose reported `changeRoot` contains a changed path.
 
 It excludes every active change's `implementation-review.md` from reviewable
 paths. This allows review evidence to be committed without triggering an endless
 report-only re-review loop.
 
-The helper identifies the Git target and active change, not the tasks or
-requirements implemented by that target. Resolve that semantic work increment
-from the immutable diff and the complete change context during review; do not
-infer it from changed filenames alone.
+The helper identifies the Git target and active change, not which paths are
+implementation. `reviewablePaths` is the authoritative changed-file inventory.
+`pathsOutsideChangeRoot` reports location only. Resolve path roles, tasks,
+requirements, and review units from the immutable diff and complete change
+context; do not infer them from location or filenames alone.
 
 ## Overrides
 
@@ -45,11 +47,11 @@ without the user's request.
 ## Results
 
 - `ready`: use the exact base, head, commits, reviewable paths, selected change,
-  implementation paths, and excluded paths.
+  paths outside its change root, and excluded paths.
 - `no_outgoing_commits`: nothing committed is waiting for push.
 - `no_reviewable_changes`: outgoing commits change only excluded review reports.
-- `incomplete`: stop and report its reason. Request only the missing baseline or
-  intentional change association.
+- `incomplete`: stop and report its reason. Request only the specific missing
+  baseline, intentional change association, or OpenSpec repair it identifies.
 - `diverged_upstream`: stop because the branch is both ahead and behind; it is not
   a normal push target.
 - `multiple_change_matches`: stop and require a branch or checkout whose outgoing
