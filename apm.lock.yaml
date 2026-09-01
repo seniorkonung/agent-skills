@@ -391,7 +391,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:9ecbf8a263b1995e8a95c3b46a6c861ae0ffab659570acce1f534628fe1c490f
+  content_hash: sha256:569d69a47cafd109144f2107fe99b1ea8b48d509dc91550712612bb0bb7c1d6a
 - kind: project-relative
   target: agents
   value: .agents/skills/incremental-implementation
@@ -481,7 +481,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:9b2a4e20b68d71493fa943f5541575c772ed01e7152d3ea1e811e2acbecb99dd
+  content_hash: sha256:faae53a6a467345ee76a67b498d0928d006cedce15b672f36bf13c00f95a4656
 - kind: project-relative
   target: agents
   value: .agents/skills/openspec-review-implementation/references/review-format.md
@@ -490,7 +490,16 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:8ef83bfbdb2dfc694d87009c7ae86fd652c88937d7cea7dafdfa79835f41a35e
+  content_hash: sha256:6ab29c2ddfae8b42b69b882adc53546be10d1ee6d6b741256f74749c32ef1545
+- kind: project-relative
+  target: agents
+  value: .agents/skills/openspec-review-implementation/references/review-target.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:a474b5a7310b7cbfdc8e3be96c52e554eac4630d5804771ee9ddeb557cfcc4c7
 - kind: project-relative
   target: agents
   value: .agents/skills/phased-planning
@@ -670,6 +679,7 @@ local_deployed_files:
 - .agents/skills/openspec-review-implementation
 - .agents/skills/openspec-review-implementation/SKILL.md
 - .agents/skills/openspec-review-implementation/references/review-format.md
+- .agents/skills/openspec-review-implementation/references/review-target.md
 - .agents/skills/phased-planning
 - .agents/skills/phased-planning/SKILL.md
 - .agents/skills/planning-and-task-breakdown
@@ -697,14 +707,15 @@ local_deployed_file_hashes:
   .agents/skills/idea-refine/frameworks.md: sha256:161ebc18fdf2d996bc62a87a2d747cf1bf53548354f8925de25c732c27f00309
   .agents/skills/idea-refine/refinement-criteria.md: sha256:1ca2973a4d01b5cb37ab7ddb2eff77fa4e792634a33d0ce44961c068fc88d51a
   .agents/skills/idea-refine/scripts/idea-refine.sh: sha256:f02a52408a4218047c032d221483abfbb48d11f090bb4915965c7419bf2e0e47
-  .agents/skills/implementation-decision-review/SKILL.md: sha256:9ecbf8a263b1995e8a95c3b46a6c861ae0ffab659570acce1f534628fe1c490f
+  .agents/skills/implementation-decision-review/SKILL.md: sha256:569d69a47cafd109144f2107fe99b1ea8b48d509dc91550712612bb0bb7c1d6a
   .agents/skills/incremental-implementation/SKILL.md: sha256:11b6c463fc40575041e2f5a8f467eb7f35820be0fb9a57f83fb341a1e6c8dd1c
   .agents/skills/observability-and-instrumentation/SKILL.md: sha256:72b2bf819884c33f78fa1894dc8a26e6901076a2e24c60cb3aef1a53c633a7a6
   .agents/skills/openspec-review-change/SKILL.md: sha256:ed84638877d034246d9dcb0bf2a7be8b648df94c79951df91f0533fc29974a1f
   .agents/skills/openspec-review-change/references/review-format.md: sha256:8fff9c014c0422603f982706b0b5b31adfceafec7ddd139e452c8017352fbfb7
   .agents/skills/openspec-review-change/references/review-lenses.md: sha256:68f289916a85cf64b0d675611bc6377af55c64fd8cad8b947bc23286bf34afb0
-  .agents/skills/openspec-review-implementation/SKILL.md: sha256:9b2a4e20b68d71493fa943f5541575c772ed01e7152d3ea1e811e2acbecb99dd
-  .agents/skills/openspec-review-implementation/references/review-format.md: sha256:8ef83bfbdb2dfc694d87009c7ae86fd652c88937d7cea7dafdfa79835f41a35e
+  .agents/skills/openspec-review-implementation/SKILL.md: sha256:faae53a6a467345ee76a67b498d0928d006cedce15b672f36bf13c00f95a4656
+  .agents/skills/openspec-review-implementation/references/review-format.md: sha256:6ab29c2ddfae8b42b69b882adc53546be10d1ee6d6b741256f74749c32ef1545
+  .agents/skills/openspec-review-implementation/references/review-target.md: sha256:a474b5a7310b7cbfdc8e3be96c52e554eac4630d5804771ee9ddeb557cfcc4c7
   .agents/skills/phased-planning/SKILL.md: sha256:f6e9d5c94db8837f005182bcdc5e3d4f511bb88741cdd71829ce6aeaa0badd1c
   .agents/skills/planning-and-task-breakdown/SKILL.md: sha256:acf49ad221c68c354f88ac9d7be0b94fc179d90b25177b28b151b3d9d3e7b670
   .agents/skills/security-and-hardening/SKILL.md: sha256:f06f38a9750b082fee21836e3ed03b7f566ef676178091c30e9696e9db971761
