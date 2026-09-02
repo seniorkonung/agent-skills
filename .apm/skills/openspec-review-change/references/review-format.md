@@ -14,6 +14,12 @@ a history of review sessions.
   chooses not to address it in this change.
 - Do not duplicate findings in a summary table.
 
+On the initial audit, give each finding an `F<n>` identifier in report order.
+During a re-audit, keep the identifier of every finding that still represents the
+same root cause, even when this leaves gaps. Give a new finding the next number
+after the highest identifier in the report being rewritten so an ID does not
+change meaning across that rewrite.
+
 ## Suggested Shape
 
 Adapt headings to project conventions when useful. Omit optional material rather
@@ -33,7 +39,7 @@ currently prevents implementation from being planned safely.>
 
 ## Findings
 
-### High — <concise problem statement>
+### F1 · High — <concise problem statement>
 
 - **Evidence:** <specific artifact or code paths and the relevant facts>
 - **Impact:** <concrete ambiguity, failure mode, rework, or operational risk>

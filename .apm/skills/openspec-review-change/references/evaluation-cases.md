@@ -17,6 +17,8 @@ The skill should:
   treating them as missing or inventing content for them;
 - keep the current report at `<change-root>/review.md` outside the schema artifact
   graph;
+- let the user address selected findings by their current report IDs without
+  changing unselected findings;
 - use `openspec-update-change` for planning-artifact edits and retain ownership of
   the subsequent re-audit; and
 - route implementation review and unrelated narrow planning edits elsewhere.
@@ -87,22 +89,25 @@ The skill should:
 
 **Prompt**
 
-> Address all findings that do not need another product decision, then re-audit.
+> Address F1, then re-audit.
 
 **Fixture**
 
 - The initial broad audit is complete.
-- One finding requires proposal and task changes; another still needs a human
-  contract decision.
+- `F1` requires proposal and task changes; `F2` still needs a human contract
+  decision.
 
 **Expected behavior**
 
-- Ask only for the unresolved consequential decision.
+- Resolve `F1` from the current `review.md` and keep `F2` out of scope, including
+  its unresolved consequential decision.
 - Use `openspec-update-change` to revise the existing planning artifacts rather
   than editing them directly under this skill.
-- Pass the applicable findings and settled decisions into that workflow.
+- Pass the `F1` identifier, evidence, impact, required change, and settled
+  decisions into that workflow.
 - Re-audit affected roles and risk areas afterward.
-- Rewrite `review.md` to current truth without resolved-item history.
+- Remove `F1` only if it no longer applies, preserve `F2` and its identifier, and
+  rewrite `review.md` to current truth without resolved-item history.
 
 ## Case 5: Adjacent Near Misses
 

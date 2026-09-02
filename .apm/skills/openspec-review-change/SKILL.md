@@ -130,16 +130,19 @@ tests" or "think about monitoring."
 
 ## Address Findings When Asked
 
-Resolve findings by impact and dependency, and ask the human for any unresolved
-consequential choice. Give the applicable findings and settled decisions to
-`openspec-update-change`; do not edit planning artifacts directly under this
-skill.
+For requests such as `fix F2` or `address F1 and F3`, resolve each requested ID
+from the current `review.md`. Do not guess a missing ID or include unselected
+findings. Recheck the selected findings and ask only for consequential choices
+needed to address them. Give their IDs, evidence, impact, required changes, and
+settled decisions to `openspec-update-change`; do not edit planning artifacts
+directly under this skill.
 
 After that workflow completes, re-read the current artifacts, re-audit affected
 behavior, coherence, planned work, verification, and specialist areas, then
-rewrite `review.md` to contain only findings that still apply. Reject remediation
-that hides an upstream gap in vague work, treats downstream artifacts as the
-source of truth, or silently broadens the change.
+rewrite `review.md` to contain only findings that still apply while preserving
+their identifiers. Reject remediation that hides an upstream gap in vague work,
+treats downstream artifacts as the source of truth, or silently broadens the
+change.
 
 ## Handoff
 
