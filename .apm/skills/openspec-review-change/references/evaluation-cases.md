@@ -17,6 +17,8 @@ The skill should:
   treating them as missing or inventing content for them;
 - keep the current report at `<change-root>/review.md` outside the schema artifact
   graph;
+- preserve existing findings until current artifact evidence shows that they were
+  fixed or no longer apply;
 - let the user address selected findings by their current report IDs without
   changing unselected findings;
 - use `openspec-update-change` for planning-artifact edits and retain ownership of
@@ -124,8 +126,27 @@ The skill should:
 - Route committed implementation review to `openspec-review-implementation`.
 - Do not create or rewrite `review.md` for either near miss.
 
+## Case 6: Re-Audit After Unrelated Planning Revisions
+
+**Prompt**
+
+> I materially revised the rollout plan. Re-audit the change.
+
+**Fixture**
+
+- The current report contains unresolved F1 and F2 in unaffected artifacts.
+- The rollout revision introduces a new material problem, F3.
+
+**Expected behavior**
+
+- Re-test F1 and F2 against the current artifacts instead of limiting the review
+  to the rollout edits.
+- Preserve F1 and F2 with their identifiers when neither was fixed or made
+  inapplicable, and assign the next available identifier to F3.
+- Do not treat their absence from newly reviewed rollout content as resolution.
+
 ## Deterministic Checks
 
 Validate frontmatter, relative links, generated copies, focused repository diff,
 and the absence of stale full-path or direct-remediation instructions. Behavioral
-evaluation should cover all five cases above.
+evaluation should cover all six cases above.

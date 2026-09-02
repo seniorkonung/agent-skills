@@ -108,9 +108,11 @@ The report describes only the current review result:
   concerns or resolved-item history.
 
 When continuing an existing review, reread `review.md`, the current change
-artifacts, and any repository evidence needed to test its conclusions. Re-evaluate
-areas affected by material edits and rewrite the report to current truth. Exact
-content tracking is unnecessary because current artifacts are reviewed again.
+artifacts, and any repository evidence needed to test its conclusions. Re-test
+each existing finding under the report retention contract, re-evaluate areas
+affected by material edits, and rewrite the report to current truth. Exact
+content tracking is unnecessary because current artifacts and findings are
+reviewed again.
 
 ## Record Material Findings
 

@@ -8,6 +8,9 @@ a history of review sessions.
 
 - Rewrite the report when artifacts or conclusions change.
 - Remove a finding once it has been fixed or no longer applies.
+- Preserve an existing finding unless current artifact evidence establishes one
+  of those outcomes. Material edits elsewhere and absence from new review output
+  are not resolutions.
 - Do not preserve resolved findings, old assessments, decision history, or
   review-process bookkeeping.
 - Keep a risk visible while it still exists, even when the human knowingly
