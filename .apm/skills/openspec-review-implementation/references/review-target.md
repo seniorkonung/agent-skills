@@ -1,4 +1,4 @@
-# Pre-Push Review Target
+# Committed Review Target
 
 Use the bundled helper to resolve which committed bytes and OpenSpec change the
 review owns:
@@ -15,8 +15,9 @@ work.
 
 It resolves:
 
-- the current branch's configured upstream and full base SHA;
-- the full `upstream..HEAD` commit list and changed paths;
+- the current branch's configured upstream, or the user-supplied local baseline,
+  and full base SHA;
+- the complete `base..HEAD` commit list and changed paths for that target;
 - ahead and behind counts;
 - active change names from `openspec list --json` and current metadata from
   `openspec status --change <name> --json`; and
@@ -47,6 +48,10 @@ The helper never checks the live remote. A configured upstream reflects the last
 local tracking update; an explicit baseline is another local ref. Do not fetch
 without the user's request.
 
+An explicit baseline narrows this review target only. It does not establish that
+findings outside the target were fixed, disproved, or handed off into tracked
+remediation; preserve those findings according to the report contract.
+
 ## Results
 
 - `ready`: use the exact base, head, commits, reviewable paths, selected change,
@@ -57,7 +62,7 @@ without the user's request.
   baseline, intentional change association, or OpenSpec repair it identifies.
 - `diverged_upstream`: stop because the branch is both ahead and behind; it is not
   a normal push target.
-- `multiple_change_matches`: stop and require a branch or checkout whose outgoing
+- `multiple_change_matches`: stop and require a branch or checkout whose target
   range contains one change. An explicit change name cannot make a mixed range
   safe.
 

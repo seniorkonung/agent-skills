@@ -64,15 +64,17 @@ skill does not invoke a continuation workflow or create the artifact itself.
 
 ## Finish With a Planning Handoff
 
-After any confirmed planning revisions:
+After resolving the selected findings, including when current planning and
+tracked work already provide the required ownership:
 
 1. Run OpenSpec validation and report its result or limitation.
-2. Keep every selected finding in `implementation-review.md`; set its disposition
-   to `Planned` only when a concrete existing work item now owns the required
-   outcome, otherwise use `Awaiting decision` or `Open`.
+2. Remove a selected finding from `implementation-review.md` when its agreed
+   remediation is durably captured in the appropriate sources of truth and any
+   remaining implementation has a concrete tracked owner. Otherwise keep it with
+   disposition `Awaiting decision`, `Open`, or `Accepted risk`.
 3. Report the revised artifacts, the phase or work-item IDs that own later work,
    unresolved decisions, and the separate next action available to the user.
 
-Implementation happens only in a later, separately invoked Apply workflow. A
-finding is removed only after that implementation is committed and a complete
-new review disproves it or verifies it as fixed.
+Implementation happens only in a later, separately invoked Apply workflow. Once
+the planning handoff resolves a finding, its OpenSpec artifacts and tracked work
+carry that context; do not keep a duplicate review entry as a reminder.

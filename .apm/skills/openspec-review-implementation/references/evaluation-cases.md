@@ -10,12 +10,12 @@ matching exact phrases.
 
 The skill should:
 
-- review the complete committed range ahead of upstream without including the
-  worktree;
+- review the complete committed range ahead of upstream by default, or an
+  explicitly requested bounded committed range, without including the worktree;
 - select one active OpenSpec change from changed-path evidence;
 - derive the implemented work increment from both the immutable diff and the
   complete change context instead of treating the whole change as delivered;
-- map material outgoing paths to work items and requirements in both directions;
+- map material target paths to work items and requirements in both directions;
 - understand the complete planning context before reducing it to a neutral brief;
 - expose only that brief and the immutable code target to a fresh decision
   reviewer;
@@ -24,11 +24,14 @@ The skill should:
 - cover decision quality, OpenSpec conformance, and ordinary code quality;
 - record each substantiated finding when it is verified instead of retaining it
   until all review passes finish;
+- preserve earlier unresolved findings that a bounded review does not re-evaluate;
 - produce concise findings that identify the earliest source of truth;
 - coordinate a planning handoff without editing implementation or invoking
   Apply;
 - use `openspec-update-change` for confirmed, bidirectional planning
-  reconciliation and corrective task updates; and
+  reconciliation and corrective task updates;
+- remove a finding after its remediation is durably owned by the appropriate
+  OpenSpec artifacts and any required tracked work; and
 - keep phased plans at outcome granularity while recording detailed corrective
   work in the schema's task or tracked-work artifact.
 
@@ -181,10 +184,11 @@ The skill should:
   checklist to the phased plan.
 - Do not edit code or tests, invoke `openspec-apply-change`, commit implementation,
   or re-audit in this remediation run.
-- Keep F2 in the report with disposition `Planned` only when a concrete work item
-  now owns it. Hand that work item to the user for a separate later Apply.
-- Remove F2 only after later implementation is committed and a complete new
-  review verifies or disproves it.
+- Remove F2 from the report once the corrected sources of truth durably describe
+  the remediation and a concrete work item owns the remaining implementation.
+  Hand that work item to the user for a separate later Apply.
+- If the update stops before establishing that ownership, keep F2 as `Open` or
+  `Awaiting decision`; do not remove it merely because remediation was discussed.
 
 ## Case 7: Report-Only Commit
 
@@ -361,8 +365,38 @@ The skill should:
   instead of adding a duplicate.
 - Remove the second finding when the later evidence disproves it so the report
   continues to state only the current supported conclusion.
-- If all three passes complete without a substantive finding, write the clean
-  report only when finalizing the review.
+- If all three passes complete without a substantive finding and no earlier
+  finding needs to be carried forward, write the clean report only when
+  finalizing the review.
+
+## Case 14: Bounded Review Preserves Earlier Findings
+
+**Prompt**
+
+> Review only my newest commit. The earlier commits and their review findings are
+> still unpushed, but this commit does not address them.
+
+**Fixture**
+
+- The existing report contains F1 and F2 from an earlier immutable target.
+- Neither finding has been fixed, disproved, accepted as risk, or handed off into
+  concrete remediation artifacts and tracked work.
+- The newest commit has a disjoint implementation target and introduces F3.
+- The user supplies the newest commit's parent as the local baseline.
+
+**Expected behavior**
+
+- Review exactly the user-requested bounded range and disclose that it is not the
+  complete pre-push range.
+- Keep F1 and F2 out of the isolated reviewer context.
+- Add F3 while carrying F1 and F2 forward as unresolved and not re-reviewed.
+- Do not treat a moved head, a disjoint target, or absence from current reviewer
+  output as evidence that F1 or F2 was resolved.
+- Keep the aggregate result `Changes needed`; the bounded review cannot claim
+  `No unresolved findings` while F1, F2, or F3 remains.
+- If the user then resolves F1 through a concrete remediation decision captured
+  in the appropriate OpenSpec artifacts and tracked work, remove F1 without
+  waiting for Apply. Preserve F2 and F3.
 
 ## Deterministic Checks
 
@@ -379,4 +413,5 @@ and a report-only commit. Also validate frontmatter, relative links, generated
 copies, and the focused repository diff. Behavioral evaluation must cover exact
 reviewer path boundaries, including overlapping unit paths, result precedence,
 planning handoff, phased-plan versus task granularity, the prohibition on code
-and Apply, the update workflow's boundary handoffs, and the missing-skill failure.
+and Apply, the update workflow's boundary handoffs, bounded-review finding
+retention, durable remediation handoff, and the missing-skill failure.
