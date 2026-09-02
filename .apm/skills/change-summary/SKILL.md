@@ -1,6 +1,6 @@
 ---
 name: change-summary
-description: Produces a causal, human-readable summary of repository work in the active task, connecting intent, substantive changes, resulting behavior, key decisions, verification, and limitations. Use only on explicit request; not for routine progress, independent review, release notes, changelogs, or commit messages.
+description: Produces a causal, human-readable summary of repository work in the active task, connecting intent, substantive changes, resulting behavior, key decisions, verification, and limitations.
 disable-model-invocation: true
 ---
 
@@ -10,26 +10,13 @@ Explain repository work so a human can quickly judge its meaning and direction
 without reading the diff. Give a causal account of the result, not an inventory
 of edits or a replay of the session.
 
-## Invocation Boundary
-
-Use this skill only when the user explicitly requests a summary or explanation
-of work from the active task. Naming the skill counts. The work may be complete
-or still in progress.
-
-Do not invoke it automatically at completion or use it for routine progress
-updates, correctness or quality review, reconstruction of unrelated or historical
-work, release notes, changelogs, commit messages, or as a substitute for detailed
-documentation the user requested.
-
-The active task includes work performed under the current agent's responsibility,
-including delegated work. It does not include unrelated work merely because it is
-visible in the repository.
-
 ## Establish Scope and Evidence
 
-Default to the active user request, but follow any broader or narrower boundary
-the user gives. If plausible boundaries would materially change the account, ask
-for the smallest clarification needed.
+Default to repository work from the active task: work performed under the current
+agent's responsibility, including delegated work. Do not include unrelated work
+merely because it is visible in the repository. Follow any broader or narrower
+boundary the user gives. If plausible boundaries would materially change the
+account, ask for the smallest clarification needed.
 
 Use the conversation, request, specification, and plan to establish intent,
 including intentions the agent inherited. Inspect the resulting repository state
