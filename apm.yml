@@ -5,6 +5,9 @@ author: Valentin Panchenko
 targets:
   - agent-skills
   - codex
+compilation:
+  agents_md:
+    mode: managed_section
 dependencies:
   apm:
     - git: obra/superpowers
