@@ -1,8 +1,9 @@
-# Planning Handoff for Implementation Findings
+# Resolve Implementation Findings
 
-Use this workflow only when the user asks to address selected findings. Its job
-is to make the current OpenSpec planning artifacts accurately describe the
-remaining work. It does not implement that work.
+Use this workflow only when the user asks to address selected findings. Resolve a
+selected finding either by making OpenSpec planning own later remediation or by
+recording the human's explicit acceptance of the residual risk. This workflow
+does not implement corrective work.
 
 ## Hard Boundary
 
@@ -11,22 +12,56 @@ remaining work. It does not implement that work.
 - Never commit implementation, claim a finding is fixed, or re-audit in the same
   remediation run.
 - Edit existing planning artifacts only through `openspec-update-change`.
-- Keep unselected findings and unrelated cleanup out of scope.
+- Never infer risk acceptance from rarity, remediation cost, or an agent's
+  recommendation; only an explicit human decision authorizes it.
+- Keep unselected findings, existing accepted risks, and unrelated cleanup out of
+  scope.
 
-## Prepare the Handoff
+## Choose the Resolution Path
 
 For each selected finding:
 
 1. Recheck its evidence, severity, dependencies, required outcome, and earliest
    source of truth.
-2. Obtain any consequential human decision needed to define the correct outcome.
-3. Decide which of these states applies:
+2. Determine whether the user wants remediation or explicitly accepts the
+   residual risk. A request such as `accept F2 as residual risk` is explicit; an
+   agent recommendation to accept it is not.
+3. For remediation, obtain any consequential human decision needed to define the
+   correct outcome, then decide which of these states applies:
    - planning is wrong or incomplete and must be reconciled;
    - planning is correct, but no existing work item covers the required outcome;
    - planning and tracked work already cover the finding, so no planning edit is
      needed; or
    - the finding introduces materially different intent and belongs in a separate
      change.
+
+## Record an Accepted Risk
+
+When the human explicitly accepts a selected finding's residual risk:
+
+1. Recheck that the evidence and potential impact remain supported, and make the
+   remediation cost or technical trade-off concrete. If current evidence instead
+   disproves the condition, remove the finding without creating an accepted risk.
+2. Bound the acceptance with explicit scope and assumptions, define observable
+   reopening conditions, and identify the human decision as its acceptance
+   authority.
+3. Remove the `F<n>` entry from `Findings` and create a collision-free `AR<n>`
+   entry under `Accepted risks` using the report contract. Record the originating
+   finding for traceability; never keep both entries active.
+4. If the acceptance changes a product contract, architecture, or another
+   OpenSpec source of truth, reconcile that artifact through
+   `openspec-update-change`. Do not edit planning solely to duplicate a
+   change-scoped accepted-risk entry.
+5. If the acceptance must remain authoritative after the OpenSpec change is
+   archived, require its entry to reference an appropriate durable project
+   decision record.
+
+Acceptance resolves the finding in the review state, not the underlying
+condition. Do not claim that the risk was fixed or disproved, create corrective
+tracked work for deliberately unplanned remediation, or include `AR<n>` entries
+in the active finding count. Name the accepted risk in the handoff.
+
+## Prepare the Planning Handoff
 
 When an existing planning artifact needs revision, invoke
 `openspec-update-change` with the change name, finding ID, evidence, impact,
@@ -64,14 +99,14 @@ skill does not invoke a continuation workflow or create the artifact itself.
 
 ## Finish With a Planning Handoff
 
-After resolving the selected findings, including when current planning and
+After handing selected findings to planning, including when current planning and
 tracked work already provide the required ownership:
 
 1. Run OpenSpec validation and report its result or limitation.
 2. Remove a selected finding from `implementation-review.md` when its agreed
    remediation is durably captured in the appropriate sources of truth and any
-   remaining implementation has a concrete tracked owner. Otherwise keep it with
-   disposition `Awaiting decision`, `Open`, or `Accepted risk`.
+   remaining implementation has a concrete tracked owner. Otherwise keep it as an
+   active finding and retain `Decision needed` when a human choice remains.
 3. Report the revised artifacts, the phase or work-item IDs that own later work,
    unresolved decisions, and the separate next action available to the user.
 

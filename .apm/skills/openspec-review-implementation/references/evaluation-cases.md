@@ -25,6 +25,10 @@ The skill should:
 - record each substantiated finding when it is verified instead of retaining it
   until all review passes finish;
 - preserve earlier unresolved findings that a bounded review does not re-evaluate;
+- keep human-accepted residual risks outside the active finding list under stable
+  `AR<n>` identifiers, with explicit scope, rationale, and reopening conditions;
+- reconcile fresh findings against accepted risks only in the orchestrator after
+  isolated decision reviewers return;
 - produce concise findings that identify the earliest source of truth;
 - coordinate a planning handoff without editing implementation or invoking
   Apply;
@@ -71,7 +75,7 @@ The skill should:
 - Write only the selected change's `implementation-review.md`.
 - Record the reviewed unit and its work-item and requirement IDs in the report.
 - Consolidate duplicate symptoms into root-cause findings with evidence, impact,
-  required outcome, earliest source, affected artifacts, and disposition.
+  required outcome, earliest source, and affected artifacts.
 
 ## Case 2: Two Changes in One Outgoing Range
 
@@ -187,8 +191,9 @@ The skill should:
 - Remove F2 from the report once the corrected sources of truth durably describe
   the remediation and a concrete work item owns the remaining implementation.
   Hand that work item to the user for a separate later Apply.
-- If the update stops before establishing that ownership, keep F2 as `Open` or
-  `Awaiting decision`; do not remove it merely because remediation was discussed.
+- If the update stops before establishing that ownership, keep F2 as an active
+  finding, retaining `Decision needed` when a human choice remains; do
+  not remove it merely because remediation was discussed.
 
 ## Case 7: Report-Only Commit
 
@@ -379,8 +384,9 @@ The skill should:
 **Fixture**
 
 - The existing report contains F1 and F2 from an earlier immutable target.
-- Neither finding has been fixed, disproved, accepted as risk, or handed off into
-  concrete remediation artifacts and tracked work.
+- Neither finding has been fixed, disproved, moved to accepted risks by an
+  explicit human decision, or handed off into concrete remediation artifacts and
+  tracked work.
 - The newest commit has a disjoint implementation target and introduces F3.
 - The user supplies the newest commit's parent as the local baseline.
 
@@ -398,6 +404,52 @@ The skill should:
   in the appropriate OpenSpec artifacts and tracked work, remove F1 without
   waiting for Apply. Preserve F2 and F3.
 
+## Case 15: Accepted Risk Does Not Remain an Active Finding
+
+**Prompt**
+
+> Accept F2 as residual risk. The failure requires an exceptionally rare race,
+> while preventing it would add coordination and latency to every normal request.
+
+**Fixture**
+
+- F2 is a supported medium-severity finding with concrete evidence and impact.
+- The proposed prevention would materially complicate the normal execution path.
+- No earlier accepted-risk entry covers the same condition.
+- All review passes are complete and no other active finding remains.
+- Variant A: a later review observes the same condition within the accepted scope
+  and none of its reopening conditions has occurred.
+- Variant B: a later change makes the race common enough to violate the recorded
+  likelihood assumption.
+
+**Expected behavior**
+
+- Recheck F2's evidence, impact, proposed trade-off, and acceptance boundary.
+- If that recheck instead disproves F2, remove it without creating an accepted
+  risk for a condition that no longer exists.
+- Treat the prompt as the human's explicit risk-acceptance decision; never infer
+  acceptance only because an agent considers remediation too expensive.
+- Remove F2 from `Findings` and create a collision-free `AR1` entry under
+  `Accepted risks`, recording the residual condition, potential impact,
+  acceptance rationale, scope and assumptions, reopening conditions, acceptance
+  authority, and originating finding.
+- Use `No unresolved findings` because no active finding remains, while naming
+  AR1 in the assessment and handoff. Do not imply that accepting the risk fixed or
+  disproved the underlying condition.
+- Keep accepted risks out of every isolated decision-review brief. In variant A,
+  reconcile the fresh observation against AR1 afterward, retain AR1, and do not
+  create a duplicate finding or remediation request.
+- In variant B, remove AR1 from the accepted-risk section and return the condition
+  to active findings because its recorded acceptance boundary no longer holds.
+- If the acceptance must govern work after this OpenSpec change is archived,
+  require AR1 to reference an appropriate durable project decision record.
+
+**Near miss**
+
+If the reviewer merely recommends accepting F2 but the human has not done so,
+keep F2 under `Findings` with a focused `Decision needed`; do not create an
+accepted-risk entry.
+
 ## Deterministic Checks
 
 Run:
@@ -414,4 +466,5 @@ copies, and the focused repository diff. Behavioral evaluation must cover exact
 reviewer path boundaries, including overlapping unit paths, result precedence,
 planning handoff, phased-plan versus task granularity, the prohibition on code
 and Apply, the update workflow's boundary handoffs, bounded-review finding
-retention, durable remediation handoff, and the missing-skill failure.
+retention, durable remediation handoff, accepted-risk separation and reopening,
+and the missing-skill failure.

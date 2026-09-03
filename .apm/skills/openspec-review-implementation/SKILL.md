@@ -1,6 +1,6 @@
 ---
 name: openspec-review-implementation
-description: Reviews a committed range ending at HEAD against an active OpenSpec change, preserves unresolved engineering and conformance findings across bounded reviews, and hands remediation decisions into OpenSpec artifacts and tracked work. Use after Apply commits, for re-audit, or to plan remediation; not for uncommitted work, an initial proposal review, or implementation itself.
+description: Reviews a committed range ending at HEAD against an active OpenSpec change, preserves unresolved findings and human-accepted residual risks across bounded reviews, and hands remediation decisions into OpenSpec artifacts and tracked work. Use after Apply commits, for re-audit, or to resolve review findings; not for uncommitted work, an initial proposal review, or implementation itself.
 ---
 
 # OpenSpec Review Implementation
@@ -8,7 +8,8 @@ description: Reviews a committed range ending at HEAD against an active OpenSpec
 Review the committed `base..HEAD` range requested by the user, defaulting to the
 complete range that would be pushed from the current branch. Judge engineering
 soundness, OpenSpec conformance, and ordinary code quality. Keep the current
-unresolved review state in `<change-root>/implementation-review.md`.
+unresolved findings and applicable accepted-risk decisions in
+`<change-root>/implementation-review.md`.
 
 The report is evidence, not approval to push, merge, archive, or accept risk.
 
@@ -119,8 +120,10 @@ later evidence changes the conclusion. Write a clean report only at finalization
 
 After all fresh decision reviewers return and before the first report write, read
 the existing report in the orchestrator context. Carry forward every finding
-that still lacks the explicit resolution defined by the report contract. Never
-treat absence from the current reviewer output as counter-evidence.
+that still lacks the explicit resolution defined by the report contract and
+every accepted risk whose recorded boundary still applies. Only then reconcile
+fresh observations with accepted risks. Never treat absence from current reviewer
+output, or prior acceptance of risk, as counter-evidence.
 
 Immediately before every report write, confirm that `HEAD` and the recorded local
 baseline still resolve to the recorded head and base. If either moved, rediscover
@@ -160,10 +163,10 @@ path, correct the unit or mark the pass `Incomplete`; the reviewer must not wide
 its own target.
 
 Do not expose planning artifacts, commit history, the report, prior findings,
-implementation discussion, or private source notes. If isolated review is
-unavailable, continue the other passes but mark this pass `Incomplete`. A
-non-isolated pass may add findings, but cannot produce a clean result or clear an
-earlier finding.
+accepted risks, implementation discussion, or private source notes. If isolated
+review is unavailable, continue the other passes but mark this pass `Incomplete`.
+A non-isolated pass may add findings, but cannot produce a clean result or clear
+an earlier finding.
 
 ### OpenSpec conformance
 
@@ -209,30 +212,35 @@ finding from review evidence when evidence disproves its failure mode or supplie
 a binding constraint. A concrete remediation decision captured in the
 appropriate OpenSpec artifacts, with concrete tracked work for any remaining
 implementation, resolves ownership of the finding and removes it from this
-report. Human acceptance changes disposition, not evidence.
+report. Explicit human acceptance also removes the finding from the active list
+and records the still-supported condition under a distinct `AR<n>` accepted-risk
+entry. An agent may recommend that decision but must never make it for the human.
 
 Finalize the report and aggregate result according to
 [references/review-format.md](references/review-format.md). It must describe the
-current target and unresolved review state without resolved findings, duplicate
-symptoms, or review history. Clearly identify a finding carried forward from
-outside the current target.
+current target, unresolved findings, and applicable accepted risks without
+resolved findings, duplicate symptoms, or review history. Clearly identify a
+finding carried forward from outside the current target. Accepted risks do not
+count as active findings, but must remain visible in the assessment and handoff.
 
-## Address Findings When Asked
+## Resolve Findings When Asked
 
-For requests such as `fix F2`, read
-[references/remediation.md](references/remediation.md) and prepare planning and
-tracked work for later implementation. Never implement the finding. Remove it
-from the report once the agreed remediation is durably owned by the appropriate
-artifacts and any remaining implementation has concrete tracked work, then hand
-those work items to the user.
+For requests such as `fix F2` or `accept F2 as residual risk`, read
+[references/remediation.md](references/remediation.md). Never implement the
+finding. For remediation, remove it once the agreed outcome is durably owned by
+the appropriate artifacts and any remaining implementation has concrete tracked
+work, then hand those work items to the user. For explicit human acceptance,
+move the finding to a collision-free `AR<n>` entry without claiming that its
+condition was fixed or disproved.
 
 ## Handoff
 
 Report the baseline and reviewed head, selected change, review units and work
-items, aggregate result, highest-impact findings or their absence, unresolved
-decisions, excluded worktree state, validation and verification evidence,
-isolation limitations, planning handoff state, and report path. Leave push,
-merge, archive, implementation, and risk acceptance to the human.
+items, aggregate result, highest-impact findings or their absence, applicable
+accepted risks, unresolved decisions, excluded worktree state, validation and
+verification evidence, isolation limitations, planning handoff state, and report
+path. Leave push, merge, archive, implementation, and risk acceptance to the
+human.
 
 ## Verification
 
@@ -248,6 +256,9 @@ Before reporting:
   target in a fresh context, while all three passes covered the same range;
 - every finding follows the report contract and the report matches the current
   base and head without dropping unresolved findings outside that target;
+- every accepted risk came from an explicit human decision, has a distinct
+  `AR<n>` ID and bounded reopening criteria, remains outside isolated reviewer
+  context, and is not duplicated as an active finding;
 - remediation used `openspec-update-change` and changed no code, tests, Apply
   state, or implementation, and removed a finding only after a durable planning
   handoff; and

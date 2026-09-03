@@ -1,9 +1,10 @@
 # Implementation Review Report Format
 
 Use `<change-root>/implementation-review.md` for the active OpenSpec change's
-current review state. Record the latest immutable review target and findings that
-still need an explicit resolution. The report is not review history or approval
-to push, merge, archive, or accept risk.
+current review state. Record the latest immutable review target, findings that
+still need an explicit resolution, and human-accepted residual risks that remain
+applicable. The report is not review history or approval to push, merge, archive,
+or accept risk.
 
 ## Record Supported Conclusions
 
@@ -17,8 +18,8 @@ after the fresh decision reviewers have returned. Carry forward a supported
 finding unless this review resolves it explicitly. Never expose the report or
 earlier findings to an isolated reviewer. Excluding the report from the Git
 target prevents a re-review loop; it does not exclude the report as current
-finding state. Preserve carried finding IDs and assign collision-free IDs to new
-findings.
+review state. Preserve carried `F<n>` and `AR<n>` IDs in their separate
+namespaces, and assign collision-free IDs to new entries.
 
 Completing a pass alone does not justify a report write. Do not use the report as
 a scratchpad, progress log, or store for suspicions and reviewer transcripts. If
@@ -30,7 +31,7 @@ When later evidence reveals another symptom of the same root cause, update the
 existing finding instead of adding a duplicate. Revise or remove a recorded
 finding when the evidence changes or disproves it.
 
-## Keep Only Unresolved Findings
+## Separate Findings from Accepted Risks
 
 - A finding remains until it has an explicit resolution. A different or narrower
   target, a moved head, or its absence from new reviewer output is not a
@@ -41,9 +42,24 @@ finding when the evidence changes or disproves it.
   by concrete tracked work.
 - Once those artifacts own the required outcome, remove the finding; they become
   the source of truth for later implementation.
+- Explicit human acceptance of the residual risk is also a resolution of the
+  finding, but it does not fix or disprove the risky condition. Remove the
+  `F<n>` entry and record the decision under `Accepted risks` with a distinct
+  `AR<n>` ID. Never retain the same condition in both sections.
+- An agent may explain the remediation trade-off or recommend acceptance, but it
+  must not create an accepted-risk entry without the human's explicit decision.
 - Preserve a finding outside the current target and disclose that it was carried
   forward rather than re-reviewed.
-- Keep accepted risk visible while the risky condition remains.
+- Keep an accepted risk while its condition remains within the recorded scope and
+  assumptions and no reopening condition has occurred. On a later review,
+  reconcile fresh evidence against accepted risks only after isolated reviewers
+  return: retain an applicable `AR<n>` without creating a duplicate finding;
+  remove it if the condition no longer exists; or return the condition to
+  `Findings` if its acceptance boundary no longer holds. An accepted risk never
+  prevents independent review of the implementation.
+- If an acceptance must govern work after the OpenSpec change is archived,
+  require the accepted-risk entry to reference an appropriate durable project
+  decision record.
 - Do not retain resolved findings, closure records, reviewer transcripts,
   duplicate summaries, or empty sections.
 
@@ -51,15 +67,18 @@ finding when the evidence changes or disproves it.
 
 Use one aggregate result:
 
-- `Changes needed` when any unresolved finding remains;
-- `Incomplete` when no finding remains but any required pass, target boundary, or
-  verification step was incomplete; or
+- `Changes needed` when any active finding remains;
+- `Incomplete` when no active finding remains but any required pass, target
+  boundary, or verification step was incomplete; or
 - `No unresolved findings` only when decision, conformance, and code-quality
-  passes all completed on the recorded immutable range and no finding still
-  awaits resolution.
+  passes all completed on the recorded immutable range and no active finding
+  remains.
 
 This order is the precedence. A review with both findings and incomplete coverage
 uses `Changes needed`; the pass table preserves the coverage limitation.
+Accepted risks do not count as active findings, but the assessment and handoff
+must name them so `No unresolved findings` is not mistaken for absence of known
+residual risk.
 
 The result reports review evidence. It is not a push verdict.
 
@@ -123,9 +142,24 @@ Use `Incomplete` for a pass whose required evidence was unavailable.
   design/ADR, requirement/proposal, or separate change>
 - **Affected artifacts:** <artifact IDs and code areas that must stay consistent>
 - **Decision needed:** <focused human choice and why; omit when unnecessary>
-- **Disposition:** Open | Awaiting decision | Accepted risk
 - **Current target relation:** Carried forward; not re-reviewed | <omit when the
   finding was reviewed in the current target>
+
+## Accepted risks
+
+### AR1 · <concise residual-risk condition>
+
+- **Evidence:** <specific paths, behavior, and repository facts>
+- **Potential impact:** <concrete failure or engineering harm that remains possible>
+- **Acceptance rationale:** <why remediation does not justify its cost or trade-offs>
+- **Scope and assumptions:** <the exact boundary within which acceptance applies>
+- **Reopen when:** <observable changes that invalidate the acceptance>
+- **Acceptance authority:** <the human decision or its durable source>
+- **Originating finding:** <original F identifier>
+- **Decision record:** <durable project artifact; required when acceptance must
+  outlive this OpenSpec change, otherwise omit>
+- **Current target relation:** Carried forward; not re-reviewed | <omit when the
+  accepted risk was reconciled against the current target>
 
 ## Review coverage
 
@@ -149,9 +183,15 @@ outcome` defines closure while preserving solution choice. Put implementation
 ideas in the working remediation plan or OpenSpec tasks, not in the finding,
 unless examples are needed to clarify the valid solution space.
 
+An accepted risk records a decision about a supported condition, not a weaker
+kind of finding. Its rationale must compare the residual exposure with the cost
+or technical trade-offs of remediation. Its scope, assumptions, and reopening
+conditions must be concrete enough for a later review to decide whether the
+acceptance still applies without guessing.
+
 ## A Clean Review
 
-When no unresolved finding remains, write:
+When no active finding remains, write:
 
 ```markdown
 ## Findings
@@ -160,5 +200,7 @@ No unresolved findings remain in the implementation review.
 ```
 
 Keep the target, pass coverage, and review coverage so the boundary of that
-conclusion remains reproducible. The OpenSpec artifacts and tracked work, not
-this report, retain any remediation already handed off for later implementation.
+conclusion remains reproducible. Retain the `Accepted risks` section when any
+accepted condition still applies; omit it when none does. The OpenSpec artifacts
+and tracked work, not this report, retain any remediation already handed off for
+later implementation.
