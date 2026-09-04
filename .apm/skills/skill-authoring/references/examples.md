@@ -1,7 +1,8 @@
 # Worked Examples
 
-Read these examples when calibrating how much conversation a request deserves.
-They illustrate judgment, not scripts to replay word for word.
+Read these examples when choosing how much conversation a request deserves or
+turning an intent into concrete instructions. They illustrate judgment, not
+scripts to replay word for word.
 
 ## 1. Explore a Vague New Skill
 
@@ -27,16 +28,8 @@ purpose, format, and meaning of "professional."
 > team, the useful content and voice will be different.
 
 Suppose the user answers that the update is for a product director who needs to
-spot decisions and risks in under two minutes. The next question should follow
-that answer:
-
-> Then completeness is probably not the goal; decision density is. Does success
-> mean the director can identify every requested decision and material risk
-> without asking a follow-up? My guess is yes, and that routine activity should be
-> compressed unless it changes a commitment.
-
-Once the outcome is clear, recommend a focused direction instead of preserving
-the user's original adjectives:
+spot decisions and risks in under two minutes. That resolves the consequential
+unknown. Recommend a focused direction and proceed:
 
 > I would build a decision-oriented status-writing skill, not a comprehensive
 > reporting skill. It should help the writer select and compress information,
@@ -92,12 +85,54 @@ repositories, that judgment may justify a skill. Split the concerns:
 If the user still wants a skill after hearing the trade-off, honor the informed
 choice without pretending it provides deterministic enforcement.
 
-## What These Examples Protect
+## 4. Author Directly and Turn Intent Into Instructions
 
-- Begin with a hypothesis so the user can correct something concrete.
-- Ask one question because its answer changes the next question.
-- Reframe the goal when the user's requested quality would work against it.
-- Preserve speed and scope when the requested edit is already clear.
-- Say "this should not be a skill" when another mechanism better fits the job.
-- Treat the user's informed decision as final unless safety or authorization
-  prevents execution.
+**User**
+
+> Create a reusable skill for writing weekly updates from rough project notes.
+> The reader is a product director. Keep the update under 200 words and prioritize
+> decisions needed from them, changed commitments, and material risks. Include
+> routine activity only when it explains one of those. Do not invent owners or
+> dates. Ask questions only when the missing information changes the update.
+
+The audience, source, outcome, and boundaries are clear. State the intended result
+and draft directly; routine wording and section choices do not need an interview.
+
+**Weak instruction**
+
+> Write a concise, professional update. Focus on what matters. Ask only useful
+> clarifying questions.
+
+This drops the word limit and factual boundaries, and leaves "what matters" and
+"useful" for the agent to reconstruct.
+
+**Possible skill fragment**
+
+```markdown
+Use the supplied project notes to write a weekly update of fewer than 200 words
+for a product director.
+
+Lead with decisions needed from the director, then changed commitments and
+material risks. Include routine activity only when it explains one of those.
+Omit empty sections.
+
+Preserve owners and dates stated in the notes. If a relevant owner or date is
+absent, mark it as unspecified rather than inventing one.
+
+Before asking a question, identify how the plausible answers would change the
+update's content or priority. Ask when a missing fact prevents a useful, accurate
+update; otherwise draft using the available facts and make relevant gaps explicit.
+```
+
+**Review against concrete situations**
+
+- Notes include a decision, its owner, and its deadline: draft directly.
+- A date is absent but its absence does not change the requested decision: mark
+  the date as unspecified and continue.
+- Notes conflict about whether the director has already approved a decision:
+  clarify its status because the answer changes whether to request that decision.
+
+The fragment translates the user's requirements into selection criteria, factual
+boundaries, and a decision about when to ask. These situations support text review;
+they are not a claim that model runs were performed. The fragment illustrates
+instruction writing, not a mandatory outline for other skills.

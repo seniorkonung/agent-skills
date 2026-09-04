@@ -13,8 +13,8 @@ artifact, challenge weak assumptions, recommend the simplest suitable mechanism,
 and then write instructions that agents and humans can both understand.
 
 Do not turn authoring into a ceremony. A narrow, unambiguous edit should remain a
-narrow edit. A new or unclear skill deserves more exploration because prose added
-before the purpose is understood only makes the wrong behavior more consistent.
+narrow edit. Explore when a consequential decision is unclear; a new skill with
+sufficient context can go straight to authoring.
 
 ## Core Principles
 
@@ -62,17 +62,26 @@ link, or changing a named example.
   round that cannot change the edit.
 - Verify the focused diff and the affected skill.
 
+### Direct Authoring
+
+Use direct authoring for a new skill or substantive update when the context
+already establishes the purpose, audience, expected behavior, and boundaries.
+
+- Briefly state the intended result or behavior change, then write it.
+- Resolve routine wording and organization choices using the available context.
+- Check the result against the requirements and relevant usage examples.
+- Switch to collaborative design if a consequential unknown emerges.
+
+The size of the change alone does not require an interview or an approval round.
+
 ### Collaborative Design
 
-Use collaborative design for a new skill or a change whose purpose, audience,
-behavior, boundaries, or risks are unclear.
+Use collaborative design when a missing decision about purpose, audience,
+behavior, boundaries, or risks could materially change the result.
 
-Start with a short working interpretation, not a questionnaire:
-
-```text
-My current read: <what the user is trying to accomplish>.
-The decision I cannot safely infer yet: <one consequential unknown>.
-```
+Start with a short working interpretation and identify the consequential unknown.
+Before asking, identify what you would do differently for the plausible answers.
+If the action would stay the same, proceed using the available context.
 
 Ask one high-leverage question at a time and attach the best current guess when it
 helps the user react. Prefer questions about:
@@ -88,8 +97,8 @@ change the recommended artifact or edit. Do not require a confidence score,
 formal design brief, or ritual confirmation. If the emerging direction materially
 differs from what the user asked for, say so plainly before writing.
 
-For calibrated examples of the fast path, collaborative design, and a justified
-no-skill outcome, read [references/examples.md](references/examples.md).
+For examples that help choose a route or turn intent into concrete instructions,
+read [references/examples.md](references/examples.md).
 
 ## Decide Whether a Skill Is the Right Artifact
 
@@ -134,9 +143,9 @@ behave:
 Choose a name of 1–64 characters using only lowercase ASCII letters, digits, and
 single hyphens. Do not start or end with a hyphen or use consecutive hyphens, and
 make the name exactly match the skill directory. Prefer a short name that
-communicates the capability. Write a discriminating description containing both
-what the skill does and when it applies, without compressing the full workflow
-into frontmatter.
+communicates the capability. Write a description of 1–1024 characters containing
+both what the skill does and when it applies, without compressing the full
+workflow into frontmatter.
 
 Create only the resources the workflow earns:
 
@@ -185,6 +194,8 @@ conversation language with the artifact's language.
   operations where deviation creates a concrete failure.
 - Keep one source of truth. Link conditional detail instead of duplicating it.
 - Keep references shallow and use relative paths from the skill root.
+- Distill decision-changing guidance from external sources instead of copying
+  whole guides into the skill.
 
 Sections such as `When to Use`, `Common Rationalizations`, `Red Flags`, and
 `Verification` are tools, not mandatory decoration. Add them when they prevent a
@@ -213,13 +224,20 @@ and document the compatibility requirement rather than implying universal suppor
 
 ## Evaluate in Proportion to Risk
 
-Always perform structural validation and a careful self-review. Add behavioral
-evaluation when a new or changed instruction is meant to alter agent decisions.
+Start with structural validation and careful review of the instructions, linked
+resources, and diff. Check clarity, consistency, scope, and relevant usage examples.
+This is sufficient for changes whose correctness can be established by inspection.
 
-Use realistic prompts, including near-misses. For substantial skills, compare
-results with and without the skill, review both final artifacts and reasoning, and
-iterate only on observed failures. Prefer independent runs so knowledge of the
-intended answer does not contaminate the result.
+Use behavioral runs to resolve a specific uncertainty that inspection cannot
+settle, reproduce a reported failure, or substantiate a behavioral claim. State
+what the run should tell you and use the smallest useful set of cases within the
+user's time and token constraints. A substantive edit alone does not justify a
+benchmark or a matrix of models.
+
+When comparison is needed, use no skill as the baseline for a new capability and
+the unchanged version for an update. Inspect observable actions and artifacts.
+Keep the distinction between text review and observed behavior clear in the
+handoff.
 
 For skills that can change external state:
 
@@ -231,9 +249,11 @@ For skills that can change external state:
 - if no representative safe environment exists, report the untested boundary
   instead of inventing confidence.
 
-Do not require a full benchmark for a typo or a subjective style preference.
-Do not skip meaningful behavioral tests merely because the file is Markdown.
-For evaluation levels, comparison mechanics, and stateful safety boundaries, read
+Revise on the basis of a concrete defect found by inspection, a changed
+requirement, or an observed failure. Do not add speculative rules without a
+problem they address.
+
+For choosing focused checks, comparison mechanics, and stateful safety, read
 [references/evaluation.md](references/evaluation.md) when behavioral testing is
 warranted.
 
@@ -250,46 +270,18 @@ Show the actual artifact or focused diff when practical. Let the user judge the
 work from the result instead of asking them to approve a redundant pre-writing
 brief.
 
-## Common Rationalizations
-
-| Rationalization | Reality |
-|---|---|
-| "The user asked for a skill, so a skill must be the answer." | The requested noun may encode an assumption. Solve the underlying job and recommend a better mechanism when one exists. |
-| "I need every detail before I can write anything." | Ask only about decisions that can change the result. Narrow edits do not need discovery theater. |
-| "This is only documentation, so testing is unnecessary." | Skills change agent behavior. Important behavioral claims need realistic evidence. |
-| "More instructions make the skill more reliable." | Extra prose adds context cost and creates conflicting rules. Keep only guidance that changes decisions. |
-| "A strict template makes every skill consistent." | Consistency is useful only when the sections serve the task. Empty ceremony hides the important workflow. |
-| "The eval needs production to be realistic." | Realism does not grant authorization. Use representative safe environments and state the remaining uncertainty. |
-| "One successful prompt proves the skill works." | It may be luck or overfitting. Test varied realistic cases and near-misses when behavior matters. |
-
-## Red Flags
-
-- Drafting a new skill before understanding who benefits and what success means
-- Asking several generic questions whose answers cannot change the edit
-- Silently choosing an audience, output format, or safety boundary
-- Creating a near-duplicate without inspecting the existing skill catalog
-- Rewriting an existing skill when the user requested one focused change
-- Treating vendor-specific metadata or tools as part of the open format
-- Copying an external guide into the skill instead of distilling decision-changing guidance
-- Adding resources that are never referenced or empty directories for symmetry
-- Claiming a stateful workflow is fully tested without a safe representative run
-- Accepting structurally valid Markdown as proof of useful behavior
-
 ## Verification
 
 Before completing the work, verify that:
 
-- [ ] The result addresses the user's underlying job, not only their initial wording.
-- [ ] A skill was chosen over another mechanism for an explicit reason.
-- [ ] New skills have realistic trigger and near-miss examples.
-- [ ] Existing skills retain unrelated behavior and identity.
-- [ ] The description is specific enough to route correctly without restating the body.
-- [ ] Instructions are plain, structured, actionable, and free of generic filler.
-- [ ] Every supporting resource exists, is linked, and earns its context or maintenance cost.
-- [ ] Portable guidance is separated from requested harness-specific extensions.
-- [ ] Validation matches the change's behavioral and operational risk.
-- [ ] External mutations were tested only within the user's authorization and a safe environment.
-- [ ] The final handoff names evidence and limitations without overstating confidence.
+- [ ] YAML frontmatter parses; `name` and `description` meet the format constraints.
+- [ ] Relative links resolve and referenced scripts, templates, and files exist.
+- [ ] The result and relevant usage examples match the intended behavior and scope.
+- [ ] The diff preserves unrelated behavior and identity; instructions and examples agree.
+- [ ] Instructions guide concrete decisions without unnecessary repetition or resources.
+- [ ] Dependencies and any requested harness-specific extensions are explicit.
+- [ ] The handoff distinguishes inspection from runs, states limitations, and stays
+  within the evidence and authorization available.
 
 ## Source Notes
 
