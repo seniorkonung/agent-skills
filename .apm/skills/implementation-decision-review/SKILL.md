@@ -10,6 +10,10 @@ Ask whether the implementation is a defensible way to achieve its high-level
 intent and whether repository evidence reveals a materially simpler, safer, or
 more coherent alternative. Do not try to prove global optimality.
 
+The useful result is a supported explanation of a consequential decision, not a
+list of ways you would have written the code differently. Trace what the code
+does, establish why that matters, and state the property a correction must keep.
+
 This read-only review protocol must run in a fresh reviewer context. The caller
 must establish isolation and supply a stable target. Return findings only; do not
 modify code, persist review state, issue a merge verdict, or decide which planning
@@ -46,11 +50,16 @@ Non-goals: Changing report contents.
 Review target: Repository <root>; exact <base>..<head>; paths <path list>.
 ```
 
-Return `Incomplete` when the problem, outcome, boundary, binding constraints
-field, or exact target is absent; when the target cannot be held stable; or when
-repository evidence exposes a likely external constraint not covered by the
-brief. State the smallest question that would unblock review. Do not invent an
-unknown constraint or reconstruct the answer from planning material.
+Check the input before reviewing. If a required field is absent, the brief
+prescribes an unexplained mechanism, or the supplied commits cannot be read,
+return `Incomplete` and name the missing input. Do not reconstruct intent from
+the implementation or planning material.
+
+A constraint discovered during review may limit only one conclusion. Explain the
+repository evidence for it, identify the affected area, and ask the caller for
+the smallest clarification. Continue independent areas and preserve findings
+that do not depend on the answer. A merely imaginable constraint is not a reason
+to stop or to excuse a demonstrated problem.
 
 ## Preserve Independence
 
@@ -67,24 +76,42 @@ Use only the supplied intention brief as framing context. Do not seek or read:
 - the implementing agent's discussion or explanation; or
 - earlier review findings and preferred remedies.
 
-Reconstruct only `git diff <base>..<head> -- <target-paths>` from the supplied
-target. Do not rerun a discovery helper, resolve the current upstream or `HEAD`,
-read other changed paths, or widen the target yourself. If another changed path
-is required for a coherent review, return `Incomplete` and name it so the caller
-can correct the unit boundary.
+## Inspect the Committed Target
+
+Reconstruct the diff using the supplied full commit IDs and exact path list:
+
+```sh
+git --literal-pathspecs diff <base> <head> -- <target-paths>
+git show '<head>:<path>'
+```
+
+Run from the repository root. Pass each path as a separate, quoted argument;
+`<target-paths>` is a placeholder, not one space-joined argument. Read full files
+from the recorded head, and deleted or previous content from the base. Ordinary
+filesystem reads can include uncommitted edits even when the diff is pinned.
+
+Do not rerun discovery, resolve the current upstream or `HEAD`, or widen your
+target. Moving branch refs do not change the supplied commits; the caller owns
+the check that this snapshot still answers the user's request.
 
 Inspect unchanged surrounding production code, callers, runtime boundaries,
 configuration, and repository conventions as needed to understand actual
-behavior. Before opening a context path outside the target, use
-`git diff --quiet <base> <head> -- <path>` only to confirm that it did not change.
-Do not read it when that check reports a change; return `Incomplete` if the path
-is necessary. Context files are not additional review targets: findings must
-arise from decisions embodied in the bounded diff. Treat tests in the target as
-reviewable evidence, not as authoritative intent; they may encode the same poor
-decision as the implementation.
+behavior. Before reading or searching a path outside the target, check:
 
-A recorded, tested, or deliberate choice is not evidence that the choice is
-sound.
+```sh
+git --literal-pathspecs diff --quiet <base> <head> -- <path>
+```
+
+Exit `0` permits reading that path from the recorded head; `1` means it changed
+and is outside your boundary; any other result is a failed check, not permission
+to read. If a changed path is necessary, name it and mark coverage incomplete so
+the caller can regroup the units. Avoid repository-wide content searches that
+would read other changed paths or prohibited planning material before this check.
+
+Context files are not additional review targets: findings must arise from
+decisions embodied in the bounded diff. Tests and code comments can help explain
+behavior, but their assertions and rationale do not establish authoritative
+intent or prove that a decision is sound.
 
 ## Review the Implemented Decisions
 
@@ -106,19 +133,37 @@ Judge the resulting system, not just changed lines. Follow affected callers and
 boundaries far enough to substantiate a failure mode, but do not broaden the
 review into unrelated cleanup.
 
+For each candidate finding, trace a concrete chain: **trigger or workload → code
+path → consequence → conflict with the desired outcome or constraint**. For a
+structural finding, identify the unnecessary concept or coupling and its actual
+maintenance cost. Check relevant guards, callers, and failure handling for
+counter-evidence before reporting. Do not report an unchanged defect unless a
+decision in this diff introduces, exposes, or materially worsens it.
+
+A simpler alternative earns a finding only when it preserves the supplied
+outcome and constraints and removes a concrete cost or hazard. Fewer lines, a
+familiar pattern, or a preferred library alone do not establish that. Conversely,
+a concrete failure mode does not require a fully designed replacement to be
+reportable.
+
 Do not assess conformity to hidden tasks or specifications or attribute a finding
 to an unseen requirement, design, or task. Report the engineering problem and
 required property; the caller can later decide which artifact should change.
 
 ## Return an Evidence-Backed Result
 
-Use one result:
+After checking input and isolation, use the first matching result:
 
-- `Changes needed` when at least one substantive decision finding exists;
-- `No substantive findings` when the independent review completed without one;
-  or
-- `Incomplete` when intent, target, constraints, or independence are insufficient
-  for a sound conclusion.
+| Condition | Result |
+|---|---|
+| At least one supported substantive finding exists | `Changes needed` |
+| No supported finding exists, but required review coverage is missing | `Incomplete` |
+| The independent review completed without a substantive finding | `No substantive findings` |
+
+Report **Coverage: Complete or Incomplete** separately. A finding and a coverage
+gap can coexist: keep the supported finding, describe the gap, and do not imply
+that the rest of the target was cleared. If isolation failed, return
+`Incomplete` without presenting a dependent assessment as independent findings.
 
 Use `critical`, `high`, `medium`, or `low` severity calibrated to plausible impact
 and reach: `critical` means plausible catastrophic or system-wide harm; `high`, a
@@ -154,6 +199,7 @@ Use this shape:
 ## Decision Review
 
 **Result:** Changes needed | No substantive findings | Incomplete
+**Coverage:** Complete | Incomplete
 
 ### High — <decision problem>
 
@@ -166,29 +212,29 @@ Use this shape:
 
 ### Review coverage
 
-<Target identity, code paths and decision-relevant areas examined, plus any
-limitation.>
+<Full base and head IDs, exact assigned paths, areas examined, and any limitation.
+For incomplete coverage, name the missing evidence or path and the smallest
+caller action needed.>
 ```
 
-When no substantive finding exists, omit placeholder finding sections and state
-that none was found under the supplied intention and constraints. This result
-makes no claim about task or specification conformance, merge readiness, or the
-quality of context deliberately withheld.
+Omit placeholder finding sections. When a complete review finds no substantive
+issue, state that conclusion under the supplied intention and constraints. When
+review is incomplete, describe the missing coverage without implying that the
+target is sound. Neither result establishes task or specification conformance,
+merge readiness, or the quality of context deliberately withheld.
 
 ## Completion Check
 
-Before returning the result, confirm that:
+Before returning, check that the result can be trusted:
 
-- the intention brief did not prescribe the selected mechanism;
-- every mandatory input field was present, with `none known` accepted for binding
-  constraints;
-- the exact target was stable and bounded without unrelated changes;
-- the reviewed diff used only the supplied base, head, and target paths, without
-  rediscovery or scope expansion;
-- every context path outside the target was confirmed unchanged before it was
-  read;
-- no prohibited framing material or previous finding entered the review context;
-- every finding has concrete evidence, a failure mode, soundness reasoning, and a
-  required property;
-- uncertainty is explicit rather than filled from hidden planning context; and
-- the result contains no conformance, planning-artifact, or merge verdict.
+- **Independence:** the brief supplied intent without prohibited solution or
+  review framing, and this context was fresh.
+- **Evidence:** files came from the supplied commits; every context path was
+  checked before reading, and no other changed paths entered the review.
+- **Judgment:** each finding connects a decision to concrete harm and a required
+  property, after checking relevant counter-evidence.
+- **Limits:** incomplete coverage remains explicit, and the result makes no
+  conformance, planning-artifact, or merge claim.
+
+When changing this skill, evaluate the scenarios in
+[references/evaluation-cases.md](references/evaluation-cases.md).

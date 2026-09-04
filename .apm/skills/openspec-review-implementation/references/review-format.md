@@ -8,16 +8,18 @@ or accept risk.
 
 ## Record Supported Conclusions
 
-Create or rewrite the report as soon as any review pass substantiates a finding
-with repository evidence, concrete impact, a required outcome, and an earliest
-source of truth. Do not defer a supported finding until the remaining passes
-finish.
+Run the independent decision pass first. Once its reviewers have returned, or
+isolation is declared unavailable, reconcile existing state as described below.
+Then create or rewrite the report as soon as a finding has repository evidence,
+concrete impact, a required outcome, and an earliest source of truth. Do not wait
+for conformance and code-quality passes to finish before recording a supported
+finding. Mark every unfinished pass `Incomplete` in intermediate reports.
 
 Before the first write, read the existing report in the orchestrator context
-after the fresh decision reviewers have returned. Carry forward a supported
-finding unless this review resolves it explicitly. Never expose the report or
-earlier findings to an isolated reviewer. Excluding the report from the Git
-target prevents a re-review loop; it does not exclude the report as current
+after the fresh decision reviewers have returned or are unavailable. Carry
+forward a supported finding unless this review resolves it explicitly. Never
+expose the report or earlier findings to an isolated reviewer. Excluding the
+report from the Git target prevents a re-review loop; it does not exclude it as current
 review state. Preserve carried `F<n>` and `AR<n>` IDs in their separate
 namespaces, and assign collision-free IDs to new entries.
 
@@ -40,6 +42,9 @@ finding when the evidence changes or disproves it.
   problem, or from a concrete remediation decision durably captured in the
   appropriate OpenSpec sources of truth, with any remaining implementation owned
   by concrete tracked work.
+- A vague task promising to fix the area, or a completed checkbox contradicted by
+  code, does not establish ownership. The agreed required outcome and remaining
+  work must be identifiable in the cited artifacts.
 - Once those artifacts own the required outcome, remove the finding; they become
   the source of truth for later implementation.
 - Explicit human acceptance of the residual risk is also a resolution of the
@@ -182,6 +187,11 @@ and as a finding when it represents unrelated or untraceable work.
 outcome` defines closure while preserving solution choice. Put implementation
 ideas in the working remediation plan or OpenSpec tasks, not in the finding,
 unless examples are needed to clarify the valid solution space.
+
+For new or re-evaluated evidence, cite paths and lines at the recorded commit,
+using the base for deleted content. For a carried finding or risk, retain its
+original evidence revision and the `Current target relation` field; do not make
+old line numbers look freshly verified against the current head.
 
 An accepted risk records a decision about a supported condition, not a weaker
 kind of finding. Its rationale must compare the residual exposure with the cost

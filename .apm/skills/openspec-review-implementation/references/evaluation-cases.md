@@ -450,6 +450,83 @@ If the reviewer merely recommends accepting F2 but the human has not done so,
 keep F2 under `Findings` with a focused `Decision needed`; do not create an
 accepted-risk entry.
 
+## Case 16: Local Edits Would Hide a Committed Failure
+
+**Prompt**
+
+> Review my committed increment. I have a possible fix in the worktree, but it is
+> not part of this review.
+
+**Fixture**
+
+- The recorded head returns success before storage completes.
+- An uncommitted code edit fixes that failure; an unchanged caller is also dirty.
+- The committed spec requires retrievability on success. A local spec edit
+  relaxes that contract, and local tests pass only with the uncommitted fix.
+- The current uncommitted report contains an unresolved finding from an earlier
+  target.
+
+**Expected behavior**
+
+- Read code, caller, and versioned planning evidence from the recorded commits.
+- Prepare intent from the committed contract, disclose dirty planning, and keep
+  the local relaxation out of the independent brief.
+- Run required verification against a disposable copy of the recorded head, or
+  mark that verification incomplete. Do not attribute passing worktree tests or
+  validation of dirty artifacts to the committed snapshot.
+- Read the current report as review state after the isolated reviewers return;
+  carry its unresolved finding forward. The report exception does not permit
+  reading arbitrary uncommitted implementation as evidence.
+
+## Case 17: A Finding Does Not Establish Complete Coverage
+
+**Prompt**
+
+> Review creation and cleanup. Record proven problems even if part of the review
+> cannot finish.
+
+**Fixture**
+
+- The independent reviewer proves a creation failure.
+- Cleanup depends on another changed path omitted from its assigned target.
+- The reviewer returns `Changes needed` with `Coverage: Incomplete` and names
+  that dependency without reading it.
+
+**Expected behavior**
+
+- Correct the target grouping and dispatch a fresh reviewer when the missing path
+  is within the discovered range and the intent is known. Otherwise retain the
+  coverage limitation without widening the Git range.
+- Record the supported finding after independent reviewers have returned. Keep
+  conformance and code-quality passes `Incomplete` until actually completed.
+- Keep aggregate `Changes needed` while the finding remains. Do not mark the
+  independent pass complete solely because its result contains a finding.
+- If later evidence disproves the finding while cleanup coverage remains missing,
+  use aggregate `Incomplete`, not `No unresolved findings`.
+
+## Case 18: A Constraint Rules Out One Remedy
+
+**Prompt**
+
+> Review the committed report-delivery design. Existing callers require success
+> to mean the report is retrievable; their public protocol cannot change.
+
+**Fixture**
+
+- The design selects a queue as its mechanism.
+- The implementation acknowledges success before the queued write completes.
+- A reviewer identifies that failure and mentions returning a pending operation
+  handle as one possible alternative.
+
+**Expected behavior**
+
+- Include the established public contract in the neutral brief, with its reason.
+  Do not include the queue as a binding constraint just because the design chose it.
+- Reject the incompatible pending-state alternative without dropping the
+  supported success-before-storage finding. A failed proposed remedy does not
+  disprove the failure mode.
+- Preserve the required property and leave compatible implementation choices open.
+
 ## Deterministic Checks
 
 Run:
@@ -468,3 +545,8 @@ planning handoff, phased-plan versus task granularity, the prohibition on code
 and Apply, the update workflow's boundary handoffs, bounded-review finding
 retention, durable remediation handoff, accepted-risk separation and reopening,
 and the missing-skill failure.
+
+Also cover committed snapshot reads with dirty code, callers, and planning;
+intermediate report coverage; and findings that remain valid after one proposed
+alternative is ruled out. Evaluate the independent reviewer's own bundled cases
+when its input or result contract changes.

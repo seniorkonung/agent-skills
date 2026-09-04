@@ -58,15 +58,65 @@ remediation; preserve those findings according to the report contract.
   paths outside its change root, and excluded paths.
 - `no_outgoing_commits`: nothing committed is waiting for push.
 - `no_reviewable_changes`: outgoing commits change only excluded review reports.
-- `incomplete`: stop and report its reason. Request only the specific missing
-  baseline, intentional change association, or OpenSpec repair it identifies.
-- `diverged_upstream`: stop because the branch is both ahead and behind; it is not
-  a normal push target.
-- `multiple_change_matches`: stop and require a branch or checkout whose target
-  range contains one change. An explicit change name cannot make a mixed range
-  safe.
+- `incomplete`: stop target discovery and report its `reason`. Request only the
+  specific missing baseline, intentional change association, or OpenSpec repair
+  it identifies. Two reasons need particular care:
+  - `diverged_upstream`: the branch is both ahead and behind; it is not a normal
+    push target.
+  - `multiple_change_matches`: require a branch, checkout, or user-specified
+    baseline whose target range contains one change. An explicit change name
+    cannot hide another touched change.
 
 `worktreeDirty` is disclosure only. Never add those paths to the committed target.
 
 The CLI exits `0` for ready and no-op results, `2` for incomplete results, and
-`64` for invalid helper arguments. It always emits resolved results as JSON.
+`64` for invalid helper arguments. Discovery results are JSON; argument errors
+print usage and an error message instead. No-op results do not clear findings or
+justify rewriting an existing report.
+
+## Read the Recorded Snapshot
+
+Discovery fixes the review's identity. After discovery, use its full `base` and
+`head` IDs rather than ref names in every evidence command. From the repository
+root, for example:
+
+```sh
+git --literal-pathspecs diff <base> <head> -- <path>
+git show '<head>:<path>'
+git show '<base>:<path>'
+```
+
+Read current content at the recorded head and previous or deleted content at the
+base. Quote each argument and pass paths individually; literal pathspecs prevent
+characters in filenames from changing the requested boundary. Apply the same
+rule to unchanged callers, configuration, tests, and versioned planning sources.
+An unchanged committed file can still have an uncommitted worktree edit.
+
+OpenSpec status and instruction output locate artifacts and describe the current
+workflow. They do not establish which artifact bytes were committed. If a
+versioned planning file is dirty, use its committed content as review evidence
+and disclose the difference. If only an uncommitted artifact supplies essential
+intent, mark the dependent review incomplete. For unversioned external context,
+identify its source and limit any conclusion that depends on uncertain currency.
+
+The existing review report is the exception: read its current contents as review
+state, even when it is uncommitted or excluded from the diff. Do this only in the
+coordinator context after the independent passes return or are unavailable.
+
+## Verification Must Match the Snapshot
+
+Run project checks in an isolated checkout or disposable copy at the recorded
+head when the worktree contains changes that could affect them. Keep generated
+test and build files there; the audit's only authored repository change is the
+review report. Do not stash, reset, or overwrite the user's work to obtain a
+clean tree. Use local or fake services for checks that would otherwise change
+external state.
+
+A worktree test run may be useful, but it is not proof about the reviewed head
+unless all inputs match that snapshot. Record commands, results, execution
+location, and the revision tested. Mark required verification incomplete when
+the environment or relevant inputs cannot be established.
+
+`openspec validate` is structural evidence for the artifacts it actually reads.
+If those are dirty worktree artifacts, disclose that boundary rather than
+attributing the result to the committed planning snapshot.
