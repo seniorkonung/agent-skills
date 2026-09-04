@@ -1,61 +1,66 @@
 # Review Report Format
 
-Use `<change-root>/review.md` as a concise statement of the current review result.
-Record findings that still need resolution and human-accepted residual risks that
-remain applicable. It is a companion report, not an OpenSpec schema artifact, an
-approval record, or a history of review sessions.
+Use `<change-root>/review.md` for unresolved findings and applicable
+human-accepted residual risks. It is current review evidence, not a schema
+artifact, approval record, or review history.
 
 ## Keep Only Current Truth
 
-- Rewrite the report when artifacts or conclusions change.
-- Remove a finding once it has been fixed, no longer applies, or the human has
-  explicitly accepted its residual risk.
-- Preserve an existing finding unless current artifact evidence establishes one
-  of those outcomes or the report records that explicit acceptance. Material
-  edits elsewhere and absence from new review output are not resolutions.
-- Do not preserve resolved findings, old assessments, decision history, or
-  review-process bookkeeping.
-- Keep an accepted risk visible while its condition remains within the recorded
-  scope and assumptions and no reopening condition has occurred.
-- Do not duplicate findings in a summary table.
+- Remove a finding only when current evidence shows it is fixed or inapplicable,
+  or the acceptance procedure below is complete. Unrelated edits and absence from
+  fresh review output do not resolve it.
+- Retain an entry whose evidence cannot be rechecked, stating the limitation.
+- Keep accepted risks while their recorded scope and assumptions hold.
+- Rewrite the assessment when conclusions change. Omit resolved findings,
+  review-process bookkeeping, and duplicate summary tables.
 
 On the initial audit, give each finding an `F<n>` identifier in report order.
 During a re-audit, keep the identifier of every finding that still represents the
-same root cause, even when this leaves gaps. Give a new finding the next number
-after the highest identifier in the report being rewritten so an ID does not
-change meaning across that rewrite. Preserve `AR<n>` identifiers in their
-separate namespace and assign collision-free identifiers to newly accepted
-risks.
+same root cause, even when this leaves gaps. Allocate new finding numbers above
+the highest `F<n>` in the report being read, including originating-finding
+references in accepted risks, before removing any entries. Preserve `AR<n>`
+identifiers in their separate namespace and allocate new risk numbers above its
+current maximum. Resolve later user requests against the current report.
 
 ## Separate Findings from Accepted Risks
 
-- Explicit human acceptance resolves a finding in the review state without
-  fixing or disproving the risky condition. Remove its `F<n>` entry and create a
-  distinct `AR<n>` entry under `Accepted risks`; never keep the same condition in
-  both sections.
-- An agent may explain the remediation trade-off or recommend acceptance, but it
-  must not record an accepted risk without the human's explicit decision.
-- On every re-audit, review the full change surface independently of prior
-  acceptance, then reconcile current evidence with each accepted risk. Retain an
-  applicable `AR<n>` without creating a duplicate finding; remove it if the
-  condition no longer exists; or return the condition to `Findings` if its scope,
-  assumptions, or reopening boundary no longer holds.
-- If an acceptance changes a product contract, architecture, or another OpenSpec
-  source of truth, reconcile that artifact through `openspec-update-change`. Do
-  not edit planning solely to duplicate a change-scoped accepted-risk entry.
-- If the acceptance must govern work after the OpenSpec change is archived,
-  require the entry to reference an appropriate durable project decision record.
+1. Require the human's explicit acceptance. An agent recommendation, low
+   likelihood, or remediation cost is insufficient.
+2. Record the supported condition, impact, rationale, scope, and reopening
+   conditions using the fields below. Ask for consequential terms that cannot be
+   established from the human's decision and existing evidence.
+3. If acceptance changes an OpenSpec source of truth, reconcile it through
+   `openspec-update-change`. Acceptance that must outlive the change also needs a
+   durable project decision record. Until required reconciliation is complete,
+   keep the finding open and state the decision and remaining work. Do not edit
+   planning solely to duplicate a change-scoped risk entry.
+4. Replace the `F<n>` with a distinct `AR<n>` under `Accepted risks`. The condition
+   remains; never duplicate it in both sections.
+
+After a broad re-audit, reconcile accepted risks with fresh evidence: retain those
+still applicable, remove conditions that no longer exist, and reopen those whose
+scope, assumptions, or reopening boundary no longer holds. For a reopened risk,
+remove the `AR<n>`, explain the invalidated boundary, and reuse its originating
+`F<n>` if free and still representing the same root cause; otherwise assign a new ID.
 
 ## Result
 
-Use one aggregate result:
+Choose the first applicable result:
 
-- `Changes needed` when any active finding remains; or
-- `No unresolved findings` when no active finding remains.
+| Condition | Result |
+|---|---|
+| Any active finding remains | `Changes needed` |
+| No active finding remains, but missing material evidence prevents a review conclusion | `Review incomplete` |
+| The review scope was covered and no active finding remains | `No unresolved findings` |
 
-Accepted risks do not count as active findings, but the assessment and handoff
-must name them so `No unresolved findings` is not mistaken for absence of known
-residual risk. The result remains review evidence, not permission to run Apply.
+Always disclose material coverage gaps. An unreadable essential contract prevents
+a complete conclusion; an unavailable validation command alone need not, if the
+artifacts support the review. Record missing access as a limitation and a required
+artifact known to be absent as a finding.
+
+Accepted risks do not count as active findings. Name them in the assessment and
+handoff so a clean result is not mistaken for absence of known risk or approval
+to run Apply.
 
 ## Suggested Shape
 
@@ -67,7 +72,7 @@ than creating empty sections.
 
 ## Assessment
 
-**Result:** Changes needed | No unresolved findings
+**Result:** Changes needed | Review incomplete | No unresolved findings
 
 <A short assessment of the change, its real blast radius, and whether anything
 currently prevents implementation from being planned safely.>
@@ -104,20 +109,17 @@ depth, such as data migration, security, telemetry, or rollout. This is not an
 applicability matrix.>
 ```
 
-Use `critical`, `high`, `medium`, and `low` severity according to plausible
-impact. Do not create findings for cosmetic preferences without a concrete
-consequence.
+Use `critical`, `high`, `medium`, and `low` severity according to
+[review-lenses.md](review-lenses.md).
 
-An accepted risk records a human decision about a supported condition, not a
-weaker kind of finding. Its rationale must compare the residual exposure with the
-cost or technical trade-offs of remediation. Its scope, assumptions, and
-reopening conditions must let a later re-audit determine whether the acceptance
-still applies without guessing.
+The acceptance rationale should compare residual exposure with remediation cost
+or trade-offs. Its scope and reopening conditions must let a later reviewer
+determine whether acceptance still applies without guessing.
 
 ## A Clean Review
 
-When no active finding remains, do not leave placeholder findings, resolved
-findings, or implied concerns. Write:
+When the review is complete and no active finding remains, do not leave
+placeholder findings, resolved findings, or implied concerns. Write:
 
 ```markdown
 ## Findings
@@ -126,7 +128,7 @@ No unresolved findings remain in the reviewed change artifacts and relevant
 repository context.
 ```
 
-The assessment and coverage note should still make the scope and limits of that
-conclusion clear. Retain the `Accepted risks` section when any accepted condition
-still applies; omit it when none does. A report without active findings does not
-authorize Apply or imply that no known residual risk remains.
+For an incomplete review with no confirmed finding, say instead: "No findings
+confirmed in the inspected material; review incomplete because <missing evidence
+and affected area>." Retain `Accepted risks` only when an accepted condition
+still applies.

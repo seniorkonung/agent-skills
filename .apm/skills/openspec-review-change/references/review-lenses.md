@@ -55,8 +55,9 @@ their current placement. Then check that:
 - the artifacts owning intent name every new or modified behavioral capability;
 - each contract has one coherent purpose and each obligation belongs to that
   purpose;
-- each obligation expresses one observable outcome rather than several
-  behaviors joined by "and also";
+- each obligation makes a coherent observable promise; independent obligations
+  are separated without splitting every success and failure case into a new
+  requirement;
 - each scenario or example, when used, exercises its parent obligation and its
   normative outcome is owned by that contract;
 - related capabilities are neither collapsed into a catch-all spec nor fragmented
@@ -111,14 +112,21 @@ commitment needs downstream implementation and evidence. Every downstream work
 item needs upstream justification. Terms, invariants, error semantics, and
 selected alternatives should agree across artifacts.
 
+Read a delta together with the canonical contract it changes. An unchanged rule
+need not be restated in the delta, and its absence there is not a missing
+requirement. Repository code shows current behavior and affected paths; it does
+not override an explicitly intended behavior change. If sources conflict and no
+recorded decision resolves the conflict, report the competing commitments instead
+of silently choosing a winner.
+
 ### Planned Work and Verification
 
-Check that planned work is dependency ordered, small enough to execute without
-design invention, and covers every material behavioral commitment, migration,
-configuration, telemetry, compatibility, documentation, rollout, and rollback
-obligation. Verification should name observable evidence and
-repository-supported commands or procedures rather than merely saying that tests
-pass.
+Check that planned work is dependency ordered and executable without inventing
+consequential requirements or decisions. It should cover every material
+behavioral commitment, migration, configuration, telemetry, compatibility,
+documentation, rollout, and rollback obligation. Verification should name
+observable evidence and repository-supported commands or procedures rather than
+merely saying that tests pass.
 
 ## Conditional Activation Map
 
@@ -256,6 +264,25 @@ tasks describe the intended final system rather than the change history.
 Every finding needs evidence, impact, and an observable required change. Preserve
 the human's decision space when constraints do not make one implementation
 clearly preferable.
+
+### From Concern to Finding
+
+For a proposed retrying payment worker, "consider idempotency" is too vague.
+A useful finding would read:
+
+> **F1 · high — A retry after a timeout may charge the customer twice.**
+> **Evidence:** `design.md`, "Retry policy", retries on timeout;
+> `specs/payments/spec.md`, "Charge an order", does not define whether a retry
+> represents the same charge. `docs/payment-provider.md`, "Timeout semantics",
+> permits a timeout after the provider has committed the charge.
+> **Impact:** Retrying an uncertain result may create a second charge.
+> **Required change:** Define the outcome of retrying the same logical payment,
+> choose how to reconcile an uncertain result, and cover that case in work and
+> verification.
+
+The provider evidence is essential to this finding. For a non-finding, consider
+"the proposal has no rollback heading" when the design already specifies an
+adequate procedure: the information exists, regardless of its placement.
 
 Avoid checklist theater: do not demand every practice on every change, invent
 findings to populate a report, or lower engineering quality merely because a

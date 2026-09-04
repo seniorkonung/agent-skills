@@ -25,8 +25,10 @@ The skill should:
 - re-audit the full change surface before reconciling fresh evidence with
   accepted risks, and reopen a finding when its acceptance boundary no longer
   holds;
+- separate missing review evidence from a confirmed planning defect and avoid a
+  clean conclusion when material evidence cannot be inspected;
 - let the user address selected findings by their current report IDs without
-  changing unselected findings;
+  remediating unselected findings, while reporting newly discovered problems;
 - use `openspec-update-change` for planning-artifact edits and retain ownership of
   the subsequent re-audit; and
 - route implementation review and unrelated narrow planning edits elsewhere.
@@ -97,7 +99,7 @@ The skill should:
 
 **Prompt**
 
-> Address F1, then re-audit.
+> Address F1, then re-audit the change.
 
 **Fixture**
 
@@ -113,7 +115,8 @@ The skill should:
   than editing them directly under this skill.
 - Pass the `F1` identifier, evidence, impact, required change, and settled
   decisions into that workflow.
-- Re-audit affected roles and risk areas afterward.
+- Perform the requested broad re-audit afterward, including affected roles and
+  risk areas and the current evidence for F2. Its remediation remains out of scope.
 - Remove `F1` only if it no longer applies, preserve `F2` and its identifier, and
   rewrite `review.md` to current truth without resolved-item history.
 
@@ -191,6 +194,9 @@ The skill should:
   acceptance changes a product contract, architecture, or another source of
   truth. If the acceptance must outlive the change, require AR1 to reference a
   durable project decision record.
+- Complete any required reconciliation or durable record before replacing F2
+  with AR1. In variant B, reuse F2 for the reopened condition if the ID is free
+  and still denotes the same root cause.
 
 **Near miss**
 
@@ -198,8 +204,72 @@ If the reviewer recommends accepting F2 but the human has not explicitly done so
 keep F2 under `Findings` with a focused `Decision needed`; do not create an
 accepted-risk entry.
 
+## Case 8: Missing Evidence Is Not a Clean Review
+
+> Review this change. If you find no issues, say so.
+
+The readable artifacts agree. Test three variants:
+
+| Evidence available | Expected result |
+|---|---|
+| Essential contract exists but cannot be read | `Review incomplete` if no finding is confirmed; disclose the coverage gap without inventing a defect |
+| Metadata confirms a required contract is absent | Finding and `Changes needed`; name the missing work without creating the artifact |
+| All material artifacts are coherent; validation command is unavailable | `No unresolved findings` is permissible with the structural-check limitation disclosed |
+
+## Case 9: Check the Whole Contract Before Reporting a Gap
+
+> Review the export cancellation change for material gaps.
+
+**Fixture:** Canonical `specs/exports/spec.md` owns unchanged authorization and
+retention rules. The delta promises no delivery after cancellation; design and
+tasks let an in-flight worker deliver. Design already covers rollback, but the
+proposal has no rollback heading. No recorded decision settles the contradiction.
+
+**Expected:** One finding citing the conflicting contract, design, and tasks;
+ask which delivery guarantee should hold and require coherent work and
+verification. No findings for unchanged rules or heading placement, and no
+prescribed worker implementation.
+
+## Case 10: Remediation Dependency Is Unavailable
+
+> Fix F1 using the cancellation decision I already gave you.
+
+**Fixture:** F1 needs contract and work-artifact edits. The human settled the
+outcome, but `openspec-update-change` is unavailable.
+
+**Expected:** Reuse the decision, keep F1 open, and identify the missing workflow.
+No repeated approval request, direct planning edit, Apply, or claim of completion.
+
+## Case 11: Selected Remediation Reveals Another Problem
+
+> Address F1, then check the fix.
+
+**Fixture:** F1 is resolved without materially changing intent, capabilities, or
+requirements. F2 remains unchanged; checking affected paths reveals another problem.
+
+**Expected:** Remove F1, preserve F2, and record F3 without remediating F2 or F3.
+Review the fix's effects; broaden only if requested or warranted by material
+boundary changes. Do not claim an audit of unaffected areas.
+
+## Case 12: Acceptance Has Unfinished Planning Consequences
+
+> Accept F4: for the next month, legacy tenants may need manual rollback.
+
+F4 is the only finding, no accepted risks exist, and the contract promises
+automatic rollback for all tenants. Test these variants:
+
+- **Revision stops unfinished:** Keep F4 open with the decision and pending work;
+  use `Changes needed` and create no AR entry.
+- **Revision succeeds:** Replace F4 with AR1. If a later review finds an unrelated
+  problem while AR1 still references F4, allocate F5 to preserve that reference.
+- **Acceptance lacks bounds:** If the user only says "accept F4" and existing
+  evidence supplies no scope, duration, or accepted impact, ask for the missing
+  consequential terms instead of inventing them.
+
 ## Deterministic Checks
 
 Validate frontmatter, relative links, generated copies, focused repository diff,
 and the absence of stale full-path or direct-remediation instructions. Behavioral
-evaluation should cover all seven cases above.
+evaluation should cover the cases affected by the edit and retain the other
+cases as regression checks. Separate executed agent runs from an author's
+scenario walkthrough; the latter cannot establish reliability on other models.
