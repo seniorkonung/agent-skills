@@ -1,6 +1,6 @@
 ---
 name: openspec-review-change
-description: Audits and iteratively strengthens planning artifacts for an active OpenSpec change before implementation or after material planning revisions. Use for a broad review of the complete planning artifact graph or re-audit; not for implementation review, code verification, or a narrow correction traced from code.
+description: Audits and iteratively strengthens planning artifacts for an active OpenSpec change, preserving unresolved findings and human-accepted residual risks across broad re-audits. Use before implementation, after material planning revisions, or to resolve review findings; not for implementation review, code verification, or a narrow correction traced from code.
 ---
 
 # OpenSpec Review Change
@@ -8,10 +8,11 @@ description: Audits and iteratively strengthens planning artifacts for an active
 Review an OpenSpec change as one system of intent, commitments, decisions, and
 planned implementation work. Look beyond the change's declared scope, find
 material gaps before implementation or before continuing after substantial
-replanning, and keep a concise current assessment in `<change-root>/review.md`.
+replanning, and keep unresolved findings and applicable accepted-risk decisions
+in a concise current assessment at `<change-root>/review.md`.
 
 The report is working review evidence. It is not an OpenSpec schema artifact, an
-approval record, or permission to run Apply.
+approval record, permission to run Apply, or authority to accept risk.
 
 ## Boundaries
 
@@ -102,17 +103,19 @@ The report describes only the current review result:
 
 - keep the assessment, findings, and coverage note consistent with the artifacts
   as they exist now;
-- remove fixed or obsolete findings instead of preserving review history;
+- remove fixed or obsolete findings instead of preserving review history, while
+  keeping accepted risks whose recorded boundary still applies;
 - do not add review-process bookkeeping, duplicate summaries, or empty sections;
-- if no substantive finding remains, say so explicitly without placeholder
-  concerns or resolved-item history.
+- if no active finding remains, say so explicitly without placeholder concerns
+  or resolved-item history, and name any applicable accepted risks separately.
 
 When continuing an existing review, reread `review.md`, the current change
 artifacts, and any repository evidence needed to test its conclusions. Re-test
 each existing finding under the report retention contract, re-evaluate areas
 affected by material edits, and rewrite the report to current truth. Exact
 content tracking is unnecessary because current artifacts and findings are
-reviewed again.
+reviewed again. Prior acceptance must not narrow the broad re-audit; reconcile
+accepted risks with current evidence afterward under the report contract.
 
 ## Record Material Findings
 
@@ -146,12 +149,34 @@ their identifiers. Reject remediation that hides an upstream gap in vague work,
 treats downstream artifacts as the source of truth, or silently broadens the
 change.
 
+## Accept Residual Risk When Asked
+
+For a request such as `accept F2 as residual risk`, resolve the selected ID and
+follow the accepted-risk contract in
+[references/review-format.md](references/review-format.md). Only the human's
+explicit instruction is acceptance; an agent recommendation, remediation cost,
+or low likelihood is not.
+
+Recheck the evidence, potential impact, and remediation trade-off. If evidence
+disproves the condition, remove the finding without creating an accepted risk.
+Otherwise move it from `F<n>` to a distinct `AR<n>` with the required acceptance
+boundary and traceability. If acceptance changes an OpenSpec source of truth,
+reconcile that artifact through `openspec-update-change` and re-audit; if it must
+outlive the change, require a durable project decision record.
+
+Acceptance resolves the finding in review state, not the underlying condition.
+Do not create remediation work that the human deliberately declined, count
+`AR<n>` entries as active findings, or imply that the risk was fixed. Keep
+unselected findings and accepted risks unchanged, and name the accepted risk in
+the handoff.
+
 ## Handoff
 
-Report the current result, the highest-impact findings or the absence of findings,
-artifacts changed during requested remediation, decisions still needed, the
-validation boundary, and the `review.md` path. Keep the handoff concise and leave
-the Apply or continuation decision to the human.
+Report the current result, the highest-impact findings or their absence,
+applicable accepted risks, artifacts changed during requested remediation,
+decisions still needed, the validation boundary, and the `review.md` path. Keep
+the handoff concise and leave Apply, continuation, and risk acceptance to the
+human.
 
 ## Verification
 
@@ -162,11 +187,15 @@ Before reporting a clean review, confirm that:
   every omitted or skipped role was justified;
 - all five core questions and every activated risk area were reviewed;
 - findings are evidence-backed and current;
+- every accepted risk came from an explicit human decision, has a distinct
+  `AR<n>` ID and bounded reopening criteria, and is not duplicated as an active
+  finding;
 - intended outcomes trace through every applicable role in the actual schema
   graph to planned work and verification;
 - OpenSpec validation passed or its limitation is visible;
 - `review.md` contains no stale history or implied findings;
-- no implementation code or Apply state was changed.
+- no implementation code or Apply state was changed; and
+- no Apply, continuation, or risk-acceptance approval was implied.
 
 When changing this skill, evaluate the realistic routing and workflow cases in
 [references/evaluation-cases.md](references/evaluation-cases.md).

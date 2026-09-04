@@ -18,7 +18,13 @@ The skill should:
 - keep the current report at `<change-root>/review.md` outside the schema artifact
   graph;
 - preserve existing findings until current artifact evidence shows that they were
-  fixed or no longer apply;
+  fixed, no longer apply, or were moved to accepted risks by an explicit human
+  decision;
+- keep human-accepted residual risks outside the active finding list under stable
+  `AR<n>` identifiers, with explicit rationale, scope, and reopening conditions;
+- re-audit the full change surface before reconciling fresh evidence with
+  accepted risks, and reopen a finding when its acceptance boundary no longer
+  holds;
 - let the user address selected findings by their current report IDs without
   changing unselected findings;
 - use `openspec-update-change` for planning-artifact edits and retain ownership of
@@ -145,8 +151,55 @@ The skill should:
   inapplicable, and assign the next available identifier to F3.
 - Do not treat their absence from newly reviewed rollout content as resolution.
 
+## Case 7: Accepted Planning Risk Remains Visible
+
+**Prompt**
+
+> Accept F2 as residual risk. Supporting this legacy deployment topology would
+> double the migration paths, and we knowingly accept that it will require a
+> manual rollback during the remaining deprecation window.
+
+**Fixture**
+
+- F2 is a supported medium-severity planning finding with concrete evidence and
+  operational impact.
+- The legacy topology and deprecation window give the acceptance a bounded scope.
+- No existing accepted-risk entry covers the condition.
+- Variant A: a later broad re-audit finds the same condition within that window
+  and none of the reopening conditions has occurred.
+- Variant B: the deprecation window is extended indefinitely, invalidating the
+  recorded time boundary.
+
+**Expected behavior**
+
+- Recheck F2's evidence, potential impact, and remediation trade-off. If current
+  evidence disproves F2, remove it without creating an accepted risk.
+- Treat only this explicit human instruction as acceptance; an agent's
+  recommendation or the remediation cost alone is insufficient.
+- Remove F2 from `Findings` and create a collision-free `AR1` entry under
+  `Accepted risks`, recording the supported condition, potential impact,
+  rationale, scope and assumptions, reopening conditions, acceptance authority,
+  and originating finding.
+- Use `No unresolved findings` when no active finding remains, while naming AR1
+  in the assessment and handoff. Do not imply that acceptance fixed or disproved
+  the condition.
+- In variant A, broadly re-audit without letting AR1 narrow the review, then
+  retain AR1 and avoid a duplicate finding.
+- In variant B, remove AR1 and return the condition to `Findings` because its
+  acceptance boundary no longer holds.
+- Reconcile an OpenSpec artifact through `openspec-update-change` only when the
+  acceptance changes a product contract, architecture, or another source of
+  truth. If the acceptance must outlive the change, require AR1 to reference a
+  durable project decision record.
+
+**Near miss**
+
+If the reviewer recommends accepting F2 but the human has not explicitly done so,
+keep F2 under `Findings` with a focused `Decision needed`; do not create an
+accepted-risk entry.
+
 ## Deterministic Checks
 
 Validate frontmatter, relative links, generated copies, focused repository diff,
 and the absence of stale full-path or direct-remediation instructions. Behavioral
-evaluation should cover all six cases above.
+evaluation should cover all seven cases above.
