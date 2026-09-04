@@ -1,28 +1,75 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process';
+import {
+  closeSync,
+  mkdtempSync,
+  openSync,
+  readFileSync,
+  rmSync,
+  statSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+const CAPTURE_LIMIT_BYTES = 1024 * 1024;
 const TRACKING_REF_FRESHNESS = 'local tracking state; no fetch performed';
 const EXPLICIT_REF_FRESHNESS = 'explicit local ref; no fetch performed';
 
+function readCapturedOutput(filePath, invocation, streamName) {
+  if (statSync(filePath).size > CAPTURE_LIMIT_BYTES) {
+    throw new Error(
+      `${invocation}: ${streamName} exceeded ${CAPTURE_LIMIT_BYTES} bytes`,
+    );
+  }
+
+  return readFileSync(filePath, 'utf8');
+}
+
 function run(command, args, cwd, { trim = true } = {}) {
-  const result = spawnSync(command, args, {
-    cwd,
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
+  const captureDir = mkdtempSync(
+    path.join(tmpdir(), 'openspec-review-target-'),
+  );
+  const invocation = [command, ...args].join(' ');
+  const stdoutPath = path.join(captureDir, 'stdout');
+  const stderrPath = path.join(captureDir, 'stderr');
 
-  if (result.error) {
-    throw new Error(`${command}: ${result.error.message}`);
-  }
-  if (result.status !== 0) {
-    const detail = result.stderr.trim() || result.stdout.trim() || `exit ${result.status}`;
-    throw new Error(`${command} ${args.join(' ')}: ${detail}`);
-  }
+  try {
+    let result;
+    let stdoutFd;
+    let stderrFd;
 
-  return trim ? result.stdout.trim() : result.stdout;
+    try {
+      stdoutFd = openSync(stdoutPath, 'wx');
+      stderrFd = openSync(stderrPath, 'wx');
+      result = spawnSync(command, args, {
+        cwd,
+        stdio: ['ignore', stdoutFd, stderrFd],
+      });
+    } finally {
+      try {
+        if (stdoutFd !== undefined) closeSync(stdoutFd);
+      } finally {
+        if (stderrFd !== undefined) closeSync(stderrFd);
+      }
+    }
+
+    const stdout = readCapturedOutput(stdoutPath, invocation, 'stdout');
+    const stderr = readCapturedOutput(stderrPath, invocation, 'stderr');
+
+    if (result.error) {
+      throw new Error(`${command}: ${result.error.message}`);
+    }
+    if (result.status !== 0) {
+      const detail = stderr.trim() || stdout.trim() || `exit ${result.status}`;
+      throw new Error(`${invocation}: ${detail}`);
+    }
+
+    return trim ? stdout.trim() : stdout;
+  } finally {
+    rmSync(captureDir, { recursive: true, force: true });
+  }
 }
 
 function git(cwd, ...args) {

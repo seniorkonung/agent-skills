@@ -11,7 +11,10 @@ import {
 } from '../scripts/discover-review-target.mjs';
 
 function git(cwd, ...args) {
-  return execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
+  execFileSync('git', args, {
+    cwd,
+    stdio: ['ignore', 'ignore', 'inherit'],
+  });
 }
 
 async function createRepository() {
@@ -22,6 +25,7 @@ async function createRepository() {
   git(repositoryRoot, 'init', '--quiet', '--initial-branch=main');
   git(repositoryRoot, 'config', 'user.name', 'Review Target Test');
   git(repositoryRoot, 'config', 'user.email', 'review-target@example.test');
+  git(repositoryRoot, 'config', 'commit.gpgsign', 'false');
 
   await mkdir(path.join(repositoryRoot, 'src'), { recursive: true });
   await writeFile(path.join(repositoryRoot, 'src/app.js'), 'export const value = 1;\n');
@@ -97,6 +101,45 @@ exit 64
   await chmod(openspecBin, 0o755);
 }
 
+async function writeNodeFakeOpenSpec(
+  openspecBin,
+  statuses,
+  { oversizedList = false } = {},
+) {
+  await writeFile(
+    openspecBin,
+    `#!/usr/bin/env node
+import { fstatSync } from 'node:fs';
+
+if (!fstatSync(1).isFile() || !fstatSync(2).isFile()) process.exit(70);
+
+const statuses = ${JSON.stringify(statuses)};
+const [command, ...args] = process.argv.slice(2);
+
+if (command === 'list' && args[0] === '--json') {
+  if (${oversizedList}) {
+    console.log('x'.repeat(1024 * 1024 + 1));
+  } else {
+    console.log(JSON.stringify({
+      changes: statuses.map(({ changeName }) => ({ name: changeName })),
+    }));
+  }
+} else if (
+  command === 'status' &&
+  args[0] === '--change' &&
+  args[2] === '--json'
+) {
+  const status = statuses.find(({ changeName }) => changeName === args[1]);
+  if (status) console.log(JSON.stringify(status));
+  else process.exitCode = 1;
+} else {
+  process.exitCode = 64;
+}
+`,
+  );
+  await chmod(openspecBin, 0o755);
+}
+
 test('discovers the one OpenSpec change touched by outgoing commits', async () => {
   const { openspecBin, repositoryRoot } = await createRepository();
 
@@ -132,6 +175,40 @@ test('discovers changes without requiring batch status support', async () => {
 
   assert.equal(result.result, 'ready');
   assert.equal(result.change.name, 'add-value');
+});
+
+test('captures output from a Node OpenSpec CLI through regular files', async () => {
+  const { changeStatus, openspecBin, repositoryRoot } = await createRepository();
+  await writeNodeFakeOpenSpec(openspecBin, [changeStatus]);
+
+  const result = discoverReviewTarget({
+    cwd: repositoryRoot,
+    openspecBin,
+    upstreamRef: 'HEAD~1',
+  });
+
+  assert.equal(result.result, 'ready', JSON.stringify(result, null, 2));
+  assert.equal(result.change.name, 'add-value');
+});
+
+test('rejects command output above the previous pipe buffer limit', async () => {
+  const { changeStatus, openspecBin, repositoryRoot } = await createRepository();
+  await writeNodeFakeOpenSpec(openspecBin, [changeStatus], {
+    oversizedList: true,
+  });
+
+  const result = discoverReviewTarget({
+    cwd: repositoryRoot,
+    openspecBin,
+    upstreamRef: 'HEAD~1',
+  });
+
+  assert.equal(result.result, 'incomplete');
+  assert.equal(result.reason, 'openspec_status_failed');
+  assert.match(
+    result.message,
+    /\/openspec list --json: stdout exceeded 1048576 bytes/,
+  );
 });
 
 test('preserves Git paths that contain newlines', async () => {
