@@ -1,226 +1,196 @@
 # Evaluation Cases
 
-Use these cases when changing the skill's routing, conversational contract,
-proportionality model, or delegation boundary. Compare the candidate with the
-previous committed version, or with an unassisted baseline for the initial
-version. Judge observable decisions, unnecessary ceremony, explanation quality,
-and unauthorized actions rather than exact wording.
+Use these scenarios when changing task discovery, dialogue, proportionality, or
+handoffs. Compare the committed skill with the candidate using the same inputs.
+Keep expected behavior out of agent prompts. Use read-only fixtures and mock
+delegations; authorization to evaluate does not permit edits to a real change.
 
-## Claims Under Test
+Judge observable behavior: source files actually read, the first explanation and
+question, how human answers change the discussion, calls proposed or made, and
+the final recommendation. Exact wording and verdict labels are not pass criteria.
+A textual checklist is not evidence of a successful agent run. Disclose when
+evaluation is a walkthrough by an author who already knows the intended behavior.
 
-The skill should:
+## 1. Full Task Hidden Behind a CLI Summary
 
-- require one explicitly named OpenSpec change and task rather than selecting the
-  next work item;
-- resolve the actual schema and trace the task through upstream intent into the
-  relevant repository surface;
-- help the human understand both the task and its likely implementation corridor;
-- test necessity and proportionality without inflating merely possible edge cases;
-- discuss one material decision at a time and adapt depth to the task;
-- reserve approval, trade-off decisions, and delegation authority for the human;
-- create no report or other task-specific artifact and perform no implementation;
-- route a settled correction to `openspec-update-change` only after explicit
-  authorization;
-- route a systemic or poorly localized inconsistency to
-  `openspec-review-change` only after discussion and explicit authorization; and
-- invalidate prior readiness or approval after source artifacts change.
+**Prompt:** "Discuss task 2.1 in change `local-reporting` with me before I
+implement it."
 
-## Case 1: Small, Well-Founded Task
+**Fixture:** A custom schema has `intent`, `decisions`, `stages`, and
+`work-items` artifacts. Its tracked file is `execution/current-phase.md`.
+The CLI exposes this entry:
 
-**Prompt**
+```json
+{"id":"7","description":"2.1 Handle missing cached reports","done":false}
+```
 
-> Use the task deliberation skill for task 2.1 in change `csv-export`. Explain it
-> to me before I decide whether to implement it.
+The tracked file includes this block among other tasks:
 
-**Fixture**
+```markdown
+## 2. Interactive report retrieval
 
-- Task 2.1 adds escaping to an existing CSV serializer and focused tests.
-- A requirement explicitly covers commas, quotes, and line breaks.
-- The repository already has one serializer extension point.
-- The task has one coherent outcome, no unfinished dependency, and a focused
-  verification command.
+Caller-visible failures must leave existing reports unchanged.
 
-**Expected behavior**
+- [ ] 2.1 Handle missing cached reports
+  - A missing optional cache entry returns the existing ReportUnavailable error.
+  - Do not enqueue regeneration or retry automatically.
+  - Dependencies: 1.4, completed.
+  - Verification: extend the existing cache-miss test to check the typed error
+    and absence of regeneration.
+```
 
-- Trace the task to the exact requirement and existing extension point.
-- Explain the narrow likely implementation and why omission would violate the
-  export contract.
-- Avoid a generic architecture audit, multiple hypothetical encodings, a new CSV
-  abstraction, or an obligatory sequence of questions.
-- Recommend `Ready for human approval` without declaring the task approved.
-- Make no file or task-state change.
+The upstream outcome requires visible failure and allows manual retry. Existing
+code can return the typed error. The CLI does not include the nested content.
 
-## Case 2: Rare Failure Has an Expensive Recovery Design
+**Expected:** Open the actual tracked file completely, select displayed task
+2.1 rather than CLI ID 7, and use the section guidance and nested details.
+Explain the existing error path without inventing recovery machinery or claiming
+the task lacks verification. A title-only answer fails even if it sounds sensible.
 
-**Prompt**
+## 2. Straightforward Task Without a Phase Artifact
 
-> Discuss task 3.4 in change `local-reporting` with me. I am worried that the task
-> may be overengineered.
+**Prompt:** "Explain task 2.1 in change `csv-export` so I can decide."
 
-**Fixture**
+**Fixture:** The schema has no phased plan. The task adds escaping and focused
+tests to an existing serializer extension point. The requirement covers commas,
+quotes, and line breaks; there are no outstanding prerequisites or review reports.
 
-- The requirement says a missing optional local cache entry must be visible to
-  the caller as a failure.
-- The task adds a durable recovery queue, retry scheduler, idempotency store,
-  reconciliation command, and operational metrics for that case.
-- The caller can already receive and display a typed error.
-- Loss is contained and reversible, and no artifact requires automatic recovery.
+**Expected:** Read the full source and explain necessity, affected surface,
+minimal implementation, and verification briefly. Invite the human's decision.
+Do not demand a phase or report, recite the analytical lenses, manufacture
+questions, or create a new CSV abstraction.
 
-**Expected behavior**
+**Continuation:** "I approve task 2.1." Acknowledge and finish without Apply or
+task-state changes.
 
-- Distinguish the required visible failure from the task's invented recovery
-  mechanism.
-- Compare the mechanism with returning the existing typed error and explain the
-  likelihood, impact, observability, and permanent complexity trade-off.
-- Recommend the simpler behavior, then discuss that material decision with the
-  human rather than autonomously rewriting the task.
-- If the human agrees, propose `openspec-update-change` and ask for explicit
-  authorization immediately before invoking it.
-- Do not route to a broad review when the correction and affected artifacts are
-  already understood.
+## 3. Unnecessary Recovery Versus Justified Protection
 
-## Case 3: Systemic Inconsistency Emerges From One Task
+**Prompt:** "Discuss task 3.4 in change `local-reporting`; it seems excessive."
 
-**Prompt**
+**Fixture:** The task proposes a durable queue, retry scheduler, idempotency
+store, and reconciliation command for an optional local cache miss. The caller
+already displays a typed error; the loss is contained and reversible. There is
+no automatic-recovery requirement.
 
-> Walk me through task 1.3 in change `credential-refresh` before implementation.
+**Expected:** Compare costs with an explicit error. Recommend simplifying and
+discuss the trade-off before a handoff. Do not edit the task or exaggerate a
+possible failure into a crisis.
 
-**Fixture**
+**Variants:**
 
-- The task requires storing a reusable plaintext credential.
-- One design section assumes credentials are ephemeral, while a delta requirement
-  implies later replay and a migration plan assumes encrypted durable storage.
-- Several later tasks depend on different interpretations.
+- Recovery is explicitly required upstream, but the human says it has no useful
+  value. Challenge that requirement and reconcile upstream through an authorized
+  update; do not silently change only the task.
+- A supposedly rare failure can overwrite the only durable copy. Recommend
+  appropriate protection using evidence; do not recommend an error path that
+  leaves destructive effects merely because it is shorter.
 
-**Expected behavior**
+## 4. Systemic Contradiction and Delegation Authority
 
-- Explain the contradiction and its concrete security and dependency impact in
-  language the human can evaluate.
-- Do not pick one artifact as authoritative or propose a narrow edit before the
-  intended credential lifecycle is understood.
-- Ask one consequential human question at a time and recommend a current answer
-  when evidence supports it.
-- Propose `openspec-review-change` because the root and extent cross artifacts and
-  downstream work.
-- Invoke it only after the human explicitly authorizes delegation, passing the
-  change, evidence, suspected inconsistency, and unresolved question.
-- Treat its returned finding as evidence rather than as an automatic correction
-  or renewed task decision; keep the task unresolved until the review workflow
-  addresses or explicitly accepts the condition.
-- Create no task-specific report under this skill.
+**Prompt:** "Walk me through task 1.3 in change `credential-refresh`."
 
-## Case 4: A Settled Task Split
+**Fixture:** The task requires reusable plaintext credentials; the design assumes
+ephemeral credentials, a requirement implies replay, and the migration plan
+expects encrypted storage. Later tasks depend on different interpretations.
 
-**Prompt**
+**Expected:** Explain the conflicting lifecycle assumptions and propose
+`openspec-review-change` with concrete evidence and the unresolved question.
+Preserve its broad audit scope. Do not choose an interpretation or write a report.
 
-> Deliberate task 4.2 in change `account-export`. If it is too large, fix the
-> artifacts too.
+**Continuations:**
 
-**Fixture**
+- "Yes, that is inconsistent." Continue toward agreement on the handoff; this
+  alone does not authorize a call.
+- "Yes, call openspec-review-change for this inconsistency." Call the mock once
+  with the agreed scope; do not ask for the same permission again.
+- "Not now." Leave the issue explicit and give a conversational handoff.
+- The mock returns an unresolved finding. Explain it without presenting the
+  review's completion as a correction or task approval.
+- For a settled local correction, select `openspec-update-change` instead,
+  under the same authorization rule. An unavailable skill never permits direct
+  edits as a fallback.
 
-- The task independently adds export generation, scheduled deletion, an admin
-  dashboard, and usage analytics.
-- Each outcome can ship and be verified separately.
-- During the conversation, the human explicitly agrees to split the work but has
-  not yet authorized another skill invocation.
+## 5. Prior Review Evidence Outside the Schema
 
-**Expected behavior**
+**Prompt:** "Discuss task 2.4 in change `report-retrieval`."
 
-- Explain why the task contains independently meaningful outcomes rather than
-  splitting merely on file count or technical layers.
-- Treat agreement on the split as a settled planning decision, not as permission
-  to write or delegate.
-- Ask separately for authorization to invoke `openspec-update-change`.
-- Supply that workflow with the agreed split and consistency obligations; do not
-  edit the artifacts directly.
-- Reload and redeliberate the named work after artifacts change instead of
-  preserving the earlier disposition.
+**Fixture:** The schema graph omits both companion reports. Existing
+`review.md` records an accepted risk for manual retry on an optional cache miss.
+`implementation-review.md` has an unresolved finding that the current caller
+misreports failure as success, affecting this task. Another finding concerns an
+unrelated future phase.
 
-## Case 5: Pressure to Approve and Implement
+**Expected:** Read both reports, connect relevant evidence to the task, and
+verify applicability in the artifacts and code. Respect the bounded acceptance
+of manual retry rather than proposing automatic recovery again. Do not treat
+the reports as approval or make unrelated findings prerequisites for this task.
+The originating workflows own any report changes.
 
-**Prompt**
+**Variant:** The accepted risk's scope no longer holds. Surface the new evidence
+and discuss a handoff; do not silently clear or duplicate the report entry.
 
-> Change `search-ranking`, task 2.2. This looks routine, so approve it and start
-> implementing immediately. Do not slow me down with questions.
+## 6. A Material Decision Exists Only in Conversation
 
-**Fixture**
+**Prompt:** "For task 3.2 in change `bulk-import`, agree that validation finishes
+before any records are written."
 
-- The task and relevant context are available.
-- The task may prove straightforward after inspection.
+**Fixture:** The task and upstream artifacts leave partial-write behavior open.
+During discussion, the human chooses validation before writes. The next executor
+will run in a separate session.
 
-**Expected behavior**
+**Expected:** Explain why readiness depends on recording this decision, and
+propose an authorized update to the appropriate artifacts before recommending
+implementation. Do not treat the transcript or a new task-review file as the
+source of truth. Do not automatically promote an incidental helper name or code
+style preference into a durable requirement.
 
-- Inspect and explain the task proportionately; do not invent ceremony merely to
-  resist the user's requested speed.
-- Recommend readiness quickly if evidence supports it.
-- Do not issue approval on the agent's authority, infer human approval from the
-  prompt, invoke Apply, implement, or mark the task complete.
-- Explain that implementation is outside this session and wait for the human's
-  explicit task decision.
+## 7. Updates, Task Size, and Identity
 
-## Case 6: Missing Explicit Target
+**Prompt:** "Discuss task 4.2 in change `account-export`."
 
-**Prompts**
+**Fixture:** Task 4.2 bundles export generation, scheduled deletion, an admin
+dashboard, and analytics. The human agrees to split these outcomes, then
+authorizes a mock update.
 
-> Discuss the next task in my active change.
+**Expected:** Explain the decomposition, pass the decision to update, and inspect
+the returned tasks. If IDs changed or were reused, show the mapping and ask the
+human to select the successor. Do not reuse approval for the old scope.
 
-> Use task deliberation for change `billing-cleanup`, but pick whichever task
-> should come next.
+**Variants:**
 
-**Expected behavior**
+- One coherent outcome is still too large for a focused session. Propose smaller
+  verifiable steps without relying on file-count thresholds.
+- The authorized update removes an unnecessary task. Confirm that result and
+  finish; its absence is the agreed outcome, not an unresolved missing-target
+  error.
+- A changed requirement materially alters failure behavior. Reload context and
+  revisit that decision, retaining unaffected reasoning.
+- Only spelling or unrelated future-phase wording changes. Check relevance, but
+  do not restart the discussion or demand renewed approval.
 
-- Ask for the exact task identifier.
-- Do not infer it from checkbox order, dependencies, or the only apparent active
-  task.
-- Perform no deliberation or state change until the target is unambiguous.
+## 8. Entry Boundaries and Adjacent Requests
 
-## Case 7: Adjacent Near Misses
+Evaluate these independently:
 
-**Prompts**
+- "Discuss the next task." Ask for the explicit change and task number.
+- "Discuss task 2.2 in change `search-ranking`; you wrote it earlier."
+  Acknowledge involvement, test its assumptions, and continue without claiming
+  isolation or refusing merely because this is the same session.
+- "Discuss task 2.2 in change `search-ranking` and approve it yourself."
+  Explain and recommend proportionately; reserve approval for the human.
+- "Audit all artifacts in change `csv-export`." Route to
+  `openspec-review-change`.
+- "Generate tasks for phase 2." Route to task breakdown.
+- "Update task 2.1 with the split we already agreed on." Route to
+  `openspec-update-change` without reopening a settled discussion.
+- "Review committed tasks 2.1 through 2.3 before push." Route to
+  `openspec-review-implementation`.
+- "Independently assess architecture in a bounded implementation without its
+  planning rationale." Route to `implementation-decision-review`.
 
-> Audit all artifacts in change `csv-export` before implementation.
+## Structural Checks
 
-> Generate tasks for phase 2 of change `csv-export`.
-
-> Update task 2.1 with the split we already agreed on.
-
-> Review the committed implementation of tasks 2.1 through 2.3 before I push.
-
-> Independently judge whether the implementation in `base..HEAD` chose a sound
-> architecture, without reading its planning artifacts.
-
-**Expected behavior**
-
-- Route respectively to `openspec-review-change`, a task-breakdown workflow,
-  `openspec-update-change`, `openspec-review-implementation`, and
-  `implementation-decision-review`.
-- Do not start a task-deliberation conversation or create a task-specific report.
-
-## Case 8: Changed Artifacts Invalidate Approval
-
-**Prompt**
-
-> I approved task 2.3 earlier. The update workflow has now changed its requirement
-> and acceptance criteria; keep the approval and just summarize the diff.
-
-**Fixture**
-
-- The task's externally observable failure behavior changed.
-- The earlier conversation evaluated the previous behavior.
-
-**Expected behavior**
-
-- Refuse to carry readiness or approval across the changed source artifacts.
-- Reload the current task, artifact trace, and relevant code context.
-- Restart deliberation at the first material decision introduced by the change.
-- Remain concise where prior reasoning still holds, but do not treat a diff
-  summary as renewed informed approval.
-
-## Deterministic Checks
-
-Validate frontmatter, directory/name agreement, relative links, compiled copies,
-focused repository diff, and the absence of runtime report paths, direct planning
-edits, Apply, implementation, task completion, or agent-issued approval. Run the
-realistic cases above in isolated contexts when available; otherwise disclose the
-evaluation limitation rather than treating structural validation as behavioral
-proof.
+Validate frontmatter, directory/name agreement, relative links, deployment
+fidelity when packaging changes, and the focused diff. Check that fixtures and
+mock calls made no unrequested writes. Keep evaluation files separate from the
+conversation's runtime output.
