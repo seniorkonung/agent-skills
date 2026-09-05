@@ -1,5 +1,5 @@
 ---
-name: openspec-gherkin-authorin
+name: openspec-gherkin-authoring
 description: Clarifies requirements and illustrates them with readable Gherkin-style scenarios in OpenSpec Markdown. Use when drafting or reviewing behavioral specifications, choosing meaningful examples, or resolving ambiguity while following the active schema.
 ---
 
@@ -79,17 +79,20 @@ are themselves an agreed constraint on the system.
 
 ## Example
 
-Requirement: only a document's owner may change its visibility.
+Requirement: an invitation remains valid for 24 hours after it is issued and is
+rejected once that period ends.
 
-Scenario: a user who does not own the document attempts to change its visibility.
+Scenario: the recipient attempts to accept an invitation at the expiry boundary.
 
-- GIVEN the user is not the document's owner
-- WHEN the user attempts to change the document's visibility
-- THEN the change is refused and the visibility remains unchanged
+- GIVEN the invitation was issued exactly 24 hours ago
+- WHEN the recipient attempts to accept it
+- THEN acceptance is refused because the invitation has expired
 
-The scenario explains the access rule. User IDs, stored records, request payloads,
-and a particular error code are unnecessary unless the requirement specifies
-them. Render the rule and scenario using the active template's notation.
+The exact duration belongs in the scenario because it defines the requirement's
+business boundary. If expiration is defined elsewhere, prefer "an expired
+invitation" instead of repeating the value. If the agreed context does not say
+what happens at the boundary, surface that decision instead of choosing an
+outcome. Render the rule and scenario using the active template's notation.
 
 ## Review Before Returning
 
