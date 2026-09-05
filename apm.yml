@@ -19,7 +19,6 @@ dependencies:
       ref: v1.1.0
       skills:
         - codebase-design
-        - domain-modeling
         - grill-with-docs
         - grilling
       targets: [agent-skills]
