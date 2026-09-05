@@ -114,10 +114,11 @@ significant decisions may warrant an ADR.
 
 At natural pauses and before finishing, review the important objects, roles,
 actions, states, transitions, relationships, ownership rules, and boundaries that
-the work introduced or changed. For each one, confirm that its meaning is already
-clear, add an agreed concise definition, or surface the unresolved meaning and
-record it where the project tracks open questions. Do not leave an essential
-concept implicit or a material glossary conflict unnoticed.
+the work introduced or changed. Apply the inclusion test in `CONTEXT-FORMAT.md`
+to each candidate. For every qualifying concept, confirm that the glossary already
+defines it or add an agreed concise definition. Surface unresolved significant
+meanings and record them where the project tracks open questions. Do not leave an
+essential concept implicit or a material glossary conflict unnoticed.
 
 Use this coverage pass to find omissions after focused discussion. It is not a
 reason to interrupt every incidental word or exhaustively define the entire

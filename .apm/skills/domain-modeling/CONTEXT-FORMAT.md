@@ -24,11 +24,9 @@ _Avoid_: Client, buyer, account
 
 ## Rules
 
-- **Select significant concepts.** Include terms that help participants understand
-  the product and distinguish its important concepts. Familiar terms such as
-  Customer can qualify through their specific meaning in this domain. Technical
-  concepts qualify when they are part of the domain itself; ordinary fields and
-  implementation helpers do not qualify merely because the project uses them.
+- **Select significant concepts.** Treat the glossary as the project's active
+  domain language rather than an inventory of everything the system contains.
+  Use the inclusion test below instead of relying on novelty or frequency alone.
 - **Choose useful canonical language.** Prefer the agreed term. Use `_Avoid_` for
   names that would cause a real misunderstanding, and omit it when none are
   needed. Do not turn harmless wording variations into terminology disputes.
@@ -36,6 +34,30 @@ _Avoid_: Client, buyer, account
   and the distinctions a reader needs. Length alone is not the test: two long
   sentences can still hide an entire specification.
 - **Group terms under subheadings** when natural clusters emerge. If all terms belong to a single cohesive area, a flat list is fine.
+
+## Inclusion test
+
+Actively consider the important nouns and verbs in user language, scenarios,
+specifications, and code. Add an agreed term when at least one of these is true:
+
+- it is needed to explain an important user or domain scenario;
+- it distinguishes concepts that participants could reasonably confuse;
+- it has a non-obvious meaning in this domain or differs from its everyday or
+  industry meaning;
+- it recurs as stable language across conversations, requirements, interfaces,
+  or code;
+- interpreting it differently would change domain identity, behavior, ownership,
+  lifecycle, relationships, or system boundaries.
+
+One strong reason is sufficient. A newly introduced core concept need not recur
+before it belongs in the glossary, and a familiar term such as Customer can
+qualify through its specific meaning in this domain. Technical concepts qualify
+when they are part of the domain itself.
+
+Do not add a term solely because it names an incidental field, interface control,
+operation parameter, storage structure, or implementation helper. A difference
+in operation-specific validation or persistence mechanics does not count as a
+different domain meaning by itself.
 
 ## Definitions and detailed rules
 
@@ -51,15 +73,29 @@ behavior does not automatically make it part of a definition.
 
 | Concept | Useful definition content | Detail for a specification or technical document |
 |---|---|---|
-| Intention title | User-provided name of an intention; distinct intentions can share a title. | Trimming surrounding whitespace, rejecting blank input, preserving internal spaces. |
+| Intention title, when participants need it as a domain term | User-provided name of an intention; distinct intentions can share a title. | Trimming surrounding whitespace, rejecting blank input, preserving internal spaces. |
 | Daily choice | A dated choice of action connected to an originating intention through a saved selection path; completion belongs to that choice. | Which edits revalidate the path, whether changing the action preserves completion, and which references block deletion. |
 | Selection path step | An element of a selection path, if participants need to discuss steps as a domain concept. | A pointer to the previous step, lack of duplicated entities, or snapshot storage. |
-| Description | Optional explanatory text accompanying an intention or relationship. | Treatment of whitespace-only input and exact preservation of line breaks. |
+| Description, when it carries a distinct domain meaning | Optional explanatory text accompanying an intention or relationship. | Treatment of whitespace-only input and exact preservation of line breaks. |
 
 These examples illustrate placement, not domain rules to adopt in other projects.
 Do not give an incidental field or storage structure its own entry just to house
 its constraints. Preserve details removed from an existing entry in the relevant
 document; link to that document when it helps readers find the full rules.
+
+## Coverage check
+
+At natural pauses and before finishing glossary work, review the important
+objects, roles, actions, states, transitions, relationships, ownership rules, and
+boundaries introduced or changed by the current work. Apply the inclusion test to
+each candidate. Every qualifying concept must have an existing or newly added
+agreed concise definition; keep a significant unresolved meaning explicitly open
+in the project's appropriate working document. Resolve material conflicts with
+existing entries.
+
+Scope this check to the current work and the concepts needed to understand it.
+Audit the entire repository only when the user asks for a comprehensive domain
+language review.
 
 ## Single vs multi-context repos
 
