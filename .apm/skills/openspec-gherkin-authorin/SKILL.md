@@ -1,163 +1,103 @@
 ---
 name: openspec-gherkin-authorin
-description: Authors and reviews Gherkin-style requirements and behavioral scenarios in OpenSpec Markdown specifications. Use when creating or improving OpenSpec spec artifacts, acceptance criteria, or scenario examples while preserving the active schema and template.
+description: Clarifies requirements and illustrates them with readable Gherkin-style scenarios in OpenSpec Markdown. Use when drafting or reviewing behavioral specifications, choosing meaningful examples, or resolving ambiguity while following the active schema.
 ---
 
 # Gherkin-Style OpenSpec Authoring
 
 ## Purpose
 
-Write OpenSpec requirements as business rules illustrated by concrete,
-testable examples. Apply the behavioral semantics of Gherkin while keeping the
-document in the exact Markdown structure required by the active OpenSpec schema.
+Write OpenSpec specifications that help people agree on the system's intended
+behavior. State general requirements in prose and use Gherkin-style scenarios
+to illustrate their meaning. Aim for clear rules, useful examples, and enough
+precision to recognize whether the behavior satisfies the requirement.
 
-Treat the OpenSpec structure as the semantic model:
+Read the requirement and relevant agreed context before choosing examples. Use
+the repository's language and domain terminology. Follow the active artifact
+instructions, schema, and template for syntax and document structure; use only
+the constructs they support. Keep edits within the requested scope.
 
-| OpenSpec element | Gherkin-style meaning |
-| --- | --- |
-| Capability | Feature context |
-| Requirement | Business rule |
-| Scenario | Concrete example of the rule |
-| `GIVEN` | Relevant starting state |
-| `WHEN` | Meaningful action or event |
-| `THEN` | Observable outcome |
+## Keep Requirements Primary
 
-These are semantic mappings, not instructions to add literal `Feature:` or
-`Rule:` lines.
+- State obligations, constraints, and exceptions in the requirement text.
+  Scenarios illustrate the rule; they do not replace its general statement or
+  define the full extent of the requirement through a list of examples.
+- Retain explanations, definitions, and shared context that help readers
+  understand the behavior. A scenario may rely on this context without repeating
+  it as setup steps.
+- Keep detail proportional to the behavioral decision. Test fixtures, harness
+  setup, assertion code, and exhaustive input combinations belong in test design.
+- Preserve meaningful requirements even when the method of verification has
+  not yet been chosen. Clarify uncertainty about behavior separately from
+  uncertainty about how to test it.
 
-## Scope
+## Choose Examples That Explain the Rule
 
-Use this skill only for OpenSpec Markdown specifications. It does not author
-standalone Gherkin feature files, Markdown with Gherkin documents, step
-definitions, tests, implementation plans, or technical designs.
+- Identify the rule each scenario demonstrates. Split unrelated behaviors into
+  separate examples; keep consequences of the same event together.
+- Choose cases that distinguish business conditions, boundaries, or outcomes.
+  Use representative examples where they make a rule easier to understand or
+  expose ambiguity. Include boundary, failure, and alternative cases when their
+  distinctions matter, without expanding into a test coverage matrix.
+- Give each scenario a name that identifies its situation or expected outcome.
+  Keep it short enough that the behavior remains apparent.
+- Ensure the examples agree with the rule. Add an example when prose leaves an
+  important interpretation unclear; do not require a separate scenario for
+  every sentence. Surface missing decisions instead of silently extending or
+  weakening the requirement.
 
-When reviewing or editing a spec, preserve unrelated requirements, scenarios,
-operation sections, prose, and metadata. Change only the behavior or wording in
-scope unless the active schema requires a broader structural correction.
+## Express State, Event, and Result
 
-## Read the Specification Contract
+- **GIVEN** describes prior state needed to understand this example. Omit it
+  when no special starting context is relevant or the applicable context is
+  already clear from the requirement. Do not add generic setup to fill a template.
+- **WHEN** identifies one meaningful action or event. Express the actor's intent
+  or the system event clearly, without incidental interaction sequences.
+- **THEN** states consequences observable by a user, caller, or external system.
+  Include multiple results when they belong to the behavior being demonstrated.
 
-Before authoring, read the repository instructions and the active OpenSpec
-artifact instructions, schema, and template. Also read the proposal and any
-existing requirement being modified.
+Use domain behavior as the level of description. UI controls, API operations,
+messages, and other technical details belong in the scenario when they are part
+of the contract being specified. Include implementation details only when they
+are themselves an agreed constraint on the system.
 
-Apply the sources in this order:
+## Use Enough Precision to Resolve Meaning
 
-1. Repository language and domain terminology.
-2. The active OpenSpec schema and artifact instructions.
-3. The active template and established spec style.
-4. The Gherkin-style authoring guidance in this skill.
-
-The schema owns exact paths, headings, operation sections, keyword spelling,
-emphasis, and required fields. Preserve those forms exactly. Use the repository's
-required language for names and prose while keeping structural markers in the
-form required by the schema.
-
-## Author the Behavior
-
-1. Identify the capability and the delta operation the schema requires.
-2. Write each `Requirement` as one independently understandable business rule.
-   Put normative `SHALL` or `MUST` language in the requirement body when the
-   schema requires it.
-3. Illustrate the rule with the smallest set of scenarios needed to distinguish
-   its important behavior. Include success, alternative, boundary, or failure
-   cases only when they have materially different outcomes.
-4. Write each scenario as one concrete example with relevant context, one
-   meaningful event, and observable results.
-5. Re-read the requirement and its scenarios together. The examples must
-   demonstrate the rule without introducing behavior that the requirement does
-   not state.
-6. Review the finished Markdown against the active schema and template without
-   translating it into standalone Gherkin syntax.
-
-## Write Strong Scenarios
-
-### GIVEN: establish relevant state
-
-- Include `GIVEN` only when the scenario needs prior state to be understood.
-- Describe facts that are true before the behavior begins.
-- Keep only context that changes the outcome or makes the example unambiguous.
-- Do not put the triggering user interaction or system event in `GIVEN`.
-
-### WHEN: name the behavior trigger
-
-- Describe one meaningful action or event.
-- State intent at the domain level instead of scripting a sequence of incidental
-  interface operations.
-- Mention a UI control, API operation, message, or other channel when that
-  channel is itself part of the externally visible contract.
-
-### THEN: state observable consequences
-
-- Describe what a user, caller, or external system can observe.
-- Use precise outcomes that can be checked without guessing intent.
-- Include multiple consequences only when they belong to the same behavioral
-  outcome.
-- Avoid internal database, class, function, queue, mock, or logging details
-  unless they are explicitly part of the external contract.
-
-Use the step markers and continuation style allowed by the active schema. Do not
-introduce `And`, `But`, or another marker merely because standalone Gherkin
-supports it.
-
-## Keep Examples Useful
-
-- Give scenarios specific names that communicate the situation or outcome;
-  avoid names such as "Works", "Success", or "Error case" without context.
-- Prefer concrete actors, states, values, and boundaries over abstract phrases
-  such as "valid data" when the distinction matters.
-- Keep each scenario independently understandable. Do not rely on scenario order
-  or state created by another scenario.
-- Keep scenarios short enough to reveal one behavior. Three to five clauses is a
-  useful signal, not a hard limit.
-- Avoid duplicating scenarios that exercise the same rule and produce the same
-  observable result.
-- Do not turn scenarios into implementation procedures or exhaustive test suites.
-
-## Respect OpenSpec Delta Semantics
-
-- Preserve exact operation and requirement headings from the active schema.
-- For `MODIFIED`, carry forward the complete existing requirement block and all
-  scenarios that remain valid, then edit the resulting full behavior.
-- Do not force behavioral scenarios onto `REMOVED` or `RENAMED` entries when the
-  schema defines different required fields for those operations.
-- Do not add `Feature`, `Rule`, `Background`, `Scenario Outline`, `Examples`,
-  tags, Doc Strings, Data Tables, or other standalone Gherkin constructs unless
-  the active OpenSpec schema explicitly defines their Markdown representation.
-- Remove template comments and placeholders from completed requirements.
+- Make the situation, event, and expected consequence understandable in the
+  context of the specification. Avoid implicit dependence on the execution of
+  another scenario.
+- Replace empty claims such as "works correctly" or "handles errors gracefully"
+  with the expected behavior. Terms such as "authorized user" or "valid data"
+  are useful when the specification defines their meaning.
+- Use exact values, times, and error text when they define or clarify the rule.
+  Otherwise use meaningful domain conditions such as "an expired invitation";
+  arbitrary identifiers, timestamps, and payloads need not be supplied.
+- Distinguish example data from business limits. Do not invent thresholds,
+  tolerances, or error policies to make the document appear more precise.
+- When several materially different outcomes fit the wording, resolve the
+  ambiguity from agreed context or identify the missing product decision.
 
 ## Example
 
-A typical OpenSpec representation is:
+Requirement: only a document's owner may change its visibility.
 
-```markdown
-## ADDED Requirements
+Scenario: a user who does not own the document attempts to change its visibility.
 
-### Requirement: Expired password reset links are rejected
+- GIVEN the user is not the document's owner
+- WHEN the user attempts to change the document's visibility
+- THEN the change is refused and the visibility remains unchanged
 
-The system MUST reject a password reset link after its allowed lifetime.
+The scenario explains the access rule. User IDs, stored records, request payloads,
+and a particular error code are unnecessary unless the requirement specifies
+them. Render the rule and scenario using the active template's notation.
 
-#### Scenario: Customer uses an expired reset link
+## Review Before Returning
 
-- **GIVEN** the customer's password reset link has expired
-- **WHEN** the customer attempts to choose a new password with the link
-- **THEN** the system informs the customer that the link has expired
-- **THEN** the customer's password remains unchanged
-```
+Read the requirement and its scenarios together: can a reader understand what
+the system promises, when the rule applies, and what its examples demonstrate?
+Could materially different behaviors both appear to satisfy the wording? Clarify
+such differences without filling in the mechanics of a future test.
 
-The active schema and template take precedence over this example's exact
-formatting.
-
-## Verification
-
-Before finishing, verify that:
-
-- the file follows the active OpenSpec schema, template, and repository language;
-- every added or modified requirement states one normative business rule;
-- every required scenario has a specific name and demonstrates that rule;
-- each `GIVEN` is prior state, each `WHEN` is a meaningful event, and each `THEN`
-  is an observable result;
-- scenarios do not add unstated behavior or unnecessary implementation detail;
-- modified requirements retain all behavior that is meant to survive the change;
-- removed and renamed entries follow their own schema-defined fields; and
-- no unsupported standalone Gherkin constructs were introduced.
+Review the specification for contradictions, missing behavioral decisions, and
+redundancy. Preserve agreed behavior when improving wording, and distinguish
+proposed behavior changes from editorial corrections.
