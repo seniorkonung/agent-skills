@@ -5,10 +5,10 @@ description: Build and sharpen a project's domain model. Use when clarifying key
 
 # Domain Modeling
 
-Build shared understanding of the project's key concepts as you design. Resolve
-meaningful ambiguity, capture agreed definitions, and preserve the reasons for
-significant decisions. Merely reading an existing glossary for vocabulary does
-not require this workflow.
+Build shared understanding of the project's domain language as you design.
+Actively discover important concepts, resolve meaningful ambiguity, capture
+agreed definitions, and preserve the reasons for significant decisions. Merely
+reading an existing glossary for vocabulary does not require this workflow.
 
 ## File structure
 
@@ -55,13 +55,24 @@ If the topic's scope remains ambiguous, ask which context it belongs to.
 
 ## During the session
 
-### Choose concepts worth defining
+### Discover the domain language actively
 
-Prioritize the objects, roles, actions, states, and relationships through which
-users and domain participants understand the product. Include internal or
-technical concepts when they have an important domain meaning, such as ownership
-or access boundaries. Being project-specific or having come up in conversation
-does not by itself earn a term a glossary entry.
+Throughout the session, look for domain concepts instead of waiting for the user
+to request a definition. Notice the recurring or structurally important nouns and
+verbs in user language, scenarios, specifications, and code: objects, roles,
+actions, states and transitions, relationships, ownership, and boundaries.
+
+A concept deserves an explicit definition when it anchors an important scenario,
+distinguishes neighboring concepts, carries a non-obvious meaning in this domain,
+recurs as stable project language, or would change domain behavior, ownership,
+lifecycle, or system boundaries if interpreted differently. One strong reason is
+enough; a newly introduced core concept need not recur before it is worth naming.
+Include internal or technical concepts when they carry such domain meaning.
+
+Search broadly, then record selectively. Being project-specific or having come up
+in conversation does not by itself earn a term a glossary entry. Incidental
+fields, operation-specific inputs, and implementation structures remain outside
+the glossary unless participants need them as domain concepts in their own right.
 
 ### Resolve consequential ambiguity
 
@@ -99,6 +110,19 @@ when moving them out of an existing glossary; use an appropriate existing
 document or follow the project's documentation convention. Reasons for
 significant decisions may warrant an ADR.
 
+### Check language coverage
+
+At natural pauses and before finishing, review the important objects, roles,
+actions, states, transitions, relationships, ownership rules, and boundaries that
+the work introduced or changed. For each one, confirm that its meaning is already
+clear, add an agreed concise definition, or surface the unresolved meaning and
+record it where the project tracks open questions. Do not leave an essential
+concept implicit or a material glossary conflict unnoticed.
+
+Use this coverage pass to find omissions after focused discussion. It is not a
+reason to interrupt every incidental word or exhaustively define the entire
+repository during an unrelated task.
+
 ### Record and maintain decisions
 
 Before creating or editing an ADR or its index, read
@@ -106,5 +130,6 @@ Before creating or editing an ADR or its index, read
 status handling, history preservation, and the adjacent `README.md` index.
 
 Maintain the index in the same change as the ADR. Before finishing, check that
-glossary additions explain concepts, agreed details have an appropriate home,
-and affected ADRs and indexes agree on status and replacement links.
+the language coverage pass is complete, glossary additions explain concepts,
+agreed details have an appropriate home, and affected ADRs and indexes agree on
+status and replacement links.
