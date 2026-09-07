@@ -1,0 +1,99 @@
+{
+  "kind": "implementation",
+  "change": "persist-export",
+  "assessment": {
+    "formatVersion": 1,
+    "result": "Changes needed",
+    "coverageStatus": "Complete",
+    "summary": "Export acknowledgement can precede storage. AR1 remains accepted."
+  },
+  "reviewTarget": {
+    "baselineRef": "origin/feature",
+    "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "reviewedHead": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "targetCommits": [
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "reviewablePaths": [
+      "src/export.js",
+      "specs/export.md"
+    ],
+    "openSpecChange": "persist-export",
+    "openSpecSchema": "spec-driven",
+    "targetScope": "Complete pre-push range",
+    "baselineFreshness": "Local ref state; no fetch performed",
+    "planningEvidencePaths": [
+      "specs/export.md"
+    ]
+  },
+  "reviewedIncrement": [
+    {
+      "id": "U1",
+      "title": "Persist before acknowledgement",
+      "workItems": [
+        "1.1"
+      ],
+      "requirementsAndScenarios": [
+        "Export: acknowledge persisted output"
+      ],
+      "affectedBoundary": "Export API callers.",
+      "implementationTarget": [
+        "src/export.js"
+      ],
+      "applicableConstraintsAndNonGoals": "Preserve the existing success response contract."
+    }
+  ],
+  "passCoverage": [
+    {
+      "pass": "Independent decision review",
+      "status": "Complete",
+      "evidence": "Fresh isolated reviewer covered src/export.js at the recorded head."
+    },
+    {
+      "pass": "OpenSpec conformance",
+      "status": "Complete",
+      "evidence": "Export scenario inspected; node --test passed in a disposable checkout at the recorded head."
+    },
+    {
+      "pass": "Code quality",
+      "status": "Complete",
+      "evidence": "Failure handling and callers inspected at the recorded head."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F2",
+      "title": "Success can precede durable storage",
+      "severity": "High",
+      "evidence": "src/export.js acknowledges a request before its write completes.",
+      "evidenceRevisions": [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ],
+      "impact": "A caller can receive success for a missing export.",
+      "requiredOutcome": "Success implies retrievable export output.",
+      "earliestSourceOfTruth": "implementation/tests",
+      "affectedArtifacts": [
+        "src/export.js",
+        "specs/export.md"
+      ]
+    }
+  ],
+  "acceptedRisks": [
+    {
+      "id": "AR1",
+      "title": "Legacy rollback remains manual",
+      "evidence": "The legacy deployment has no automatic rollback path.",
+      "evidenceRevisions": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "potentialImpact": "Recovery takes longer during the deprecation window.",
+      "acceptanceRationale": "Automation costs more than the bounded remaining exposure.",
+      "scopeAndAssumptions": "Legacy deployments during September 2026 only.",
+      "reopenWhen": "The deprecation deadline is extended or new legacy deployments appear.",
+      "acceptanceAuthority": "The change owner explicitly accepted manual rollback in the review discussion.",
+      "originatingFinding": "F1",
+      "acceptanceLifetime": "Change-scoped"
+    }
+  ],
+  "reviewCoverage": "Reviewed export persistence, failure handling, callers, and legacy rollback."
+}

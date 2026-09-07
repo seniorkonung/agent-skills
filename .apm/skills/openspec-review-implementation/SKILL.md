@@ -134,7 +134,7 @@ mapping ambiguity, or mark the affected independent pass `Incomplete`.
 ## 4. Run the Independent Decision Review
 
 Read [references/review-format.md](references/review-format.md) before the review
-passes and follow it as the report contract.
+passes for the report rules and template.
 
 Read [references/intention-brief.md](references/intention-brief.md) and prepare a
 mechanism-neutral brief for each review unit or overlap group. Derive it from
@@ -179,6 +179,17 @@ Immediately before each report write, confirm that `HEAD` and the recorded local
 baseline still resolve to the recorded head and base. If either moved,
 rediscover and review the new target before replacing the report. Preserve any
 supported findings from the superseded target until explicitly resolved.
+
+After every creation or edit of `implementation-review.md`, including
+intermediate reports, finalization, planning handoff, and risk acceptance, run:
+
+```sh
+node "<skill-root>/scripts/validate-review.mjs" "<change-root>/implementation-review.md"
+```
+
+Requires Node.js 18+ and no installed packages. Fix reported errors and rerun until
+exit code 0 before continuing. If validation cannot run, disclose that limitation
+and do not claim a format-valid report.
 
 ### OpenSpec conformance
 
@@ -267,6 +278,7 @@ Before reporting, check the boundaries most likely to produce a false conclusion
 - **Handoff:** planning ownership, verified correction, and risk acceptance are
   distinguished; the report does not authorize implementation or release.
 
-When changing this skill, run the bundled discovery tests and evaluate the
+When changing this skill, run `node --test "<skill-root>"/tests/*.test.mjs`
+(discovery and report validation) and evaluate the
 realistic routing and workflow cases in
 [references/evaluation-cases.md](references/evaluation-cases.md).

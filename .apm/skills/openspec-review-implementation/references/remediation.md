@@ -110,6 +110,9 @@ tracked work already provide the required ownership:
 3. Report the revised artifacts, the phase or work-item IDs that own later work,
    unresolved decisions, and the separate next action available to the user.
 
+Recompute the report result from the remaining findings and recorded coverage.
+A planning handoff does not turn an incomplete review pass into a completed one.
+
 Implementation happens only in a later, separately invoked Apply workflow. Once
 the planning handoff resolves a finding, its OpenSpec artifacts and tracked work
 carry that context; do not keep a duplicate review entry as a reminder.

@@ -87,130 +87,35 @@ residual risk.
 
 The result reports review evidence. It is not a push verdict.
 
-## Suggested Shape
+## Write the Report
 
-Omit optional fields rather than adding placeholders.
+Fill [the report template](../assets/review-template.md), preserving its structure.
+Replace placeholders with evidence, repeat entry blocks as needed, and omit
+inapplicable optional fields and sections. Use the validator's diagnostics to
+correct format errors.
 
-```markdown
-# OpenSpec Implementation Review: <change-name>
+Set coverage from the evidence actually reviewed; explain missing material
+coverage in `Coverage limitations`. Preserve findings, accepted risks, IDs, and
+evidence when updating an older report. Do not invent evidence or drop review
+state to satisfy the validator; it checks recorded structure, not the truth of
+the review.
 
-## Assessment
+Copy the full commit and path arrays from discovery into the target. Keep each
+reviewable path accounted for as planning evidence, part of a review unit, or
+unmapped. Use `[]` for work-item or requirement labels only when their mapping
+cannot be established; explain that uncertainty rather than inventing IDs.
 
-**Result:** Changes needed | Incomplete | No unresolved findings
+Cite paths and lines at the recorded base/head in current evidence. For a carried
+finding or risk, preserve its original evidence revisions and `Current target
+relation`; omit that field when the entry was re-evaluated in the current target.
 
-<A short statement of the highest-impact current conclusion.>
+Keep required outcomes focused on closure; put implementation ideas in remediation
+plans or tasks unless an example clarifies the valid solution space.
 
-## Review target
+With no active findings, keep `Findings` and use the matching sentence:
 
-- **Baseline:** <tracking or user-supplied local ref and full base SHA>
-- **Reviewed head:** <full HEAD SHA>
-- **Target commits:** <count>
-- **Reviewable paths:** <count; excludes implementation-review.md>
-- **OpenSpec change:** <name and schema>
-- **Target scope:** Complete pre-push range | User-requested bounded range
-- **Baseline freshness:** Local ref state; no fetch performed
-- **Excluded worktree state:** <dirty paths were excluded; omit when clean>
+- Complete coverage: `No unresolved findings remain in the implementation review.`
+- Incomplete coverage: `No findings confirmed; review incomplete.`
 
-## Reviewed increment
-
-### U1 · <short intended outcome>
-
-- **Work items:** <task or work-item IDs or stable labels attributable to the range>
-- **Requirements and scenarios:** <affected IDs or stable labels>
-- **Affected boundary:** <actor or system boundary>
-- **Implementation target:** <exact changed paths within the recorded base..head>
-- **Applicable constraints and non-goals:** <mechanism-neutral summary>
-- **Excluded change scope:** <untouched future work; omit when obvious>
-
-## Unmapped range
-
-- **Unmatched target paths:** <paths and uncertainty; omit when none>
-
-## Pass coverage
-
-| Pass | Status | Evidence or limitation |
-|---|---|---|
-| Independent decision review | Complete | <fresh reviewer and exact path boundary for each unit> |
-| OpenSpec conformance | Complete | <verification and validation evidence> |
-| Code quality | Complete | <areas and checks covered> |
-
-Use `Incomplete` for a pass whose required evidence was unavailable.
-
-## Findings
-
-### F1 · High — <concise problem>
-
-- **Evidence:** <specific paths, lines, behavior, and repository facts>
-- **Impact:** <concrete failure, rework, or engineering harm>
-- **Required outcome:** <what must become true without prescribing one fix>
-- **Earliest source of truth:** <implementation/tests, task/verification,
-  design/ADR, requirement/proposal, or separate change>
-- **Affected artifacts:** <artifact IDs and code areas that must stay consistent>
-- **Decision needed:** <focused human choice and why; omit when unnecessary>
-- **Current target relation:** Carried forward; not re-reviewed | <omit when the
-  finding was reviewed in the current target>
-
-## Accepted risks
-
-### AR1 · <concise residual-risk condition>
-
-- **Evidence:** <specific paths, behavior, and repository facts>
-- **Potential impact:** <concrete failure or engineering harm that remains possible>
-- **Acceptance rationale:** <why remediation does not justify its cost or trade-offs>
-- **Scope and assumptions:** <the exact boundary within which acceptance applies>
-- **Reopen when:** <observable changes that invalidate the acceptance>
-- **Acceptance authority:** <the human decision or its durable source>
-- **Originating finding:** <original F identifier>
-- **Decision record:** <durable project artifact; required when acceptance must
-  outlive this OpenSpec change, otherwise omit>
-- **Current target relation:** Carried forward; not re-reviewed | <omit when the
-  accepted risk was reconciled against the current target>
-
-## Review coverage
-
-<A concise note naming important paths, runtime boundaries, requirements, and
-activated risk areas examined. Do not reproduce a traceability matrix.>
-```
-
-Use `critical`, `high`, `medium`, and `low` severity according to plausible
-impact. Do not report cosmetic preferences or hypothetical improvements without
-concrete harm.
-
-The reviewed-increment section defines what the target range actually claims
-to deliver. Add another `U<n>` section for each materially distinct outcome. Omit
-`Unmapped range` when every material path is mapped. Do not list the whole change
-as implemented, treat a checkbox as sufficient mapping evidence, or enumerate
-every untouched future task. Any material unmatched path must remain visible here
-and as a finding when it represents unrelated or untraceable work.
-
-`Evidence` establishes the fact. `Impact` explains why it matters. `Required
-outcome` defines closure while preserving solution choice. Put implementation
-ideas in the working remediation plan or OpenSpec tasks, not in the finding,
-unless examples are needed to clarify the valid solution space.
-
-For new or re-evaluated evidence, cite paths and lines at the recorded commit,
-using the base for deleted content. For a carried finding or risk, retain its
-original evidence revision and the `Current target relation` field; do not make
-old line numbers look freshly verified against the current head.
-
-An accepted risk records a decision about a supported condition, not a weaker
-kind of finding. Its rationale must compare the residual exposure with the cost
-or technical trade-offs of remediation. Its scope, assumptions, and reopening
-conditions must be concrete enough for a later review to decide whether the
-acceptance still applies without guessing.
-
-## A Clean Review
-
-When no active finding remains, write:
-
-```markdown
-## Findings
-
-No unresolved findings remain in the implementation review.
-```
-
-Keep the target, pass coverage, and review coverage so the boundary of that
-conclusion remains reproducible. Retain the `Accepted risks` section when any
-accepted condition still applies; omit it when none does. The OpenSpec artifacts
-and tracked work, not this report, retain any remediation already handed off for
-later implementation.
+For programmatic consumption or validator maintenance only, read
+[validator-interface.md](validator-interface.md).

@@ -532,7 +532,7 @@ accepted-risk entry.
 Run:
 
 ```sh
-node --test tests/discover-review-target.test.mjs
+node --test tests/*.test.mjs
 ```
 
 The tests must cover a single matched change, discovery through list plus
@@ -545,6 +545,15 @@ planning handoff, phased-plan versus task granularity, the prohibition on code
 and Apply, the update workflow's boundary handoffs, bounded-review finding
 retention, durable remediation handoff, accepted-risk separation and reopening,
 and the missing-skill failure.
+
+The report-validator tests additionally cover exact field/section grammar, JSON
+extraction, result precedence, incomplete coverage, accepted-risk references,
+durable decision records, immutable target identities, path accounting, carried
+evidence, diagnostics, and installation without the other review skill. In the
+workflow cases, inspect that every intermediate, final, remediation, or acceptance
+report write runs the validator and repairs errors before continuation/handoff.
+These deterministic tests do not establish that an agent actually followed that
+workflow or that recorded evidence and human authority were truthful.
 
 Also cover committed snapshot reads with dirty code, callers, and planning;
 intermediate report coverage; and findings that remain valid after one proposed
