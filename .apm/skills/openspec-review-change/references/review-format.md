@@ -27,7 +27,7 @@ current maximum. Resolve later user requests against the current report.
 1. Require the human's explicit acceptance. An agent recommendation, low
    likelihood, or remediation cost is insufficient.
 2. Record the supported condition, impact, rationale, scope, and reopening
-   conditions using the fields below. Ask for consequential terms that cannot be
+   conditions using the template. Ask for consequential terms that cannot be
    established from the human's decision and existing evidence.
 3. If acceptance changes an OpenSpec source of truth, reconcile it through
    `openspec-update-change`. Acceptance that must outlive the change also needs a
@@ -54,7 +54,7 @@ Choose the first applicable result:
 | The review scope was covered and no active finding remains | `No unresolved findings` |
 
 Always disclose material coverage gaps. An unreadable essential contract prevents
-a complete conclusion; an unavailable validation command alone need not, if the
+a complete conclusion; an unavailable OpenSpec validation command alone need not, if the
 artifacts support the review. Record missing access as a limitation and a required
 artifact known to be absent as a finding.
 
@@ -62,73 +62,23 @@ Accepted risks do not count as active findings. Name them in the assessment and
 handoff so a clean result is not mistaken for absence of known risk or approval
 to run Apply.
 
-## Suggested Shape
+## Write the Report
 
-Adapt headings to project conventions when useful. Omit optional material rather
-than creating empty sections.
+Fill [the report template](../assets/review-template.md), preserving its structure.
+Replace placeholders with evidence, repeat entry blocks as needed, and omit
+inapplicable optional fields and sections. Use the validator's diagnostics to
+correct format errors.
 
-```markdown
-# OpenSpec Change Review: <change-name>
+Set coverage from the evidence actually reviewed; explain missing material
+coverage in `Coverage limitations`. Preserve findings, accepted risks, IDs, and
+evidence when updating an older report. Do not invent evidence or drop review
+state to satisfy the validator; it checks recorded structure, not the truth of
+the review.
 
-## Assessment
+With no active findings, keep `Findings` and use the matching sentence:
 
-**Result:** Changes needed | Review incomplete | No unresolved findings
+- Complete coverage: `No unresolved findings remain in the reviewed change artifacts and relevant repository context.`
+- Incomplete coverage: `No findings confirmed; review incomplete.`
 
-<A short assessment of the change, its real blast radius, and whether anything
-currently prevents implementation from being planned safely.>
-
-**Validation:** <OpenSpec validation result and any important untested boundary>
-
-## Findings
-
-### F1 · High — <concise problem statement>
-
-- **Evidence:** <specific artifact or code paths and the relevant facts>
-- **Impact:** <concrete ambiguity, failure mode, rework, or operational risk>
-- **Required change:** <observable outcome, without inventing an unresolved design>
-- **Decision needed:** <human question and why it matters; omit when unnecessary>
-
-## Accepted risks
-
-### AR1 · <concise residual-risk condition>
-
-- **Evidence:** <specific artifact or repository facts supporting the condition>
-- **Potential impact:** <concrete failure, rework, or operational harm that remains possible>
-- **Acceptance rationale:** <why remediation does not justify its cost or trade-offs>
-- **Scope and assumptions:** <the exact boundary within which acceptance applies>
-- **Reopen when:** <observable changes that invalidate the acceptance>
-- **Acceptance authority:** <the human decision or its durable source>
-- **Originating finding:** <original F identifier>
-- **Decision record:** <durable project artifact; required when acceptance must
-  outlive this OpenSpec change, otherwise omit>
-
-## Review coverage
-
-<A brief note naming the core review and the change-specific areas examined in
-depth, such as data migration, security, telemetry, or rollout. This is not an
-applicability matrix.>
-```
-
-Use `critical`, `high`, `medium`, and `low` severity according to
-[review-lenses.md](review-lenses.md).
-
-The acceptance rationale should compare residual exposure with remediation cost
-or trade-offs. Its scope and reopening conditions must let a later reviewer
-determine whether acceptance still applies without guessing.
-
-## A Clean Review
-
-When the review is complete and no active finding remains, do not leave
-placeholder findings, resolved findings, or implied concerns. Write:
-
-```markdown
-## Findings
-
-No unresolved findings remain in the reviewed change artifacts and relevant
-repository context.
-```
-
-For an incomplete review with no confirmed finding, say instead: "No findings
-confirmed in the inspected material; review incomplete because <missing evidence
-and affected area>." Retain `Accepted risks` only when an accepted condition
-still applies.
+For programmatic consumption or validator maintenance only, read
+[validator-interface.md](validator-interface.md).

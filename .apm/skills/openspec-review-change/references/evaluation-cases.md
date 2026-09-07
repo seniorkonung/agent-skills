@@ -268,6 +268,19 @@ automatic rollback for all tenants. Test these variants:
 
 ## Deterministic Checks
 
+Run from the skill root:
+
+```sh
+node --test tests/validate-review.test.mjs
+```
+
+These fixture and CLI tests check valid and malformed reports, result precedence,
+incomplete coverage, risk origins and durable records, diagnostics, JSON extraction,
+and installation without the other review skill. They do not run an agent audit.
+In the workflow cases above, inspect that every report write is followed by the
+bundled validator, errors are repaired before handoff, and migration preserves
+earlier findings and risks. A successful format check is not review approval.
+
 Validate frontmatter, relative links, generated copies, focused repository diff,
 and the absence of stale full-path or direct-remediation instructions. Behavioral
 evaluation should cover the cases affected by the edit and retain the other

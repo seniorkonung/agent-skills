@@ -114,8 +114,8 @@ explain more than "consider adding tests" or "think about monitoring."
 
 ## Write the Current Review
 
-Read [references/review-format.md](references/review-format.md) before creating or
-restructuring `review.md`.
+Read [references/review-format.md](references/review-format.md) before writing
+`review.md` for the report rules and template.
 
 Keep the report current using that reference's retention, identifier, and result
 rules. Remove resolved findings, preserve applicable accepted risks, and distinguish
@@ -125,6 +125,17 @@ duplicate summaries, and empty sections.
 A broad re-audit repeats the breadth review and re-tests every existing finding.
 Review independently of prior acceptance, then reconcile accepted risks with the
 current evidence. An old finding's absence from fresh output does not resolve it.
+
+After every creation or edit of `review.md`, including remediation, risk
+acceptance, and re-audit updates, run:
+
+```sh
+node "<skill-root>/scripts/validate-review.mjs" "<change-root>/review.md"
+```
+
+Requires Node.js 18+ and no installed packages. Fix reported errors and rerun until
+exit code 0 before continuing. If validation cannot run, disclose that limitation
+and do not claim a format-valid report.
 
 ## Address Findings When Asked
 
@@ -175,5 +186,6 @@ Before reporting a clean review, confirm that:
 - only authorized artifacts changed, with no implementation, Apply-state change,
   or implied approval to proceed.
 
-When changing this skill, evaluate the realistic routing and workflow cases in
+When changing this skill, run `node --test "<skill-root>/tests/validate-review.test.mjs"`
+and evaluate the realistic routing and workflow cases in
 [references/evaluation-cases.md](references/evaluation-cases.md).

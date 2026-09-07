@@ -1,0 +1,36 @@
+{
+  "kind": "change",
+  "change": "persist-export",
+  "assessment": {
+    "formatVersion": 1,
+    "result": "Changes needed",
+    "coverageStatus": "Complete",
+    "summary": "Export acknowledgement can precede storage. AR1 remains accepted.",
+    "validation": "openspec validate persist-export passed; runtime behavior was not tested."
+  },
+  "findings": [
+    {
+      "id": "F2",
+      "title": "Success can precede durable storage",
+      "severity": "High",
+      "evidence": "src/export.js acknowledges a request before its write completes.",
+      "impact": "A caller can receive success for a missing export.",
+      "requiredChange": "Align the contract, design, work, and verification on durable acknowledgement."
+    }
+  ],
+  "acceptedRisks": [
+    {
+      "id": "AR1",
+      "title": "Legacy rollback remains manual",
+      "evidence": "The legacy deployment has no automatic rollback path.",
+      "potentialImpact": "Recovery takes longer during the deprecation window.",
+      "acceptanceRationale": "Automation costs more than the bounded remaining exposure.",
+      "scopeAndAssumptions": "Legacy deployments during September 2026 only.",
+      "reopenWhen": "The deprecation deadline is extended or new legacy deployments appear.",
+      "acceptanceAuthority": "The change owner explicitly accepted manual rollback in the review discussion.",
+      "originatingFinding": "F1",
+      "acceptanceLifetime": "Change-scoped"
+    }
+  ],
+  "reviewCoverage": "Reviewed export persistence, failure handling, callers, and legacy rollback."
+}
