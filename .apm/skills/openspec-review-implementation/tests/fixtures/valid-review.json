@@ -8,7 +8,7 @@
     "summary": "Export acknowledgement can precede storage. AR1 remains accepted."
   },
   "reviewTarget": {
-    "baselineRef": "origin/feature",
+    "baselineRef": "review-start",
     "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "reviewedHead": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
     "targetCommits": [
@@ -20,7 +20,7 @@
     ],
     "openSpecChange": "persist-export",
     "openSpecSchema": "spec-driven",
-    "targetScope": "Complete pre-push range",
+    "targetScope": "User-requested bounded range",
     "baselineFreshness": "Local ref state; no fetch performed",
     "planningEvidencePaths": [
       "specs/export.md"

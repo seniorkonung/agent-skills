@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { chmod, mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import {
   discoverReviewTarget,
@@ -140,18 +141,20 @@ if (command === 'list' && args[0] === '--json') {
   await chmod(openspecBin, 0o755);
 }
 
-test('discovers the one OpenSpec change touched by outgoing commits', async () => {
+test('discovers the one OpenSpec change touched by the supplied range', async () => {
   const { openspecBin, repositoryRoot } = await createRepository();
 
   const result = discoverReviewTarget({
     cwd: repositoryRoot,
     openspecBin,
-    upstreamRef: 'HEAD~1',
+    headRef: 'HEAD',
+    baseRef: 'HEAD~1',
   });
 
   assert.equal(result.result, 'ready');
-  assert.equal(result.ahead, 1);
-  assert.equal(result.behind, 0);
+  assert.equal(result.commits.length, 1);
+  assert.deepEqual(result.commits, [result.head]);
+  assert.notEqual(result.base, result.head);
   assert.equal(result.change.name, 'add-value');
   assert.equal(result.change.schemaName, 'spec-driven');
   assert.deepEqual(result.changedPaths, [
@@ -160,7 +163,8 @@ test('discovers the one OpenSpec change touched by outgoing commits', async () =
   ]);
   assert.deepEqual(result.pathsOutsideChangeRoot, ['src/app.js']);
   assert.equal('implementationPaths' in result, false);
-  assert.equal(result.upstreamFreshness, 'explicit local ref; no fetch performed');
+  assert.equal(result.baseRef, 'HEAD~1');
+  assert.equal(result.headRef, 'HEAD');
 });
 
 test('discovers changes without requiring batch status support', async () => {
@@ -170,7 +174,8 @@ test('discovers changes without requiring batch status support', async () => {
   const result = discoverReviewTarget({
     cwd: repositoryRoot,
     openspecBin,
-    upstreamRef: 'HEAD~1',
+    headRef: 'HEAD',
+    baseRef: 'HEAD~1',
   });
 
   assert.equal(result.result, 'ready');
@@ -184,7 +189,8 @@ test('captures output from a Node OpenSpec CLI through regular files', async () 
   const result = discoverReviewTarget({
     cwd: repositoryRoot,
     openspecBin,
-    upstreamRef: 'HEAD~1',
+    headRef: 'HEAD',
+    baseRef: 'HEAD~1',
   });
 
   assert.equal(result.result, 'ready', JSON.stringify(result, null, 2));
@@ -200,7 +206,8 @@ test('rejects command output above the previous pipe buffer limit', async () => 
   const result = discoverReviewTarget({
     cwd: repositoryRoot,
     openspecBin,
-    upstreamRef: 'HEAD~1',
+    headRef: 'HEAD',
+    baseRef: 'HEAD~1',
   });
 
   assert.equal(result.result, 'incomplete');
@@ -222,7 +229,8 @@ test('preserves Git paths that contain newlines', async () => {
   const result = discoverReviewTarget({
     cwd: repositoryRoot,
     openspecBin,
-    upstreamRef: 'HEAD~1',
+    headRef: 'HEAD',
+    baseRef: 'HEAD~1',
   });
 
   assert.equal(result.result, 'ready', JSON.stringify(result, null, 2));
@@ -231,17 +239,18 @@ test('preserves Git paths that contain newlines', async () => {
   assert.equal(result.change.changeRoot, changeRoot);
 });
 
-test('returns a no-op result when there are no outgoing commits', async () => {
+test('returns a no-op result when the supplied endpoints are equal', async () => {
   const { openspecBin, repositoryRoot } = await createRepository();
 
   const result = discoverReviewTarget({
     cwd: repositoryRoot,
     openspecBin,
-    upstreamRef: 'HEAD',
+    headRef: 'HEAD',
+    baseRef: 'HEAD',
   });
 
-  assert.equal(result.result, 'no_outgoing_commits');
-  assert.equal(result.ahead, 0);
+  assert.equal(result.result, 'no_commits');
+  assert.deepEqual(result.commits, []);
   assert.deepEqual(result.changedPaths, []);
 });
 
@@ -310,7 +319,8 @@ test('an explicit change cannot hide another change in the same range', async ()
     changeName: 'add-value',
     cwd: repositoryRoot,
     openspecBin,
-    upstreamRef: 'HEAD~2',
+    headRef: 'HEAD',
+    baseRef: 'HEAD~2',
   });
 
   assert.equal(result.result, 'incomplete');
@@ -331,7 +341,8 @@ test('a report-only commit does not create an endless review target', async () =
   const result = discoverReviewTarget({
     cwd: repositoryRoot,
     openspecBin,
-    upstreamRef: 'HEAD~1',
+    headRef: 'HEAD',
+    baseRef: 'HEAD~1',
   });
 
   assert.equal(
@@ -345,4 +356,90 @@ test('a report-only commit does not create an endless review target', async () =
   assert.deepEqual(result.excludedPaths, [
     'openspec/changes/add-value/implementation-review.md',
   ]);
+});
+
+test('requires both endpoints even with a configured upstream', async () => {
+  const { openspecBin, repositoryRoot } = await createRepository();
+  git(repositoryRoot, 'branch', 'baseline', 'HEAD~1');
+  git(repositoryRoot, 'branch', '--set-upstream-to=baseline');
+
+  for (const endpoints of [{}, { baseRef: 'HEAD~1' }, { headRef: 'HEAD' }]) {
+    const result = discoverReviewTarget({
+      cwd: repositoryRoot,
+      openspecBin,
+      ...endpoints,
+    });
+    assert.equal(result.result, 'incomplete');
+    assert.equal(result.reason, 'missing_commit_range');
+  }
+});
+
+test('reviews a historical range on a detached checkout and excludes local work', async () => {
+  const { openspecBin, repositoryRoot } = await createRepository();
+  const base = execFileSync('git', ['rev-parse', 'HEAD~1'], {
+    cwd: repositoryRoot, encoding: 'utf8',
+  }).trim();
+  const head = execFileSync('git', ['rev-parse', 'HEAD'], {
+    cwd: repositoryRoot, encoding: 'utf8',
+  }).trim();
+  await writeFile(path.join(repositoryRoot, 'src/later.js'), 'export const later = true;\n');
+  git(repositoryRoot, 'add', '.');
+  git(repositoryRoot, 'commit', '--quiet', '-m', 'feat: add later work');
+  git(repositoryRoot, 'checkout', '--quiet', '--detach');
+  await writeFile(path.join(repositoryRoot, 'src/app.js'), 'uncommitted edit\n');
+  await writeFile(path.join(repositoryRoot, 'staged.txt'), 'staged work\n');
+  git(repositoryRoot, 'add', 'staged.txt');
+  await writeFile(path.join(repositoryRoot, 'untracked.txt'), 'untracked work\n');
+
+  const result = discoverReviewTarget({
+    cwd: repositoryRoot,
+    openspecBin,
+    baseRef: base,
+    headRef: head,
+  });
+
+  assert.equal(result.result, 'ready', JSON.stringify(result));
+  assert.equal(result.base, base);
+  assert.equal(result.head, head);
+  assert.deepEqual(result.commits, [head]);
+  assert.deepEqual(result.changedPaths, ['openspec/changes/add-value/tasks.md', 'src/app.js']);
+  assert.equal(result.worktreeDirty, true);
+});
+
+test('rejects invalid revisions and non-ancestor ranges without selecting a replacement', async () => {
+  const { openspecBin, repositoryRoot } = await createRepository();
+  git(repositoryRoot, 'checkout', '--quiet', '-b', 'side', 'HEAD~1');
+  git(repositoryRoot, 'commit', '--quiet', '--allow-empty', '-m', 'chore: diverge');
+
+  for (const [baseRef, headRef, reason] of [
+    ['missing', 'main', 'invalid_git_target'],
+    ['main~1', 'missing', 'invalid_git_target'],
+    ['main:src/app.js', 'main', 'invalid_git_target'],
+    ['--all', 'main', 'invalid_git_target'],
+    ['main', 'main~1', 'non_ancestor_range'],
+    ['side', 'main', 'non_ancestor_range'],
+  ]) {
+    const result = discoverReviewTarget({ cwd: repositoryRoot, openspecBin, baseRef, headRef });
+    assert.equal(result.result, 'incomplete');
+    assert.equal(result.reason, reason, `${baseRef}..${headRef}: ${JSON.stringify(result)}`);
+  }
+});
+
+test('CLI requires two endpoints and rejects the old upstream option', async () => {
+  const { openspecBin, repositoryRoot } = await createRepository();
+  const script = fileURLToPath(new URL('../scripts/discover-review-target.mjs', import.meta.url));
+  const invoke = (...args) => spawnSync(process.execPath, [script, ...args], {
+    cwd: repositoryRoot,
+    encoding: 'utf8',
+  });
+
+  const missing = invoke('--base', 'HEAD~1');
+  assert.equal(missing.status, 2);
+  assert.equal(JSON.parse(missing.stdout).reason, 'missing_commit_range');
+  for (const args of [['--upstream', 'HEAD~1'], ['--base'], ['--base', '--head', 'HEAD']]) {
+    assert.equal(invoke(...args).status, 64);
+  }
+  const ready = invoke('--base', 'HEAD~1', '--head', 'HEAD', '--openspec', openspecBin);
+  assert.equal(ready.status, 0, ready.stderr);
+  assert.equal(JSON.parse(ready.stdout).result, 'ready');
 });

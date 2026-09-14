@@ -4,14 +4,17 @@ Use these cases when changing the skill's routing, target discovery, review
 ordering, report format, or remediation behavior. Compare the candidate skill
 with the repository's previous committed version. Review observable decisions,
 writes, report quality, unnecessary work, and disclosed limitations rather than
-matching exact phrases.
+matching exact phrases. Unless a case exercises missing or contextual endpoints,
+assume the invocation supplies locally resolvable base and head commits enclosing
+exactly the fixture's reviewed increment.
 
 ## Claims Under Test
 
 The skill should:
 
-- review the complete committed range ahead of upstream by default, or an
-  explicitly requested bounded committed range, without including the worktree;
+- require both range endpoints from the invocation or unambiguous context,
+  resolve them to full commit IDs, and review exactly that range without defaults
+  based on branch or push state and without including the worktree;
 - select one active OpenSpec change from changed-path evidence;
 - derive the implemented work increment from both the immutable diff and the
   complete change context instead of treating the whole change as delivered;
@@ -39,16 +42,17 @@ The skill should:
 - keep phased plans at outcome granularity while recording detailed corrective
   work in the schema's task or tracked-work artifact.
 
-## Case 1: Normal Pre-Push Review
+## Case 1: Explicit Committed Range
 
 **Prompt**
 
-> Implementation is committed. Review everything that will be pushed and record
-> anything I need to fix.
+> Review `review-start..review-end` and record anything I need to fix.
 
 **Fixture**
 
-- The branch tracks `origin/feature` and is three commits ahead, zero behind.
+- `review-start` and `review-end` enclose three implementation commits.
+- The branch's current `HEAD` includes a later unrelated commit; whether these
+  commits have been pushed is irrelevant.
 - The active change contains ten tasks; the range changes production code, tests,
   and completion state for two tasks that serve one outcome.
 - The outcome, external compatibility constraint, and selected mechanism are
@@ -57,7 +61,8 @@ The skill should:
 
 **Expected behavior**
 
-- Resolve exactly `origin/feature..HEAD` and disclose local tracking freshness.
+- Resolve exactly `review-start..review-end` to full IDs, excluding the base and
+  including the head. Do not include the later commit or inspect push state.
 - Select the one change touched by the range.
 - Exclude the uncommitted note.
 - Map the two tasks and their affected requirements to one coherent review unit
@@ -77,43 +82,45 @@ The skill should:
 - Consolidate duplicate symptoms into root-cause findings with evidence, impact,
   required outcome, earliest source, and affected artifacts.
 
-## Case 2: Two Changes in One Outgoing Range
+## Case 2: Two Changes in One Supplied Range
 
 **Prompt**
 
-> Review my branch before I push. Do not ask unnecessary questions.
+> Review `review-start..review-end`. Do not ask unnecessary questions.
 
 **Fixture**
 
-- The outgoing range changes tracking artifacts under two active change roots.
+- The supplied range changes tracking artifacts under two active change roots.
 
 **Expected behavior**
 
 - Return an incomplete result naming both candidates.
 - Do not choose the most recently modified or alphabetically first change.
 - Do not write either report until the caller isolates one change target.
-- Require a branch or checkout with a non-overlapping outgoing range; an explicit
-  change name must not hide the other touched change.
+- Ask the caller for a separate range per change; an explicit change name must
+  not hide the other touched change. Do not choose replacement endpoints.
 
 ## Case 3: Re-Audit After Corrective Commits
 
 **Prompt**
 
-> I committed fixes for every open finding. Re-review before push.
+> I committed fixes. Review only `before-fixes..after-fixes`.
 
 **Fixture**
 
-- The upstream has not moved.
-- Corrective commits change code and tests but the original task update remains in
-  the full outgoing range.
+- Corrective commits change code and tests; the original task update is before
+  the supplied base, and another unrelated commit follows the supplied head.
+- The invocation names the active change because the range touches no planning
+  artifacts.
 - An earlier `implementation-review.md` contains open findings.
 
 **Expected behavior**
 
-- Review the new complete `upstream..HEAD` range, not only corrective commits.
+- Review exactly the corrective range; neither the earlier implementation nor
+  the later unrelated commit is added to the target.
 - Use a fresh isolated decision reviewer with no earlier findings.
-- Rewrite the report to current truth and remove findings only when the complete
-  evidence supports removal.
+- Reconcile the report against the supplied range and remove findings only when
+  evidence supports resolution. Preserve findings outside it as carried forward.
 - Do not retain an old-target ledger or remediation history.
 
 ## Case 4: Planning-Only Near Miss
@@ -124,7 +131,7 @@ The skill should:
 
 **Fixture**
 
-- Outgoing commits contain change artifacts plus a linked planning document
+- The supplied commits contain change artifacts plus a linked planning document
   outside the selected change root, but no implementation or delivery behavior.
 
 **Expected behavior**
@@ -199,11 +206,11 @@ The skill should:
 
 **Prompt**
 
-> I committed the clean implementation review. Check again before push.
+> Review `before-report..after-report`; I just committed the review report.
 
 **Fixture**
 
-- The only commit ahead of upstream changes
+- The supplied range contains one commit changing only
   `<change-root>/implementation-review.md`.
 
 **Expected behavior**
@@ -252,14 +259,14 @@ The skill should:
 - Two tasks implement one user-visible outcome in one subsystem.
 - A third task implements a materially different operator outcome in a disjoint
   subsystem, but all three belong to the same active change.
-- Variant A: their code and test paths are separable in the immutable outgoing
+- Variant A: their code and test paths are separable in the immutable supplied
   diff.
 - Variant B: one changed implementation path materially contributes to both
   outcomes.
 
 **Expected behavior**
 
-- Map all three tasks and every material outgoing implementation path.
+- Map all three tasks and every material implementation path in the supplied range.
 - Group the first two tasks into one review unit and the third into another; do
   not flatten them into the active change's broad purpose.
 - In variant A, prepare one mechanism-neutral brief and use one fresh decision
@@ -270,7 +277,7 @@ The skill should:
   use one fresh reviewer with a combined neutral brief and the union of their
   complete path lists. Do not assign the shared path to only one unit or attempt
   hunk-level isolation.
-- Apply conformance and code-quality review to the complete outgoing range and
+- Apply conformance and code-quality review to the complete supplied range and
   consolidate all findings into one current report.
 - Record both units and disclose any unmatched path or uncertain task mapping.
 
@@ -388,12 +395,11 @@ The skill should:
   explicit human decision, or handed off into concrete remediation artifacts and
   tracked work.
 - The newest commit has a disjoint implementation target and introduces F3.
-- The user supplies the newest commit's parent as the local baseline.
+- The user supplies the newest commit and its parent as head and base.
 
 **Expected behavior**
 
-- Review exactly the user-requested bounded range and disclose that it is not the
-  complete pre-push range.
+- Review exactly the supplied parent-to-commit range, regardless of push state.
 - Keep F1 and F2 out of the isolated reviewer context.
 - Add F3 while carrying F1 and F2 forward as unresolved and not re-reviewed.
 - Do not treat a moved head, a disjoint target, or absence from current reviewer
@@ -527,6 +533,36 @@ accepted-risk entry.
   disprove the failure mode.
 - Preserve the required property and leave compatible implementation choices open.
 
+## Case 19: Missing or Ambiguous Endpoints
+
+**Setup:** The user asks to review before push. The branch has an upstream and
+several increments, but the conversation identifies no range. Also try supplying
+only the base or only the head.
+
+**Expected:** Ask for the missing boundaries before auditing or writing a report.
+Do not derive defaults from branch state or a previous report. The helper returns
+`missing_commit_range` without both endpoints, even with a configured upstream.
+
+## Case 20: Context Identifies Both Endpoints
+
+**Setup:** The user asks to review the two commits just made. The conversation
+records the pre-work commit and both new commits; a later unrelated commit exists.
+
+**Expected:** Resolve the pre-work commit and the last of those two commits to full
+IDs, state `base..head`, and proceed without asking the user to repeat them. Exclude
+the later commit. If the intended increment or first commit's inclusion is
+ambiguous, ask only for that clarification.
+
+## Case 21: Supplied Refs Move During Review
+
+**Setup:** Discovery records both commit IDs. The worktree is clean, but its `HEAD`
+differs from the reviewed head. A supplied ref or checkout `HEAD` advances during
+the review.
+
+**Expected:** Keep the recorded IDs for diffs, reads, reviewer briefs, and reports.
+Verify in an isolated checkout at the recorded head. A different range requires
+the caller to identify it; unresolved findings carry forward.
+
 ## Deterministic Checks
 
 Run:
@@ -536,11 +572,14 @@ node --test tests/*.test.mjs
 ```
 
 The tests must cover a single matched change, discovery through list plus
-per-change status, no outgoing commits, multiple matched changes, explicit-change
-isolation, the location-only `pathsOutsideChangeRoot` field, unusual Git paths,
-and a report-only commit. Also validate frontmatter, relative links, generated
-copies, and the focused repository diff. Behavioral evaluation must cover exact
-reviewer path boundaries, including overlapping unit paths, result precedence,
+per-change status, required endpoints even with an upstream, equal endpoints,
+historical and detached targets, invalid revisions and non-ancestor ranges,
+exclusion of staged/unstaged/untracked work, CLI arguments, multiple matched
+changes, explicit-change isolation, the location-only `pathsOutsideChangeRoot`
+field, unusual Git paths, and a report-only commit. Also validate frontmatter,
+relative links, generated copies, and the focused repository diff. Behavioral
+evaluation must cover exact reviewer path boundaries, including overlapping unit
+paths, result precedence,
 planning handoff, phased-plan versus task granularity, the prohibition on code
 and Apply, the update workflow's boundary handoffs, bounded-review finding
 retention, durable remediation handoff, accepted-risk separation and reopening,

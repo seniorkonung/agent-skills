@@ -10,14 +10,14 @@
 
 ## Review target
 
-- **Baseline ref:** <tracking or user-supplied local ref>
+- **Baseline ref:** <supplied base commit ID or local ref>
 - **Base commit:** <full base SHA>
-- **Reviewed head:** <full HEAD SHA>
+- **Reviewed head:** <full supplied head SHA; need not be checkout HEAD>
 - **Target commits:** ["<full commit SHA>"]
 - **Reviewable paths:** ["<exact repository-relative path>"]
 - **OpenSpec change:** <same change name as the title>
 - **OpenSpec schema:** <schema name>
-- **Target scope:** Complete pre-push range
+- **Target scope:** User-requested bounded range
 - **Baseline freshness:** Local ref state; no fetch performed
 - **Planning evidence paths:** ["<reviewable path used as planning context; omit field when none>"]
 - **Excluded worktree state:** ["<excluded dirty path; omit field when clean>"]

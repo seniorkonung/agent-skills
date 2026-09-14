@@ -9,14 +9,14 @@
 
 ## Review target
 
-- **Baseline ref:** origin/feature
+- **Baseline ref:** review-start
 - **Base commit:** aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 - **Reviewed head:** bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 - **Target commits:** ["bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"]
 - **Reviewable paths:** ["src/export.js", "specs/export.md"]
 - **OpenSpec change:** persist-export
 - **OpenSpec schema:** spec-driven
-- **Target scope:** Complete pre-push range
+- **Target scope:** User-requested bounded range
 - **Baseline freshness:** Local ref state; no fetch performed
 - **Planning evidence paths:** ["specs/export.md"]
 

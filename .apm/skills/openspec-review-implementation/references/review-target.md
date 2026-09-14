@@ -1,24 +1,25 @@
 # Committed Review Target
 
-Use the bundled helper to resolve which committed bytes and OpenSpec change the
-review owns:
+## Range Semantics
 
-```sh
-node "<skill-root>/scripts/discover-review-target.mjs"
-```
+Use `base..head`: exclude `base` and include `head`. The base must be an ancestor
+of head; equal endpoints produce a no-op. The reviewed head need not be the
+checkout's `HEAD`.
 
-## Contract
+If the caller names the first reviewed commit rather than an excluded base,
+resolve its intended parent as the base only when that meaning and parent are
+clear. Clarify ambiguous inclusion or parentage before invoking the helper.
 
-The helper requires Git, Node.js, and the `openspec` CLI. It is read-only: it
+## Helper Contract
+
+The helper requires Git, Node.js 18+, and the `openspec` CLI. It is read-only: it
 does not fetch, write repository files, or include staged, unstaged, or untracked
-work.
+work. It validates the supplied endpoints without selecting alternatives.
 
 It resolves:
 
-- the current branch's configured upstream, or the user-supplied local baseline,
-  and full base SHA;
-- the complete `base..HEAD` commit list and changed paths for that target;
-- ahead and behind counts;
+- the supplied `baseRef` and `headRef` to full commit IDs `base` and `head`;
+- the complete `base..head` commit list and changed paths using those fixed IDs;
 - active change names from `openspec list --json` and current metadata from
   `openspec status --change <name> --json`; and
 - the one change whose reported `changeRoot` contains a changed path.
@@ -36,36 +37,33 @@ context; do not infer them from location or filenames alone.
 The helper reads Git's changed-path output with NUL delimiters so newlines and
 other quoted characters in a path do not change the inventory boundary.
 
-## Overrides
+## Arguments
 
-- Use `--upstream <ref>` only when the user supplies a different local baseline.
+- `--base <commit>` and `--head <commit>` are both required. Each accepts a commit
+  ID or locally resolvable ref. There is no upstream or push-range option.
 - Use `--change <name>` only to associate a range that changes no artifact under
   a change root. It cannot override changed-path evidence or hide another change
   touched by the range.
 - Use `--openspec <path>` for a non-default CLI executable.
 
-The helper never checks the live remote. A configured upstream reflects the last
-local tracking update; an explicit baseline is another local ref. Do not fetch
-without the user's request.
-
-An explicit baseline narrows this review target only. It does not establish that
-findings outside the target were fixed, disproved, or handed off into tracked
-remediation; preserve those findings according to the report contract.
+Refs describe local state only. Do not fetch without the user's request.
 
 ## Results
 
 - `ready`: use the exact base, head, commits, reviewable paths, selected change,
   paths outside its change root, and excluded paths.
-- `no_outgoing_commits`: nothing committed is waiting for push.
-- `no_reviewable_changes`: outgoing commits change only excluded review reports.
-- `incomplete`: stop target discovery and report its `reason`. Request only the
-  specific missing baseline, intentional change association, or OpenSpec repair
-  it identifies. Two reasons need particular care:
-  - `diverged_upstream`: the branch is both ahead and behind; it is not a normal
-    push target.
-  - `multiple_change_matches`: require a branch, checkout, or user-specified
-    baseline whose target range contains one change. An explicit change name
-    cannot hide another touched change.
+- `no_commits`: the supplied endpoints resolve to the same commit.
+- `no_reviewable_changes`: the range has no net changes outside excluded reports.
+- `incomplete`: stop target resolution and report its `reason`. Request only the
+  missing endpoint, range clarification, intentional change association, or
+  OpenSpec repair it identifies. In particular:
+  - `missing_commit_range`: at least one endpoint was omitted.
+  - `invalid_git_target`: an endpoint cannot be resolved to a local commit or Git
+    cannot inspect it.
+  - `non_ancestor_range`: base is not an ancestor of head; ask for the intended
+    range rather than selecting a replacement baseline.
+  - `multiple_change_matches`: require a caller-supplied range containing one
+    change. An explicit change name cannot hide another touched change.
 
 `worktreeDirty` is disclosure only. Never add those paths to the committed target.
 
@@ -106,11 +104,11 @@ coordinator context after the independent passes return or are unavailable.
 ## Verification Must Match the Snapshot
 
 Run project checks in an isolated checkout or disposable copy at the recorded
-head when the worktree contains changes that could affect them. Keep generated
-test and build files there; the audit's only authored repository change is the
-review report. Do not stash, reset, or overwrite the user's work to obtain a
-clean tree. Use local or fake services for checks that would otherwise change
-external state.
+head when the checkout's `HEAD` differs from it or the worktree contains changes
+that could affect them. Keep generated test and build files there; the audit's
+only authored repository change is the review report. Do not stash, reset, or
+overwrite the user's work to obtain a clean tree. Use local or fake services for
+checks that would otherwise change external state.
 
 A worktree test run may be useful, but it is not proof about the reviewed head
 unless all inputs match that snapshot. Record commands, results, execution

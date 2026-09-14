@@ -105,6 +105,10 @@ reviewable path accounted for as planning evidence, part of a review unit, or
 unmapped. Use `[]` for work-item or requirement labels only when their mapping
 cannot be established; explain that uncertainty rather than inventing IDs.
 
+Set `Target scope` to `User-requested bounded range`, including when endpoints
+came from clear context. The legacy value `Complete pre-push range` remains
+supported for existing reports.
+
 Cite paths and lines at the recorded base/head in current evidence. For a carried
 finding or risk, preserve its original evidence revisions and `Current target
 relation`; omit that field when the entry was re-evaluated in the current target.

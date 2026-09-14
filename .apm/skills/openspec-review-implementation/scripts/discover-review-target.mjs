@@ -14,8 +14,6 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const CAPTURE_LIMIT_BYTES = 1024 * 1024;
-const TRACKING_REF_FRESHNESS = 'local tracking state; no fetch performed';
-const EXPLICIT_REF_FRESHNESS = 'explicit local ref; no fetch performed';
 
 function readCapturedOutput(filePath, invocation, streamName) {
   if (statSync(filePath).size > CAPTURE_LIMIT_BYTES) {
@@ -175,11 +173,19 @@ function incomplete(reason, message, context = {}) {
 }
 
 export function discoverReviewTarget({
+  baseRef,
   changeName,
   cwd = process.cwd(),
+  headRef,
   openspecBin = process.env.OPENSPEC_BIN || 'openspec',
-  upstreamRef,
 } = {}) {
+  if (!baseRef || !headRef) {
+    return incomplete(
+      'missing_commit_range',
+      'Supply both --base <commit> (excluded) and --head <commit> (included).',
+    );
+  }
+
   let repositoryRoot;
   try {
     repositoryRoot = git(cwd, 'rev-parse', '--show-toplevel');
@@ -187,64 +193,47 @@ export function discoverReviewTarget({
     return incomplete('not_git_repository', error.message);
   }
 
-  const upstreamWasExplicit = Boolean(upstreamRef);
-  let upstream = upstreamRef;
-  if (!upstream) {
-    try {
-      upstream = git(
-        repositoryRoot,
-        'rev-parse',
-        '--abbrev-ref',
-        '--symbolic-full-name',
-        '@{upstream}',
-      );
-    } catch (error) {
-      return incomplete(
-        'no_upstream',
-        'The current branch has no upstream tracking ref. Supply --upstream <ref>.',
-        { repositoryRoot },
-      );
-    }
-  }
-
   let base;
   let head;
-  let behind;
-  let ahead;
+  let baseOnlyCommit;
   try {
-    base = git(repositoryRoot, 'rev-parse', `${upstream}^{commit}`);
-    head = git(repositoryRoot, 'rev-parse', 'HEAD^{commit}');
-    [behind, ahead] = git(
-      repositoryRoot,
-      'rev-list',
-      '--left-right',
-      '--count',
-      `${upstream}...HEAD`,
-    )
-      .split(/\s+/)
-      .map(Number);
+    base = git(
+      repositoryRoot, 'rev-parse', '--verify', '--end-of-options', `${baseRef}^{commit}`,
+    );
+    head = git(
+      repositoryRoot, 'rev-parse', '--verify', '--end-of-options', `${headRef}^{commit}`,
+    );
+    // Verify ancestry without selecting a different baseline.
+    baseOnlyCommit = git(
+      repositoryRoot, 'rev-list', '--max-count=1', base, '--not', head,
+    );
   } catch (error) {
     return incomplete('invalid_git_target', error.message, {
       repositoryRoot,
-      upstream,
+      baseRef,
+      headRef,
     });
   }
 
   const common = {
     repositoryRoot,
-    upstream,
-    upstreamFreshness: upstreamWasExplicit
-      ? EXPLICIT_REF_FRESHNESS
-      : TRACKING_REF_FRESHNESS,
+    baseRef,
+    headRef,
     base,
     head,
-    behind,
-    ahead,
   };
 
-  if (ahead === 0) {
+  if (baseOnlyCommit) {
+    return incomplete(
+      'non_ancestor_range',
+      'The supplied base is not an ancestor of head. Supply the intended ancestor-to-descendant range; no replacement baseline was selected.',
+      common,
+    );
+  }
+
+  if (base === head) {
     return {
-      result: 'no_outgoing_commits',
+      result: 'no_commits',
       ...common,
       commits: [],
       changedPaths: [],
@@ -256,7 +245,7 @@ export function discoverReviewTarget({
     repositoryRoot,
     'rev-list',
     '--reverse',
-    `${upstream}..HEAD`,
+    `${base}..${head}`,
   ).split('\n');
   const changedOutput = gitRaw(
     repositoryRoot,
@@ -264,7 +253,8 @@ export function discoverReviewTarget({
     '--name-only',
     '-z',
     '--diff-filter=ACDMRTUXB',
-    `${upstream}..HEAD`,
+    base,
+    head,
   );
   const changedPaths = changedOutput
     ? changedOutput.split('\0').filter(Boolean).sort()
@@ -275,14 +265,6 @@ export function discoverReviewTarget({
     changedPaths,
     worktreeDirty: git(repositoryRoot, 'status', '--porcelain').length > 0,
   };
-
-  if (behind > 0) {
-    return incomplete(
-      'diverged_upstream',
-      'The branch has outgoing commits but is also behind its upstream. Reconcile the branch or supply an explicit non-diverged baseline.',
-      targetContext,
-    );
-  }
 
   let statuses;
   try {
@@ -328,7 +310,7 @@ export function discoverReviewTarget({
   if (matches.length > 1) {
     return incomplete(
       'multiple_change_matches',
-      'Outgoing commits touch more than one active OpenSpec change. Use a separate non-overlapping branch or baseline for each change.',
+      'The supplied range touches more than one active OpenSpec change. Supply a separate range for each change.',
       { ...targetContext, candidates: matches },
     );
   }
@@ -348,7 +330,7 @@ export function discoverReviewTarget({
     if (matches.length === 1 && matches[0].name !== changeName) {
       return incomplete(
         'explicit_change_conflict',
-        `Outgoing paths match ${matches[0].name}, not the explicitly selected ${changeName}.`,
+        `Changed paths match ${matches[0].name}, not the explicitly selected ${changeName}.`,
         { ...targetContext, candidates: matches },
       );
     }
@@ -357,7 +339,7 @@ export function discoverReviewTarget({
   } else if (matches.length === 0) {
     return incomplete(
       'no_change_match',
-      'No active OpenSpec change contains a path changed by the outgoing commits. Supply --change <name> if the association is intentional.',
+      'No active OpenSpec change contains a path changed by the supplied range. Supply --change <name> if the association is intentional.',
       { ...targetContext, candidates: [] },
     );
   } else {
@@ -383,14 +365,15 @@ export function discoverReviewTarget({
 }
 
 function usage() {
-  return `Usage: discover-review-target.mjs [options]
+  return `Usage: discover-review-target.mjs --base <commit> --head <commit> [options]
 
-Resolve committed changes that are ahead of the current branch's upstream and
-associate them with one active OpenSpec change.
+Resolve a supplied base..head range and associate it with one active OpenSpec
+change. Both endpoints are required; the script does not choose a range.
 
 Options:
+  --base <commit>       Base commit or local ref (excluded; ancestor of head)
+  --head <commit>       End commit or local ref (included; need not be HEAD)
   --change <name>       Associate an otherwise unmatched range with this change
-  --upstream <ref>      Override the branch's configured upstream
   --openspec <path>     Override the openspec executable
   --help                Show this help
 
@@ -407,12 +390,13 @@ function parseArgs(argv) {
     const argument = argv[index];
     if (argument === '--help') return { help: true };
 
-    if (['--change', '--upstream', '--openspec'].includes(argument)) {
+    if (['--base', '--head', '--change', '--openspec'].includes(argument)) {
       const value = argv[index + 1];
-      if (!value) throw new Error(`${argument} requires a value`);
+      if (!value || value.startsWith('--')) throw new Error(`${argument} requires a value`);
       index += 1;
+      if (argument === '--base') options.baseRef = value;
+      if (argument === '--head') options.headRef = value;
       if (argument === '--change') options.changeName = value;
-      if (argument === '--upstream') options.upstreamRef = value;
       if (argument === '--openspec') options.openspecBin = value;
       continue;
     }

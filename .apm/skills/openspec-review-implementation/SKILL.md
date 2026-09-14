@@ -1,14 +1,13 @@
 ---
 name: openspec-review-implementation
-description: Reviews a committed range ending at HEAD against an active OpenSpec change, preserves unresolved findings and human-accepted residual risks across bounded reviews, and hands remediation decisions into OpenSpec artifacts and tracked work. Use after Apply commits, for re-audit, or to resolve review findings; not for uncommitted work, an initial proposal review, or implementation itself.
+description: Reviews a committed range against an active OpenSpec change, preserves unresolved findings and human-accepted residual risks, and hands remediation decisions into OpenSpec artifacts and tracked work. Requires exact base and head commits, supplied explicitly or clear from context. Use after Apply commits, for re-audit, or to resolve findings; not for uncommitted work, an initial proposal review, or implementation itself.
 ---
 
 # OpenSpec Review Implementation
 
-Review the committed `base..HEAD` range requested by the user, defaulting to the
-complete range that would be pushed from the current branch. Judge engineering
-soundness, OpenSpec conformance, and ordinary code quality. Keep the current
-unresolved findings and applicable accepted-risk decisions in
+Review the caller's committed `base..head` range for engineering soundness,
+OpenSpec conformance, and ordinary code quality. Keep current unresolved findings
+and applicable accepted-risk decisions in
 `<change-root>/implementation-review.md`.
 
 The report is evidence, not approval to push, merge, archive, or accept risk.
@@ -45,23 +44,23 @@ and still be unsound; passing one review does not substitute for another.
 
 ## 1. Resolve the Target
 
-Read [references/review-target.md](references/review-target.md), then run from the
-repository root:
+Require both endpoints, supplied explicitly or unambiguously identified by the
+conversation. Resolve those commits with a focused local Git lookup; ask for any
+missing or ambiguous boundary. Do not choose defaults from branch state, push
+status, or an earlier report.
+
+Read [references/review-target.md](references/review-target.md) for endpoint
+semantics, the helper contract, and snapshot rules, then run from the repository
+root:
 
 ```sh
-node "<skill-root>/scripts/discover-review-target.mjs"
+node "<skill-root>/scripts/discover-review-target.mjs" --base "<base>" --head "<head>"
 ```
 
-Use the helper's exact result. Do not broaden the target, claim that a local
-upstream is live, or fetch without the user's request.
-
-Use the recorded full base and head IDs for every diff and file read. Follow the
-snapshot and verification rules in `review-target.md`; a clean Git diff does not
-make ordinary worktree reads evidence about those commits.
-
-The configured upstream is the default baseline. Use a different local baseline
-only when the user explicitly requests that bounded committed range. Narrowing
-the target limits new review work; it does not resolve earlier findings.
+State the resolved `base..head` range and use the helper's exact target. Use its
+full commit IDs for every diff, file read, and report; movement of the supplied
+refs does not change that target. Follow the snapshot rules in `review-target.md`
+for evidence and verification, including when the worktree is clean.
 
 `reviewablePaths` is the authoritative inventory from the recorded Git diff.
 `pathsOutsideChangeRoot` is only a location hint. Classify every path by its
@@ -175,10 +174,9 @@ Follow `review-format.md` for write timing, IDs, carry-forward, accepted risks,
 and resolution. Keep unfinished passes `Incomplete` in each intermediate report.
 If there are no findings to record, write the clean report only at finalization.
 
-Immediately before each report write, confirm that `HEAD` and the recorded local
-baseline still resolve to the recorded head and base. If either moved,
-rediscover and review the new target before replacing the report. Preserve any
-supported findings from the superseded target until explicitly resolved.
+Before each report write, confirm that its target and evidence use the recorded
+base and head IDs. If the caller requests a different range, review it before
+replacing the report and carry forward unresolved findings.
 
 After every creation or edit of `implementation-review.md`, including
 intermediate reports, finalization, planning handoff, and risk acceptance, run:
