@@ -5,30 +5,33 @@ author: Valentin Panchenko
 targets:
   - agent-skills
   - codex
+  - claude
 compilation:
   agents_md:
     mode: managed_section
 dependencies:
   apm:
     - git: obra/superpowers
-      ref: v6.2.0
-      skills:
-        - verification-before-completion
-      targets: [agent-skills]
+      ref: v6.3.0
+      path: skills/verification-before-completion
     - git: mattpocock/skills
-      ref: v1.1.0
-      skills:
-        - codebase-design
-        - grill-with-docs
-        - grilling
-      targets: [agent-skills]
+      ref: v1.2.3
+      path: skills/engineering/codebase-design
+    - git: mattpocock/skills
+      ref: v1.2.3
+      path: skills/engineering/grill-with-docs
+    - git: mattpocock/skills
+      ref: v1.2.3
+      path: skills/productivity/grilling
     - git: addyosmani/agent-skills
-      ref: 0.6.5
-      skills:
-        - code-simplification
-        - debugging-and-error-recovery
-        - source-driven-development
-      targets: [agent-skills]
+      ref: 0.6.9
+      path: skills/code-simplification
+    - git: addyosmani/agent-skills
+      ref: 0.6.9
+      path: skills/debugging-and-error-recovery
+    - git: addyosmani/agent-skills
+      ref: 0.6.9
+      path: skills/source-driven-development
   mcp: []
 includes: auto
 scripts: {}
