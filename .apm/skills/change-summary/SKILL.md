@@ -1,7 +1,6 @@
 ---
 name: change-summary
-description: Produces a causal, human-readable summary of repository work in the active task, connecting intent, substantive changes, resulting behavior, key decisions, verification, and limitations.
-disable-model-invocation: true
+description: Explains repository work as a causal, human-readable account that connects intent, substantive changes, resulting behavior, key decisions, verification, and limitations so a human can assess the result without reading the diff.
 ---
 
 # Change Summary

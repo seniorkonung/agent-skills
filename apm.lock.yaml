@@ -1,5 +1,5 @@
 lockfile_version: '2'
-generated_at: '2026-09-14T06:07:14.026387+00:00'
+generated_at: '2026-09-17T20:55:09.698987+00:00'
 apm_version: 0.30.0
 dependencies:
 - repo_url: addyosmani/agent-skills
@@ -427,16 +427,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:cf4f96ab7bca9e995deeb88a8bff0a8e8d9cadf4fe775a451731f359445a7276
-- kind: project-relative
-  target: claude
-  value: .claude/skills/change-summary/agents/openai.yaml
-  runtime: null
-  scope: project
-  owners:
-  - .
-  active_owner: .
-  content_hash: sha256:a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94
+  content_hash: sha256:855ac5dae361704b0af7471cf5a6c50519b338f95d49d7f83c9c1ccf1cf7cfc4
 - kind: project-relative
   target: claude
   value: .claude/skills/code-review-and-quality
@@ -1309,16 +1300,7 @@ deployments:
   owners:
   - .
   active_owner: .
-  content_hash: sha256:cf4f96ab7bca9e995deeb88a8bff0a8e8d9cadf4fe775a451731f359445a7276
-- kind: project-relative
-  target: legacy
-  value: .agents/skills/change-summary/agents/openai.yaml
-  runtime: null
-  scope: project
-  owners:
-  - .
-  active_owner: .
-  content_hash: sha256:a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94
+  content_hash: sha256:855ac5dae361704b0af7471cf5a6c50519b338f95d49d7f83c9c1ccf1cf7cfc4
 - kind: project-relative
   target: legacy
   value: .agents/skills/code-review-and-quality
@@ -1955,7 +1937,6 @@ local_deployed_files:
 - .agents/skills/c4-diagrams/templates.md
 - .agents/skills/change-summary
 - .agents/skills/change-summary/SKILL.md
-- .agents/skills/change-summary/agents/openai.yaml
 - .agents/skills/code-review-and-quality
 - .agents/skills/code-review-and-quality/SKILL.md
 - .agents/skills/discussion
@@ -2037,7 +2018,6 @@ local_deployed_files:
 - .claude/skills/c4-diagrams/templates.md
 - .claude/skills/change-summary
 - .claude/skills/change-summary/SKILL.md
-- .claude/skills/change-summary/agents/openai.yaml
 - .claude/skills/code-review-and-quality
 - .claude/skills/code-review-and-quality/SKILL.md
 - .claude/skills/discussion
@@ -2114,8 +2094,7 @@ local_deployed_files:
 local_deployed_file_hashes:
   .agents/skills/c4-diagrams/SKILL.md: sha256:1e7d597f24a015fc44cb9052fc0f8b665d136bd5c2f3a60a242adfedd98d17b4
   .agents/skills/c4-diagrams/templates.md: sha256:d5f6096cccd57d0d6b36adabd7d027c41b71961304db825dba8ea53ddbebc5a0
-  .agents/skills/change-summary/SKILL.md: sha256:cf4f96ab7bca9e995deeb88a8bff0a8e8d9cadf4fe775a451731f359445a7276
-  .agents/skills/change-summary/agents/openai.yaml: sha256:a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94
+  .agents/skills/change-summary/SKILL.md: sha256:855ac5dae361704b0af7471cf5a6c50519b338f95d49d7f83c9c1ccf1cf7cfc4
   .agents/skills/code-review-and-quality/SKILL.md: sha256:0c3fe048ef16d2a13fed1678052f46415ab99e45dfe541e8c90eac79afe70bfc
   .agents/skills/discussion/SKILL.md: sha256:e9c3423b73b4d572af3d95c8820142e18bb44e226adc92f1c297905e9835ca9a
   .agents/skills/discussion/references/document-format.md: sha256:9012f228e7a7759f14176e38b1b39946a3d810693a4a96319934b93ad71e80ac
@@ -2174,8 +2153,7 @@ local_deployed_file_hashes:
   .claude/rules/production-readiness.md: sha256:1f8352e4fad91fc1f1bee955d70521636e1da6453a96022fb3a8939cc6646e55
   .claude/skills/c4-diagrams/SKILL.md: sha256:1e7d597f24a015fc44cb9052fc0f8b665d136bd5c2f3a60a242adfedd98d17b4
   .claude/skills/c4-diagrams/templates.md: sha256:d5f6096cccd57d0d6b36adabd7d027c41b71961304db825dba8ea53ddbebc5a0
-  .claude/skills/change-summary/SKILL.md: sha256:cf4f96ab7bca9e995deeb88a8bff0a8e8d9cadf4fe775a451731f359445a7276
-  .claude/skills/change-summary/agents/openai.yaml: sha256:a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94
+  .claude/skills/change-summary/SKILL.md: sha256:855ac5dae361704b0af7471cf5a6c50519b338f95d49d7f83c9c1ccf1cf7cfc4
   .claude/skills/code-review-and-quality/SKILL.md: sha256:0c3fe048ef16d2a13fed1678052f46415ab99e45dfe541e8c90eac79afe70bfc
   .claude/skills/discussion/SKILL.md: sha256:e9c3423b73b4d572af3d95c8820142e18bb44e226adc92f1c297905e9835ca9a
   .claude/skills/discussion/references/document-format.md: sha256:9012f228e7a7759f14176e38b1b39946a3d810693a4a96319934b93ad71e80ac
