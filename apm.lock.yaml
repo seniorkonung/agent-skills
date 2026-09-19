@@ -1,5 +1,5 @@
 lockfile_version: '2'
-generated_at: '2026-09-18T19:51:30.849199+00:00'
+generated_at: '2026-09-19T12:12:12.298009+00:00'
 apm_version: 0.30.0
 dependencies:
 - repo_url: addyosmani/agent-skills
@@ -22,7 +22,7 @@ dependencies:
   content_hash: sha256:7973e746e8e2ea5004d520da970c15a106824b8d6be1bcff48908aec021f3677
   constraint: 0.6.9
   resolved_tag: 0.6.9
-  resolved_at: '2026-09-14T06:06:59+00:00'
+  resolved_at: '2026-09-19T12:12:05+00:00'
 - repo_url: addyosmani/agent-skills
   name: debugging-and-error-recovery
   host: github.com
@@ -43,7 +43,7 @@ dependencies:
   content_hash: sha256:1a119d27e8f1d27ed6317adf3115826336491346780dcb7d7a7a7f79fe3ffe10
   constraint: 0.6.9
   resolved_tag: 0.6.9
-  resolved_at: '2026-09-14T06:06:59+00:00'
+  resolved_at: '2026-09-19T12:12:05+00:00'
 - repo_url: addyosmani/agent-skills
   name: source-driven-development
   host: github.com
@@ -64,7 +64,7 @@ dependencies:
   content_hash: sha256:c48d3c3abb2cb8a5c4a8584ab95db64f8a0261f3acfe2cdb7b8ff88ec3d90211
   constraint: 0.6.9
   resolved_tag: 0.6.9
-  resolved_at: '2026-09-14T06:06:59+00:00'
+  resolved_at: '2026-09-19T12:12:05+00:00'
 - repo_url: mattpocock/skills
   name: grill-with-docs
   host: github.com
@@ -920,33 +920,6 @@ deployments:
   - .
   active_owner: .
   content_hash: sha256:bae3725fab379e1e9966b1c4a0316097d309f5c3d1b2aabdbe3c06755f7915bd
-- kind: project-relative
-  target: claude
-  value: .claude/skills/openspec-task-deliberation
-  runtime: null
-  scope: project
-  owners:
-  - .
-  active_owner: .
-  content_hash: null
-- kind: project-relative
-  target: claude
-  value: .claude/skills/openspec-task-deliberation/SKILL.md
-  runtime: null
-  scope: project
-  owners:
-  - .
-  active_owner: .
-  content_hash: sha256:4aa67c0a37f33f48213651fec54f7c28e31eac8ed1f7c1510ca04c8b3a417552
-- kind: project-relative
-  target: claude
-  value: .claude/skills/openspec-task-deliberation/references/evaluation-cases.md
-  runtime: null
-  scope: project
-  owners:
-  - .
-  active_owner: .
-  content_hash: sha256:43689993146fba677e652a44cfabb789b3e9c37c9d66dd47849fad9859cd093f
 - kind: project-relative
   target: claude
   value: .claude/skills/phased-planning
@@ -1989,9 +1962,6 @@ local_deployed_files:
 - .claude/skills/openspec-review-implementation/tests/fixtures/valid-review.json
 - .claude/skills/openspec-review-implementation/tests/fixtures/valid-review.md
 - .claude/skills/openspec-review-implementation/tests/validate-review.test.mjs
-- .claude/skills/openspec-task-deliberation
-- .claude/skills/openspec-task-deliberation/SKILL.md
-- .claude/skills/openspec-task-deliberation/references/evaluation-cases.md
 - .claude/skills/phased-planning
 - .claude/skills/phased-planning/SKILL.md
 - .claude/skills/planning-and-task-breakdown
@@ -2121,8 +2091,6 @@ local_deployed_file_hashes:
   .claude/skills/openspec-review-implementation/tests/fixtures/valid-review.json: sha256:380c981f061ccdd5a7f03e99be3160329c325d97b4c6cf0ed1d35a089705ed86
   .claude/skills/openspec-review-implementation/tests/fixtures/valid-review.md: sha256:0405f65b52b9b9438a02c025db22df7c46f08ccc0ce23af6fe740342e5604612
   .claude/skills/openspec-review-implementation/tests/validate-review.test.mjs: sha256:bae3725fab379e1e9966b1c4a0316097d309f5c3d1b2aabdbe3c06755f7915bd
-  .claude/skills/openspec-task-deliberation/SKILL.md: sha256:4aa67c0a37f33f48213651fec54f7c28e31eac8ed1f7c1510ca04c8b3a417552
-  .claude/skills/openspec-task-deliberation/references/evaluation-cases.md: sha256:43689993146fba677e652a44cfabb789b3e9c37c9d66dd47849fad9859cd093f
   .claude/skills/phased-planning/SKILL.md: sha256:f6e9d5c94db8837f005182bcdc5e3d4f511bb88741cdd71829ce6aeaa0badd1c
   .claude/skills/planning-and-task-breakdown/SKILL.md: sha256:acf49ad221c68c354f88ac9d7be0b94fc179d90b25177b28b151b3d9d3e7b670
   .claude/skills/security-and-hardening/SKILL.md: sha256:f06f38a9750b082fee21836e3ed03b7f566ef676178091c30e9696e9db971761
