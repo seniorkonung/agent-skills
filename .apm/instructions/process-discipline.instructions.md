@@ -1,3 +1,7 @@
+---
+description: Requires reaching a result through the process the repository expects, including reading a clearly applicable skill in full before acting and following OpenSpec instructions, schema, and stages rather than improvising a path.
+---
+
 ### Process discipline
 
 Reaching the expected result is not enough; reach it through the process the repository expects. A result reached by an improvised process is hard to review and repeat, and usually drops constraints the process exists to protect.
