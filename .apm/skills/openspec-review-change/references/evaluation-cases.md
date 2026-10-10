@@ -30,7 +30,10 @@ The skill should:
 - let the user address selected findings by their current report IDs without
   remediating unselected findings, while reporting newly discovered problems;
 - use `openspec-update-change` for planning-artifact edits and retain ownership of
-  the subsequent re-audit; and
+  the subsequent re-audit;
+- report unreachable, restated, or mechanics-level contract content as excess
+  findings that require removal, and report a missing case only with evidence of
+  how the current system reaches it; and
 - route implementation review and unrelated narrow planning edits elsewhere.
 
 ## Case 1: Conventional Spec-Driven Change
@@ -265,6 +268,27 @@ automatic rollback for all tenants. Test these variants:
 - **Acceptance lacks bounds:** If the user only says "accept F4" and existing
   evidence supplies no scope, duration, or accepted impact, ask for the missing
   consequential terms instead of inventing them.
+
+## Case 13: Excess Is a Finding
+
+> Review this change before implementation.
+
+**Fixture:** The delta spec for saving a record contains:
+
+- a scenario for navigation failing after a successful save, while the project's
+  router cannot fail to open a registered route;
+- English-label scenarios in this capability, while a localization capability
+  already owns label language;
+- two scenarios that differ only in the completion order of preference writes
+  that the application serializes;
+- no outcome for a storage write failure during save, which the storage layer
+  can raise.
+
+**Expected:** Excess findings that require removing the navigation-failure
+scenario, the restated localization scenarios, and the completion-order
+scenarios, each citing the reachability or ownership evidence. One gap finding
+for the storage failure that cites how it is reached. No demand for retries,
+cancellation, or race handling without a source in the current system.
 
 ## Deterministic Checks
 

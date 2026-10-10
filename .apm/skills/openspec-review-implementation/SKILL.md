@@ -193,12 +193,18 @@ and do not claim a format-valid report.
 
 Using the loaded artifact graph, verify that:
 
-- mapped requirements and scenarios have implementation and test evidence;
+- mapped requirements and scenarios have implementation evidence, and each
+  scenario is shown by one test, new or existing;
 - changed completion or verification claims are supported by the range;
 - code, requirements, design, tasks, and verification agree in both directions;
 - future tasks are not treated as obligations of this increment;
-- relevant behavior, failures, compatibility, migration, operations, and
-  documentation obligations are covered; and
+- relevant behavior, reachable failures, compatibility, migration, operations,
+  and documentation obligations are covered;
+- the range adds nothing that its requirements, decisions, or a plausible
+  regression do not justify: no unrequired behavior, no handling for states the
+  system cannot reach, and no test that names no regression or repeats another.
+  When such excess implements a contract element that is itself unreachable or
+  redundant, that element is the earliest source of truth; and
 - unrelated work in the reviewed target remains explicit.
 
 Use the project's verification workflow when available; otherwise perform the

@@ -6,10 +6,11 @@ description: Audits and iteratively strengthens planning artifacts for an active
 # OpenSpec Review Change
 
 Review whether an OpenSpec change gives an implementer a coherent, verifiable
-plan without leaving consequential requirements or decisions to guesswork.
-Check both what the artifacts promise and what the affected system actually
-requires. Keep unresolved findings and applicable human-accepted residual risks
-in a concise current assessment at `<change-root>/review.md`.
+plan that leaves no consequential requirement or decision to guesswork and
+commits no work that nothing requires. Check both what the artifacts promise and
+what the affected system actually requires. Keep unresolved findings and
+applicable human-accepted residual risks in a concise current assessment at
+`<change-root>/review.md`.
 
 The report is working review evidence. It is not an OpenSpec schema artifact, an
 approval record, permission to run Apply, or authority to accept risk.
@@ -100,8 +101,10 @@ relies on them; non-applicable lenses need no write-up.
 ## Record Material Findings
 
 Check whether other artifacts or repository evidence already answer a concern.
-Report a specific gap or contradiction with a plausible consequence and an
-observable required outcome. Distinguish observed facts from inferred consequences.
+Report a specific gap, contradiction, or excess with a plausible consequence and
+an observable required outcome. A gap finding shows how the missing case is
+reached in the current system; an excess finding names what to remove or
+consolidate. Distinguish observed facts from inferred consequences.
 
 Use one finding per root cause, with evidence, impact, severity, and a required
 change. Add a focused human question only for an unsettled consequential choice.
@@ -181,6 +184,7 @@ Before reporting a clean review, confirm that:
 - the actual artifact graph, capability boundaries, relevant repository context,
   and activated risk areas were reviewed, with omitted roles justified;
 - commitments trace through applicable roles to planned work and verification;
+- the contract and planned work were checked for excess as well as gaps;
 - findings and accepted risks meet the report contract and reflect current evidence;
 - validation results and material coverage limitations are explicit; and
 - only authorized artifacts changed, with no implementation, Apply-state change,

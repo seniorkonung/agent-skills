@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Drives development with tests. Use when implementing any logic, fixing any bug, or changing any behavior. Use when you need to prove that code works, when a bug report arrives, or when you're about to modify existing functionality.
+description: Drives development with tests and decides which tests are worth writing. Use when implementing any logic, fixing any bug, or changing any behavior. Use when you need to prove that code works, when a bug report arrives, when you're about to modify existing functionality, or when deciding which tests to write, keep, or remove.
 ---
 
 # Test-Driven Development
@@ -20,6 +20,21 @@ Write a failing test before writing the code that makes it pass. For bug fixes, 
 **When NOT to use:** Pure configuration changes, documentation updates, or static content changes that have no behavioral impact.
 
 **Related:** For browser-based changes, combine TDD with runtime verification using Chrome DevTools MCP — see the Browser Testing section below.
+
+## Decide Which Tests to Write
+
+A test costs runtime, review effort, and friction in every later refactor. Write one only when its absence would let a plausible, costly regression go unnoticed: name the regression it catches and check that no other test already catches it. If you cannot, do not write the test. Coverage targets and symmetry with neighboring tests are not reasons on their own. A reported bug always qualifies, because it is a demonstrated regression.
+
+Show each spec scenario with one test. When an existing test already shows it, including a test of a shared mechanism, cite that test instead of adding another.
+
+Do not write tests that:
+
+- Restate what the compiler, the language, or a framework guarantees: constructors, getters, equality, hash codes, string conversion, enum exhaustiveness, constants.
+- Exercise fakes, fixtures, or test helpers instead of product code.
+- Build states the product cannot reach, such as rows written with schema constraints disabled. When such a state is real, such as on-disk corruption, test recovery from it once.
+- Enumerate combinations, such as locale, screen size, timing, or failure point, whose dimensions do not change the code path. Pick the default, the boundary, and the case that actually differs.
+- Chase race or timing orders that the architecture rules out, such as operations serialized by a single executor.
+- Measure performance without asserting a threshold. When a cost requirement exists, assert its bound — page size, a time budget, or a query count that must not grow with the data — not the exact queries issued.
 
 ## Discover the Stack First
 
@@ -143,22 +158,26 @@ export async function completeTask(id: string): Promise<Task> {
 
 ## The Test Pyramid
 
-Invest testing effort according to the pyramid — most tests should be small and fast, with progressively fewer tests at higher levels:
+Test each behavior once, in the tests of the module that decides it; that is usually the cheapest level where the behavior is observable.
+
+- A test of a module that composes others covers only the decisions that module makes: what it passes to its dependencies and how it maps and presents their results and failures. For a delegated behavior, one representative case shows the wiring, and the owner's tests cover the variations. Test each validation rule in the validator, then send one invalid request to check the API's error mapping, rather than repeating every rule through the API and the form.
+- Test a shared mechanism, such as a shared UI component, an error mapper, or a retry policy, once at its own boundary, not again at every call site. Prove durability, crash safety, and rollback once per storage mechanism, not once per operation.
+- Keep one end-to-end path per user flow.
+
+A suite built this way takes the pyramid's shape — mostly small, fast tests, with progressively fewer tests at higher levels. The shape is a consequence, not a quota to fill:
 
 ```
           ╱╲
-         ╱  ╲         E2E Tests (~5%)
+         ╱  ╲         E2E Tests
         ╱    ╲        Full user flows, real browser
        ╱──────╲
-      ╱        ╲      Integration Tests (~15%)
+      ╱        ╲      Integration Tests
      ╱          ╲     Component interactions, API boundaries
     ╱────────────╲
-   ╱              ╲   Unit Tests (~80%)
+   ╱              ╲   Unit Tests
   ╱                ╲  Pure logic, isolated, milliseconds each
  ╱──────────────────╲
 ```
-
-**The Beyonce Rule:** If you liked it, you should have put a test on it. Infrastructure changes, refactoring, and migrations are not responsible for catching your bugs — your tests are. If a change breaks your code and you didn't have a test for it, that's on you.
 
 ### Test Sizes (Resource Model)
 
@@ -187,12 +206,12 @@ Is it a critical user flow that must work end-to-end?
 
 ## Writing Good Tests
 
-### Test State, Not Interactions
+### Test Outcomes, Not Interactions
 
-Assert on the *outcome* of an operation, not on which methods were called internally. Tests that verify method call sequences break when you refactor, even if the behavior is unchanged.
+Drive the code through its public interface — user actions, public API, repository contract — and assert the *outcome* a user or consumer observes: visible text and semantics, persisted and read data, returned results and failures. Tests that verify which methods were called internally break when you refactor, even if the behavior is unchanged.
 
 ```typescript
-// Good: Tests what the function does (state-based)
+// Good: Tests what the function does (outcome-based)
 it('returns tasks sorted by creation date, newest first', async () => {
   const tasks = await listTasks({ sortBy: 'createdAt', sortOrder: 'desc' });
   expect(tasks[0].createdAt.getTime())
@@ -207,6 +226,8 @@ it('calls db.query with ORDER BY created_at DESC', async () => {
   );
 });
 ```
+
+Do not assert internals: UI element identifiers or tree structure, pixel geometry without a stated layout requirement, object identity, private state of components, view models, or stores, internal bookkeeping values such as revisions or tokens, query text, or calls between internal collaborators. A count or order is an outcome only when it is the contract at a system boundary, such as one charge per payment or one email per signup.
 
 ### DAMP Over DRY in Tests
 
@@ -302,7 +323,7 @@ describe('TaskService', () => {
 
 | Anti-Pattern | Problem | Fix |
 |---|---|---|
-| Testing implementation details | Tests break when refactoring even if behavior is unchanged | Test inputs and outputs, not internal structure |
+| Testing implementation details | Tests break when refactoring even if behavior is unchanged | Test inputs and outputs, not internal structure. When such a test breaks, rewrite it against behavior or delete it if another test covers the behavior; do not adjust it to the new internals |
 | Flaky tests (timing, order-dependent) | Erode trust in the test suite | Use deterministic assertions, isolate test state |
 | Testing framework code | Wastes time testing third-party behavior | Only test YOUR code |
 | Snapshot abuse | Large snapshots nobody reviews, break on any change | Use snapshots sparingly and review every change |
@@ -334,7 +355,8 @@ For JavaScript/TypeScript testing patterns illustrating these principles — Jes
 | Rationalization | Reality |
 |---|---|
 | "I'll write tests after the code works" | You won't. And tests written after the fact test implementation, not behavior. |
-| "This is too simple to test" | Simple code gets complicated. The test documents the expected behavior. |
+| "This is too simple to test" | Simplicity is not the criterion. If its regression would be plausible and costly and no other test would catch it, test it. |
+| "I'll add a test for this case too, just in case" | A test that names no plausible regression is cost without protection. Name the regression or do not write the test. |
 | "Tests slow me down" | Tests slow you down now. They speed you up every time you change the code later. |
 | "I tested it manually" | Manual testing doesn't persist. Tomorrow's change might break it with no way to know. |
 | "The code is self-explanatory" | Tests ARE the specification. They document what the code should do, not what it does. |
@@ -343,7 +365,8 @@ For JavaScript/TypeScript testing patterns illustrating these principles — Jes
 
 ## Red Flags
 
-- Writing code without any corresponding tests
+- Changing behavior without a test that would catch its regression
+- Adding a test whose regression you cannot name, or that another test already catches
 - Reaching for a default test command (`npm test`) without checking what this repository actually uses
 - Tests that pass on the first run (they may not be testing what you think)
 - "All tests pass" but no tests were actually run
@@ -357,11 +380,11 @@ For JavaScript/TypeScript testing patterns illustrating these principles — Jes
 
 After completing any implementation:
 
-- [ ] Every new behavior has a corresponding test
+- [ ] Every new behavior that needs a test is shown by one test, new or existing, that fails if the behavior regresses
+- [ ] No added test lacks a nameable regression or repeats another test
 - [ ] The full suite passes, run with the repository's own test command (`npm test`, `./gradlew test`, `pytest`, `go test ./...`, ...)
 - [ ] Bug fixes include a reproduction test that failed before the fix
 - [ ] Test names describe the behavior being verified
 - [ ] No tests were skipped or disabled
-- [ ] Coverage hasn't decreased (if tracked)
 
 **Note:** Run each test command after a change that could affect the result. After a clean run, don't repeat the same command unless the code has changed since — re-running on unchanged code adds no confidence.

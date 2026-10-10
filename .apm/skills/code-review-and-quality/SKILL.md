@@ -28,8 +28,9 @@ Every review evaluates code across these dimensions:
 Does the code do what it claims to do?
 
 - Does it match the spec or task requirements?
-- Are edge cases handled (null, empty, boundary values)?
-- Are error paths handled (not just the happy path)?
+- Are reachable edge cases handled (null, empty, boundary values)?
+- Are the error paths the system can produce handled (not just the happy path)?
+- Does any code handle a state the system cannot reach?
 - Does it pass all tests? Are the tests actually testing the right things?
 - Are there off-by-one errors, race conditions, or state inconsistencies?
 
@@ -156,9 +157,11 @@ Tests reveal intent and coverage:
 ```
 - Do tests exist for the change?
 - Do they test behavior (not implementation details)?
-- Are edge cases covered?
+- Are reachable edge cases covered?
 - Do tests have descriptive names?
 - Would the tests catch a regression if the code changed?
+- Does each test catch a regression that no other test catches, at the cheapest
+  level where the behavior is observable?
 ```
 
 ### Step 3: Review the Implementation
@@ -309,9 +312,8 @@ For triaging `npm audit` findings and supply-chain risk (typosquatting, compromi
 
 ### Correctness
 - [ ] Change matches spec/task requirements
-- [ ] Edge cases handled
-- [ ] Error paths handled
-- [ ] Tests cover the change adequately
+- [ ] Reachable edge cases and error paths handled; no handling for unreachable states
+- [ ] Each plausible, costly regression of the change is guarded by one test; no redundant tests
 
 ### Readability
 - [ ] Names are clear and consistent

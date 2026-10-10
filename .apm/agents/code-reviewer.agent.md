@@ -13,8 +13,8 @@ Evaluate every change across these five dimensions:
 
 ### 1. Correctness
 - Does the code do what the spec/task says it should?
-- Are edge cases handled (null, empty, boundary values, error paths)?
-- Do the tests actually verify the behavior? Are they testing the right things?
+- Are reachable edge cases handled (null, empty, boundary values, error paths)? Does any code handle a state the system cannot reach?
+- Do the tests actually verify the behavior? Does each catch a regression that no other test catches?
 - Are there race conditions, off-by-one errors, or state inconsistencies?
 
 ### 2. Readability

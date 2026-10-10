@@ -14,7 +14,7 @@ You are an experienced QA Engineer focused on test strategy and quality assuranc
 Before writing any test:
 - Read the code being tested to understand its behavior
 - Identify the public API / interface (what to test)
-- Identify edge cases and error paths
+- Identify the edge cases and error paths the code can actually reach
 - Check existing tests for patterns and conventions
 
 ### 2. Test at the Right Level
@@ -25,7 +25,7 @@ Crosses a boundary          → Integration test
 Critical user flow          → E2E test
 ```
 
-Test at the lowest level that captures the behavior. Don't write E2E tests for things unit tests can cover.
+Test each behavior once, in the tests of the module that decides it. A test of a module that composes others covers only its own decisions, plus one representative case per delegated behavior to show the wiring.
 
 ### 3. Follow the Prove-It Pattern for Bugs
 
@@ -44,9 +44,9 @@ describe('[Module/Function name]', () => {
 });
 ```
 
-### 5. Cover These Scenarios
+### 5. Consider These Scenarios
 
-For every function or component:
+Check each category, but write a test only for a case the code can reach whose regression would be plausible and costly and that no other test catches:
 
 | Scenario | Example |
 |----------|---------|
@@ -68,8 +68,8 @@ When analyzing test coverage:
 - Coverage gaps identified: [list]
 
 ### Recommended Tests
-1. **[Test name]** — [What it verifies, why it matters]
-2. **[Test name]** — [What it verifies, why it matters]
+1. **[Test name]** — [What it verifies and the regression it catches]
+2. **[Test name]** — [What it verifies and the regression it catches]
 
 ### Priority
 - Critical: [Tests that catch potential data loss or security issues]

@@ -2,11 +2,11 @@
 
 Use this guide to discover material concerns that the change artifacts may not
 mention.
-Review intent, behavioral correctness, coherence, planned work, and verification
-on every change. Apply the behavioral-contract guidance when the schema contains
-such artifacts or the change affects durable observable behavior. Then scan the
-activation map and read detailed guidance only for other areas activated by
-repository evidence.
+Review intent, behavioral correctness, necessity, coherence, planned work, and
+verification on every change. Apply the behavioral-contract guidance when the
+schema contains such artifacts or the change affects durable observable
+behavior. Then scan the activation map and read detailed guidance only for other
+areas activated by repository evidence.
 
 Do not copy this catalog into `review.md` or record a verdict for every lens. The
 report needs a brief coverage note and concrete findings, not a completed
@@ -94,8 +94,30 @@ upstream commitment by treating planned work as the source of truth.
 
 Check the externally observable contract, including boundaries, invalid input,
 authorization, empty state, partial failure, cancellation, retries, and removed
-behavior where relevant. An implementer and a tester should independently reach
-the same conclusion about what must happen.
+behavior where the current system can reach them. An implementer and a tester
+should independently reach the same conclusion about what must happen.
+
+### Necessity and Reachability
+
+Review the contract and planned work for excess with the same rigor as for gaps.
+Report as findings:
+
+- obligations or scenarios whose trigger the current system cannot produce, such
+  as a failure the dependency never raises or an interleaving that serialized
+  execution rules out;
+- scenarios that restate a shared mechanism, such as failure presentation,
+  localization, or accessibility, instead of relying on its owner;
+- implementation mechanics presented as behavior: completion order, retry
+  timing, tokens, or query shapes;
+- scenarios that repeat another scenario's outcome, or examples that enumerate a
+  test matrix;
+- planned work, documents, or verification that no requirement or decision
+  needs.
+
+Establish reachability from code, dependency behavior, and recorded decisions
+before reporting either a gap or an excess. When the evidence cannot settle it,
+ask the human instead of reporting. The required change for excess is removal or
+consolidation.
 
 ### Coherence and Traceability
 
@@ -203,10 +225,11 @@ strategy. Use official sources for version-sensitive claims.
 
 ### Reliability, Concurrency, and Failure Handling
 
-Review failure atomicity, idempotency, races, duplicate and out-of-order work,
-timeouts, cancellation, bounded retries, overload, backpressure, restart recovery,
-poison work, dead letters, and operator intervention. State which invariants must
-survive partial completion.
+For the failures and interleavings that the system's dependencies and
+architecture can produce, review failure atomicity, idempotency, races,
+duplicate and out-of-order work, timeouts, cancellation, bounded retries,
+overload, backpressure, restart recovery, poison work, dead letters, and operator
+intervention. State which invariants must survive partial completion.
 
 ### Security and Privacy
 
@@ -260,6 +283,11 @@ tasks describe the intended final system rather than the change history.
 | `high` | A missing material requirement, invariant, migration property, compatibility measure, or production failure path likely to cause serious harm or rework |
 | `medium` | A bounded gap that materially weakens correctness, maintainability, testability, or operability |
 | `low` | A concrete local issue worth resolving before implementation without threatening the primary outcome |
+
+Rate excess by the work and maintenance it commits: `high` when it mandates a
+mechanism or broad work across capabilities, `medium` when it adds bounded
+implementation and tests, and `low` when it duplicates wording without committing
+work.
 
 Every finding needs evidence, impact, and an observable required change. Preserve
 the human's decision space when constraints do not make one implementation

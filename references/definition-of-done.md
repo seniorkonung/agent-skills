@@ -21,14 +21,15 @@ Apply this to every change before declaring it done.
 ### Correctness
 - [ ] All acceptance criteria for the task are met
 - [ ] Code runs and behaves as intended, verified at runtime, not just compiled or typechecked
-- [ ] New behavior is covered by tests that fail without the change and pass with it
+- [ ] Each new behavior that needs a test (see `test-driven-development`) is shown by one test that fails without the change and passes with it
 - [ ] Existing tests still pass; no regressions introduced
-- [ ] Edge cases and error paths are handled, not just the happy path
+- [ ] Reachable edge cases and failure paths are handled, each in the mechanism that owns it; unreachable states get no handling or tests
 
 ### Quality
 - [ ] Code reveals intent through naming and structure; no comments needed to explain *what* it does
 - [ ] No duplicated business logic
 - [ ] No dead code, debug output, or commented-out blocks left behind
+- [ ] Every added requirement, test, handler, abstraction, and document has a justification you can name; nothing was added as a precaution
 - [ ] Changes are scoped to the task; no unrelated refactors snuck in
 - [ ] Linting and formatting pass
 

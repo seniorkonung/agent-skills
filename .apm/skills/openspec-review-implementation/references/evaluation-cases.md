@@ -38,7 +38,10 @@ The skill should:
 - use `openspec-update-change` for confirmed, bidirectional planning
   reconciliation and corrective task updates;
 - remove a finding after its remediation is durably owned by the appropriate
-  OpenSpec artifacts and any required tracked work; and
+  OpenSpec artifacts and any required tracked work;
+- report unjustified behavior, handling, and tests in the range as findings, and
+  trace excess that implements an unreachable or redundant contract element to
+  that element; and
 - keep phased plans at outcome granularity while recording detailed corrective
   work in the schema's task or tracked-work artifact.
 
@@ -562,6 +565,21 @@ the review.
 **Expected:** Keep the recorded IDs for diffs, reads, reviewer briefs, and reports.
 Verify in an isolated checkout at the recorded head. A different range requires
 the caller to identify it; unresolved findings carry forward.
+
+## Case 22: Excess Traced to the Contract
+
+**Fixture:** The range implements a scenario for navigation failing after a save,
+with recovery handling and four tests, although the project's router cannot fail
+to open a registered route. The same failure message is also asserted in
+view-model, page, and app tests, while the shared failure presenter already has
+its own test.
+
+**Expected:** One finding for the unreachable scenario with that scenario as its
+earliest source of truth; its required outcome removes the scenario through
+`openspec-update-change` and leaves tracked work to delete the handling and
+tests. One finding for the repeated tests with the tests as their source of
+truth; the required outcome keeps the presenter's test and at most one wiring
+test. No request for additional tests or handling to compensate.
 
 ## Deterministic Checks
 

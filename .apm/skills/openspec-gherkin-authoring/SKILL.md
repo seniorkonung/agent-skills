@@ -31,14 +31,41 @@ the constructs they support. Keep edits within the requested scope.
   not yet been chosen. Clarify uncertainty about behavior separately from
   uncertainty about how to test it.
 
+## Admit Only Necessary Scenarios
+
+Illustrate each requirement with the scenario that best shows its rule. Admit
+each further scenario only when you can name all three:
+
+- **The decision** it records: an outcome a reasonable product owner could have
+  chosen differently and that the requirement text, its other scenarios, and
+  shared rules do not already show.
+- **The trigger**: a user action, adversarial input, an environment event, or a
+  failure that the system's actual dependencies and architecture can produce.
+- **The observable outcome**: what a user, caller, or external system sees.
+
+A requirement that needs many scenarios usually bundles several rules or
+enumerates a test matrix.
+
+- Specify shared behavior — failure presentation, localization, accessibility —
+  once, in the capability that owns it. Other capabilities rely on it without
+  restating it.
+- Specify the outcome, not the mechanics behind it. What a user sees when work
+  completes late or is retried is behavior; completion order, retry timing,
+  tokens, and query shapes belong to design.
+- Scenarios are not a test inventory. Each admitted scenario is later shown by
+  one test; test design belongs to implementation.
+- When you cannot establish whether a trigger is reachable or whether an outcome
+  is a product decision, ask the human instead of adding a precautionary
+  scenario.
+
 ## Choose Examples That Explain the Rule
 
 - Identify the rule each scenario demonstrates. Split unrelated behaviors into
   separate examples; keep consequences of the same event together.
 - Choose cases that distinguish business conditions, boundaries, or outcomes.
   Use representative examples where they make a rule easier to understand or
-  expose ambiguity. Include boundary, failure, and alternative cases when their
-  distinctions matter, without expanding into a test coverage matrix.
+  expose ambiguity. Include a boundary, failure, or alternative case only when it
+  passes the admission test above.
 - Give each scenario a name that identifies its situation or expected outcome.
   Keep it short enough that the behavior remains apparent.
 - Ensure the examples agree with the rule. Add an example when prose leaves an
@@ -48,9 +75,10 @@ the constructs they support. Keep edits within the requested scope.
 
 ## Express State, Event, and Result
 
-- **GIVEN** describes prior state needed to understand this example. Omit it
-  when no special starting context is relevant or the applicable context is
-  already clear from the requirement. Do not add generic setup to fill a template.
+- **GIVEN** describes reachable prior state needed to understand this example.
+  Omit it when no special starting context is relevant or the applicable context
+  is already clear from the requirement. Do not add generic setup to fill a
+  template.
 - **WHEN** identifies one meaningful action or event. Express the actor's intent
   or the system event clearly, without incidental interaction sequences.
 - **THEN** states consequences observable by a user, caller, or external system.
@@ -102,5 +130,7 @@ Could materially different behaviors both appear to satisfy the wording? Clarify
 such differences without filling in the mechanics of a future test.
 
 Review the specification for contradictions, missing behavioral decisions, and
-redundancy. Preserve agreed behavior when improving wording, and distinguish
-proposed behavior changes from editorial corrections.
+redundancy. Remove scenarios that fail the admission test: unreachable triggers,
+restated shared rules, mechanics instead of outcomes, and outcomes that no
+decision distinguishes. Preserve agreed behavior when improving wording, and
+distinguish proposed behavior changes from editorial corrections.
