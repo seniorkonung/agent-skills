@@ -1,0 +1,14 @@
+name: agent-skills-productivity
+version: 0.0.1
+targets:
+  - agent-skills
+  - codex
+  - claude
+dependencies:
+  apm:
+    - git: mattpocock/skills
+      ref: v1.2.3
+      path: skills/productivity/grilling
+  mcp: []
+includes: auto
+scripts: {}

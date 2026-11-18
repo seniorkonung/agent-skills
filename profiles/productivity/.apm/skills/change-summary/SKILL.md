@@ -1,6 +1,6 @@
 ---
 name: change-summary
-description: Explains repository work as a causal, human-readable account that connects intent, substantive changes, resulting behavior, key decisions, verification, and limitations so a human can assess the result without reading the diff.
+description: Explains repository work as a causal, human-readable account that connects intent, substantive changes, resulting effect, key decisions, verification, and limitations so a human can assess the result without reading the diff.
 ---
 
 # Change Summary
@@ -43,13 +43,13 @@ intent or problem -> substantive change -> resulting effect
 
 Explain:
 
-- what became different in behavior, structure, data, configuration, developer
+- what became different in content, behavior, structure, data, configuration,
   workflow, or operations;
 - why the change was needed, including reasons established by higher-level
   requirements;
 - what the change now enables, prevents, simplifies, or makes more reliable
   compared with the prior state; and
-- why the implementation has its present shape when that choice is important to
+- why the result has its present shape when that choice is important to
   assessing the direction of the work.
 
 Distinguish facts from expectations. Say what verification demonstrated and do
@@ -110,7 +110,8 @@ judge direction, consequences, or risk.
 
 Prefer domain and behavior language over repository topology. Mention a path,
 commit, or symbol only when it removes real ambiguity or the user asks for it.
-Avoid vague activity statements such as "updated the backend" or "added tests."
+Avoid vague activity statements such as "updated the backend" or "revised
+chapter 3."
 State what changed, why it mattered, and what the evidence establishes.
 
 ## Completion Check

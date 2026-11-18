@@ -1,7 +1,5 @@
 name: agent-skills
 version: 0.0.1
-description: APM project for agent-skills
-author: Valentin Panchenko
 targets:
   - agent-skills
   - codex
@@ -9,26 +7,10 @@ targets:
 compilation:
   agents_md:
     mode: managed_section
+  exclude:
+    - profiles/**
 dependencies:
-  apm:
-    - git: obra/superpowers
-      ref: v6.3.0
-      path: skills/verification-before-completion
-    - git: mattpocock/skills
-      ref: v1.2.3
-      path: skills/engineering/grill-with-docs
-    - git: mattpocock/skills
-      ref: v1.2.3
-      path: skills/productivity/grilling
-    - git: addyosmani/agent-skills
-      ref: 0.6.9
-      path: skills/code-simplification
-    - git: addyosmani/agent-skills
-      ref: 0.6.9
-      path: skills/debugging-and-error-recovery
-    - git: addyosmani/agent-skills
-      ref: 0.6.9
-      path: skills/source-driven-development
+  apm: []
   mcp: []
 includes: auto
 scripts: {}

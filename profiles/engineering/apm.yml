@@ -1,0 +1,23 @@
+name: agent-skills-engineering
+version: 0.0.1
+targets:
+  - agent-skills
+  - codex
+  - claude
+dependencies:
+  apm:
+    - git: obra/superpowers
+      ref: v6.3.0
+      path: skills/verification-before-completion
+    - git: addyosmani/agent-skills
+      ref: 0.6.9
+      path: skills/code-simplification
+    - git: addyosmani/agent-skills
+      ref: 0.6.9
+      path: skills/debugging-and-error-recovery
+    - git: addyosmani/agent-skills
+      ref: 0.6.9
+      path: skills/source-driven-development
+  mcp: []
+includes: auto
+scripts: {}
